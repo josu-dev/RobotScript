@@ -174,13 +174,13 @@ const ReservedFunction = createToken({
 });
 const ConsultItem = createToken({
     name: "ConsultItem",
-    pattern: /[Hay][Papel]|[Flor][EnLa][Esquina]|[Bolsa]/,
+    pattern: /Hay(Papel)|(Flor)EnLa(Esquina)|(Bolsa)/,
     longer_alt: Identifier,
     categories: ReservedFunction
 });
 const ConsultPosition = createToken({
     name: "ConsultPosition",
-    pattern: /[Pos][Ca]|[Av]/,
+    pattern: /Pos(Ca)|(Av)/,
     longer_alt: Identifier,
     categories: ReservedFunction
 });
@@ -192,7 +192,7 @@ const TakeItem = createToken({
 });
 const DepositItem = createToken({
     name: "DepositItem",
-    pattern: /depositarFlor|depositarPapel/,
+    pattern: /depositar(Flor)|(Papel)/,
     longer_alt: Identifier
 });
 
@@ -228,12 +228,12 @@ const GenerateNumber = createToken({
 
 const Message = createToken({
     name: "Message",
-    pattern: /[Enviar]|[Recibir]Mensaje/,
+    pattern: /(Enviar)|(Recibir)Mensaje/,
     longer_alt: Identifier
 });
 const ControlCorner = createToken({
     name: "ControlCorner",
-    pattern: /[Bloquear]|[Liberar]Esquina/,
+    pattern: /(Bloquear)|(Liberar)Esquina/,
     longer_alt: Identifier
 });
 
@@ -424,20 +424,17 @@ class RInfoParser extends CstParser {
             ])
         })
         $.RULE("relationExpression", () => {
-            $.SUBRULE($.AdditionExpression)
+            $.SUBRULE($.additionExpression, { LABEL: "lhs" })
             $.MANY(() => {
                 $.CONSUME(LT)
-                $.SUBRULE2($.AdditionExpression)
+                $.SUBRULE2($.additionExpression, { LABEL: "rhs" })
             })
         })
-        $.RULE("AdditionExpression", () => {
-            $.SUBRULE($.term)
+        $.RULE("additionExpression", () => {
+            $.SUBRULE($.term, { LABEL: "lhs" })
             $.MANY(() => {
-                $.OR([
-                    { ALT: () => $.CONSUME(Plus) },
-                    { ALT: () => $.CONSUME(Minus) }
-                ])
-                $.SUBRULE2($.term)
+                $.CONSUME(AdditionOperator)
+                $.SUBRULE2($.term, { LABEL: "rhs" })
             })
         })
         $.RULE("assignExpression", () => {
@@ -459,7 +456,7 @@ class RInfoParser extends CstParser {
         })
 
         // Main
-        $.RULE("parse", () => {
+        $.RULE("program", () => {
             $.SUBRULE($.section_Name)
             $.OPTION(() => {
                 $.SUBRULE($.section_Procedures)
@@ -602,67 +599,523 @@ const parserInstance = new RInfoParser();
 
 const BaseRInfoVisitor = parserInstance.getBaseCstVisitorConstructor();
 
-/*
 class RInfoToAstVisitor extends BaseRInfoVisitor {
     constructor(){
         super();
         this.validateVisitor();
+    };
+
+    section_Vars_Value(ctx) {
+        const variables = this.visit(ctx.declaration_Var_Value);
+
+        return {
+            type: "VARIABLES",
+            value: variables
+        }
+    };
+    declaration_Var_Value(ctx) {
+        const reference = ctx.Identifier[0].image;
+        const type_value = ctx.TypeValue;
+
+        return {
+            type: "DECLARATION_VARIABLE",
+            value: {
+                id1: reference,
+                type: type_value
+            }
+        }
+    };
+
+    // possible change to this
+    statement(ctx) {
+        if (ctx.ifStatement){
+            return this.visit(ctx.ifStatement)
+        }
+        if (ctx.forStatement){
+            return this.visit(ctx.forStatement)
+        }
+        if (ctx.whileStatement){
+            return this.visit(ctx.whileStatement)
+        }
+        if (ctx.blockStatement){
+            return this.visit(ctx.blockStatement)
+        }
+        if (ctx.assignStatement){
+            return this.visit(ctx.assignStatement)
+        }
+        if (ctx.callStatement){
+            return this.visit(ctx.callStatement)
+        }
+    };
+    // possible change to this
+    ifStatement(ctx) {
+        const condition = this.visit(ctx.paren_expr);
+        const statementsIf = this.visit(ctx.statement[0]);
+        let statementsElse = [];
+        if (ctx.statement[1]){
+            statementsElse = this.visit(ctx.statement[1]);
+        }
+        
+        return {
+            type: "STATEMENT_CONTROL",
+            value: {
+                type: "IF",
+                condition: condition,
+                body: statementsIf,
+                else: statementsElse
+            }
+        }
+    };
+    // possible change to this
+    forStatement(ctx) {
+        const condition = this.visit(ctx.paren_expr);
+        const statements = this.visit(ctx.statement);
+        
+        return {
+            type: "STATEMENT_CONTROL",
+            value: {
+                type: "FOR",
+                condition: condition,
+                body: statements
+            }
+        }
+    };
+    // possible change to this
+    whileStatement(ctx) {
+        const condition = this.visit(ctx.paren_expr);
+        const statements = this.visit(ctx.statement);
+
+        return {
+            type: "STATEMENT_CONTROL",
+            value: {
+                type: "WHILE",
+                condition: condition,
+                body: statements
+            }
+        }
+    };
+    // possible change to this
+    blockStatement(ctx) {
+        const statements = this.visit(ctx.statement);
+        return {
+            type: "STATEMENT_BLOCK",
+            value: statements
+        }
+    };
+    // possible change to this
+    assignStatement(ctx) {
+        const reference = ctx.Identifier[0].image;
+
+        return {
+            type: "STATEMENT_ASSIGN",
+            value: {
+                id1: reference,
+                value: this.visit(ctx.expression)
+            }
+        }
+    };
+    // possible change to this
+    callStatement(ctx) {
+        if (ctx.reservedProcedure){
+            return this.visit(ctx.reservedProcedure)
+        }
+        if (ctx.userProcedure){
+            return this.visit(ctx.userProcedure)
+        }
+    };
+    // possible change to this
+    reservedProcedure(ctx) {
+        let reference = "";
+        if (ctx.Movement){
+            reference = ctx.Movement[0].image;
+        } else if (ctx.TakeItem){
+            reference = ctx.TakeItem[0].image;
+        } else if (ctx.DepositItem){
+            reference = ctx.DepositItem[0].image;
+        } else if (ctx.ChangeOrientation){
+            reference = ctx.ChangeOrientation[0].image;
+        } else if (ctx.GenerateNumber){
+            reference = ctx.GenerateNumber[0].image;
+        } else if (ctx.Inform){
+            reference = ctx.Inform[0].image;
+        }
+
+        let args = [];
+        if (ctx.expression) {
+            args = this.visit(ctx.expression)
+        }
+
+        return {
+            type: "PROCEDURE_CALL_RESERVED",
+            value: {
+                id1: reference,
+                arguments: args
+            }
+        }
+    }
+    // possible change to this
+    userProcedure(ctx) {
+        const reference = ctx.Identifier[0].image;
+        let args = [];
+        if (ctx.expression) {
+            args = this.visit(ctx.expression)
+        }
+
+        return {
+            type: "PROCEDURE_CALL_USER",
+            value: {
+                id1: reference,
+                arguments: args
+            }
+        }
     }
 
+    // possible change to this
+    expression(ctx) {
+        if (ctx.assignExpression){
+            return this.visit(ctx.assignExpression)
+        }
+        if (ctx.relationExpression){
+            return this.visit(ctx.relationExpression)
+        }
+    };
+    // possible change to this
+    relationExpression(ctx) {
+        let result = {
+            type: "OPERATION_RELATIONAL",
+            lhs: this.visit(ctx.lhs),
+            rhs: null
+        }
+
+        if (ctx.rhs) {
+            let parcialResult = [];
+            ctx.rhs.forEach((rhsOperand, idx) => {
+                // there will be one operator for each rhs operand
+                let rhsValue = this.visit(rhsOperand)
+                let operator = ctx.additionOperator[idx]
+                    
+                parcialResult.push({
+                    operator: operator,
+                    rhs: rhsValue
+                })
+            })
+            result.rhs = parcialResult;
+        }
+
+        return {
+            type: "OPERATION_BINARI",
+            value: result
+        }
+    };
+    // possible change to this
+    additionExpression(ctx) {
+        let result = this.visit(ctx.lhs);
+
+        /*
+        if (ctx.rhs) {
+            ctx.rhs.forEach((rhsOperand, idx) => {
+              // there will be one operator for each rhs operand
+              let rhsValue = this.visit(rhsOperand)
+              let operator = ctx.additionOperator
+      
+              if (tokenMatcher(operator, Plus)) {
+                result += rhsValue
+              } else {
+                // Minus
+                result -= rhsValue
+              }
+            })
+          }
+        */
+        return {
+            type: "OPERATION_BINARI",
+            value: result
+        }
+    };
+    // possible change to this
+    assignExpression(ctx) {
+        const lhs = ctx.Identifier[0].image;
+        const operator = cta.Equal[0].image;
+        const rhs = this.visit(ctx.expression);
+
+        return {
+            type: "OPERATION_BINARI",
+            value: {
+                operator: operator,
+                lhs: lhs,
+                rhs: rhs
+            }
+        }
+    };
+    // possible change to this
+    term(ctx) {
+        if (ctx.paren_expr){
+            return this.visit(ctx.paren_expr)
+        }
+        if (ctx.Integer) {
+            return {
+                type: "LITERAL_NUMBER",
+                value: parseInt(ctx.Integer[0].image, 10)}
+        }
+        if (ctx.Identifier) {
+            return {
+                type: "VARIABLE",
+                value: ctx.Identifier[0].image
+            }
+        }
+    };
+    // possible change to this
+    paren_expr(ctx) {
+        return this.visit(ctx.expression);
+    };
+
+    program(ctx) {
+        const name = this.visit(ctx.section_Name);
+        let procedures;
+        if (ctx.section_Procedures) {
+            procedures = this.visit(ctx.section_Procedures)
+        };
+        const areas = this.visit(ctx.section_Areas);
+        const robots = this.visit(ctx.section_Robots);
+        const variables = this.visit(ctx.section_Vars_Robot);
+        const main = this.visit(ctx.section_Main);
+
+        return {
+            type: "PROGRAM",
+            value: {
+                name: name,
+                procedures: procedures,
+                areas: areas,
+                robots: robots,
+                instances: variables,
+                main: main
+            }
+        };
+    };
+
     section_Name(ctx) {
-        return ctx.Identifier[0].image
+        const name = ctx.Identifier[0].image;
+
+        return {
+            type: "PROGRAM_NAME",
+            value: name
+        };
     };
 
     section_Procedures(ctx) {
-        let procedures = this.visit(ctx.declaration_Procedure)
+        const procedures = this.visit(ctx.declaration_Procedure);
+
         return {
-            type : "PROCEDURES",
-            value : procedures
+            type: "PROGRAM_PROCEDURES",
+            value: procedures
         }
     };
     declaration_Procedure(ctx) {
         const reference = ctx.Identifier[0].image;
-        let parameters = this.visit(ctx.declaration_Parameter);
-        const localVariables = this.visit(ctx.section_Vars_Value);
-        const instructions = this.visit(ctx.statement)
+        let parameters = [];
+        if (ctx.declaration_Parameter) {
+            parameters = this.visit(ctx.declaration_Parameter)
+        }
+        let variables;
+        if (ctx.section_Vars_Value) {
+            variables = this.visit(ctx.section_Vars_Value)
+        }
+        let body = [];
+        if (ctx.statement){
+            body = this.visit(ctx.statement)
+        }
 
         return {
-            type : "PROCEDURE",
-            value : {
-                reference : reference,
-                parameters : parameters,
-                variables : localVariables,
-                body : instructions
+            type: "DECLARATION_PROCEDURE",
+            value: {
+                id1: reference,
+                parameters: parameters,
+                local_variables: variables,
+                body: body
             }
         }
-    }
-
-
-    parse(ctx) {
-        const PROGRAM_NAME = this.visit(ctx.section_Name);
-        let PROCEDURES;
-        if (ctx.section_Procedures) {
-            PROCEDURES = this.visit(ctx.section_Procedures)
-        };
-        const AREAS = this.visit(ctx.section_Areas);
-        const ROBOTS = this.visit(ctx.section_Robots);
-        const VARIABLES = this.visit(ctx.section_Vars_Robot);
-        const MAIN = this.visit(ctx.section_main);
+    };
+    declaration_Parameter(ctx) {
+        const type_parameter = ctx.TypeParameter[0].image;
+        const reference = ctx.Identifier[0].image;
+        const type_value = ctx.TypeValue;
 
         return {
-            type: "program",
+            type: "DECLARATION_PARAMETER",
             value: {
-                PROGRAM_NAME,
-                PROCEDURES,
-                AREAS,
-                ROBOTS,
-                VARIABLES,
-                MAIN
+                type_parameter: type_parameter,
+                id1: reference,
+                type_value: type_value
             }
-        };
-    }
+        }
+    };
 
-}
+    section_Areas(ctx) {
+        const areas_type = this.visit(ctx.declaration_Area);
+
+        return {
+            type: "PROGRAM_AREAS_TYPES",
+            value: areas_type
+        }
+    };
+    declaration_Area(ctx) {
+        const reference = ctx.Identifier[0].image;
+        const area_type = ctx.AreaType[0].image;
+
+        let xVal1= -1,yVal1= -1,xVal2= -1,yVal2= -1;
+        if (ctx.Integer) {
+            if (ctx.Integer[0]) {
+                xVal1= Number(ctx.Integer[0].image)
+            }
+            if (ctx.Integer[1]) {
+                yVal1= Number(ctx.Integer[1].image)
+            }
+            if (ctx.Integer[2]) {
+                xVal2= Number(ctx.Integer[2].image)
+            }
+            if (ctx.Integer[3]) {
+                yVal2= Number(ctx.Integer[3].image)
+            }
+        }
+
+        return {
+            type: "DECLARATION_AREA",
+            value: {
+                id1: reference,
+                type: area_type,
+                x1: xVal1,
+                y1: yVal1,
+                x2: xVal2,
+                y2: yVal2
+            }
+        }
+    };
+
+    section_Robots(ctx) {
+        let robots_types = [];
+        if (ctx.declaration_Robot) {
+            robots_types = this.visit(ctx.declaration_Robot)
+        }
+
+        return {
+            type: "PROGRAM_ROBOTS_TYPES",
+            value: robots_types
+        }
+    };
+    declaration_Robot(ctx) {
+        const reference = ctx.Identifier[0].image;
+        let variables;
+        if (ctx.section_Vars_Value) {
+            variables= this.visit(ctx.section_Vars_Value)
+        }
+        let algoritm= [];
+        if (ctx.statement){
+            algoritm= this.visit(ctx.statement)
+        }
+
+        return {
+            type: "DECLARATION_ROBOT_TYPE",
+            value: {
+                id1: reference,
+                local_variables: variables,
+                algoritm: algoritm
+            }
+        }
+    };
+
+    section_Vars_Robot(ctx) {
+        let robots_instances = [];
+        if (ctx.declaration_Var_Robot) {
+            ctx.declaration_Var_Robot.forEach(x => robots_instances.push(this.visit(x)))
+            //robots_instances = this.visit(ctx.declaration_Var_Robot)
+        }
+
+        return {
+            type: "PROGRAM_ROBOTS_INSTANCES",
+            value: robots_instances
+        }
+    };
+    declaration_Var_Robot(ctx) {
+        let reference1= "", reference2= "";
+        if (ctx.Identifier) {
+            if (ctx.Identifier[0]) {
+                reference1= ctx.Identifier[0].image;
+            }
+            if (ctx.Identifier[1]) {
+                reference2= ctx.Identifier[1].image;
+            }
+        }
+
+        return {
+            type: "DECLARATION_ROBOT_INSTANCE",
+            value: {
+                id1: reference1,
+                id2: reference2
+            }
+        }
+    };
+
+    section_Main(ctx) {
+        let areas_asignation = [];
+        if (ctx.asignArea) {
+            ctx.asignArea.forEach(x => areas_asignation.push(this.visit(x)))
+            //areas_asignation = this.visit(ctx.asignArea)
+        }
+        let robots_initialization = [];
+        if (ctx.initRobot) {
+            ctx.initRobot.forEach(x => robots_initialization.push(this.visit(x)))
+        }
+        return {
+            type: "PROGRAM_MAIN",
+            val: {
+                assign_area: areas_asignation,
+                init_instance: robots_initialization
+            }
+        }
+    };
+    asignArea(ctx) {
+        let reference1= "", reference2= "";
+        if (ctx.Identifier) {
+            if (ctx.Identifier[0]) {
+                reference1= ctx.Identifier[0].image;
+            }
+            if (ctx.Identifier[1]) {
+                reference2= ctx.Identifier[1].image;
+            }
+        }
+
+        return {
+            type: "ASSIGN_AREA",
+            value: {
+                id1: reference1,
+                id2: reference2
+            }
+        }
+    };
+    initRobot(ctx) {
+        let xVal=-1, yVal=-1;
+        if (ctx.Integer) {
+            if (ctx.Integer[0]) {
+                xVal= Number(ctx.Integer[0].image)
+            }
+            if (ctx.Integer[1]) {
+                yVal= Number(ctx.Integer[1].image)
+            }
+        }
+        let reference= "";
+        if (ctx.Identifier) {
+            reference= ctx.Identifier[0].image;
+        };
+        return {
+            type: "INIT_ROBOT",
+            value: {
+                id1: reference,
+                x1: xVal,
+                y1: yVal
+            }
+        }
+    };
+};
 
 const toAstVisitorInstance = new RInfoToAstVisitor();
 
@@ -672,17 +1125,27 @@ function toAst(inputText) {
     parserInstance.input = lexResult.tokens;
 
     // Parsing
-    const cst = parserInstance.parse();
+    const cst = parserInstance.program();
     if (parserInstance.errors.length > 0) {
-        return parserInstance.errors;
+        return {
+            ast : null,
+            error : true,
+            erros : parserInstance.errors
+        }
     }
 
     // Visiting
     const ast = toAstVisitorInstance.visit(cst)
-    return ast
-}
-*/
+    return {
+        ast : ast,
+        error : false,
+        errors : []
+    }
+};
 
+module.exports = toAst;
+
+/*
 const inputText = `programa P1_1
 procesos
   proceso juntarFlor (ES flor: numero; ES noFlor: numero)
@@ -698,6 +1161,7 @@ procesos
     }
   fin
 areas
+    cuadrante : AreaC(5,5,5,5)
   ciudad : AreaP(1,1,1,100)
 robots 
   robot tipo1
@@ -718,15 +1182,15 @@ robots
   fin
 variables 
   robot1: tipo1
+  ro: tipo3
 comenzar 
+AsignarArea(robot1,ciudad)
   AsignarArea(robot1,ciudad)
   Iniciar(robot1, 1, 1)
 fin`;
-const lexResult = RInfoLexer.tokenize(inputText);
-parserInstance.input = lexResult.tokens;
 
-console.log(lexResult.tokens);
-const cst = parserInstance.parse();
+const astResult = toAst(inputText);
 
-console.log(parserInstance.errors);
-console.log(JSON.stringify(cst,null," "));
+//console.log(astResult);
+console.log(JSON.stringify(astResult, null, " "));
+*/

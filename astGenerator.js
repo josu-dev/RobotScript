@@ -185,7 +185,7 @@ const asignation = sequenceOf([
   type : 'asignation',
   value : results[5]
 }));
-
+/*
 const declarationBody = sequenceOf ([
   whitespace,
   betweenBody(many1(choice([
@@ -222,7 +222,7 @@ const robotsParser = sequenceOf ([
   type : 'robots',
   value : results[3]
 }));
-
+*/
 /*const procedure = sequenceOf ([
 ])
 const proceduresParser

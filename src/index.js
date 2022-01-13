@@ -1,8 +1,29 @@
 const toAst = require("./parser");
 
-const { testPrograms } = require("./testPrograms")
+const { test1 } = require("./testPrograms");
 
-const testResult = toAst(testPrograms[0]);
 
-//console.log(testResult);
+for (t of test1) {
+    const testResult = toAst(t.test);
+
+    if (testResult.error) {
+        console.log(`Error: ${testResult.errors}`);
+        break;
+    } else {
+        console.log(`Test: ${t.name}, exitoso`);
+    };
+};
+
+/*
+    TODO
+        agregar funciones como tipos elementales en expresiones
+            fix test n2
+        definitivamente mejorar las expresiones
+            fix test n3
+*/
+
+/*
+const testResult = toAst(test1[0].test);
+console.log(testResult);
 console.log(JSON.stringify(testResult, null, " "));
+*/

@@ -1,45 +1,21 @@
 const { CstParser, Lexer, createToken } = require("chevrotain")
 
-const WhiteSpace = createToken({
-    name: "WhiteSpace",
-    pattern: /\s+/,
-    group: Lexer.SKIPPED
-});
+
+const WhiteSpace = createToken({ name: "WhiteSpace", pattern: /\s+/, group: Lexer.SKIPPED });
+const LineComment = createToken({ name: "WhiteSpace", pattern: /\/\/.*/, group: Lexer.SKIPPED });
+const MultiLineComment = createToken({ name: "WhiteSpace", pattern: /\/\*[\s\S]*?\*\//, group: Lexer.SKIPPED });
 
 const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-Z]\w*/ });
 
 const Natural = createToken({ name: "Natural", pattern: /0|[1-9]\d*/ });
 const Integer = createToken({ name: "Integer", pattern: /0|[1-9]\d*/ });
-const Boolean = createToken({
-    name: "Boolean",
-    pattern: /V|F/,
-    longer_alt: Identifier
-});
-const String =createToken({
-    name: "String",
-    pattern: /"(?:[^\\"]|\\(?:[bfnrtv"\\/]|u[0-9a-fA-F]{4}))*"/
-});
+const Boolean = createToken({ name: "Boolean", pattern: /V|F/, longer_alt: Identifier });
+const String =createToken({ name: "String", pattern: /"(?:[^\\"]|\\(?:[bfnrtv"\\/]|u[0-9a-fA-F]{4}))*"/ });
 
-const Else = createToken({
-    name: "Else",
-    pattern: /sino/,
-    longer_alt: Identifier
-  });
-const If = createToken({
-  name: "If",
-  pattern: /si/,
-  longer_alt: Identifier
-});
-const For = createToken({
-  name: "For",
-  pattern: /repetir/,
-  longer_alt: Identifier
-});
-const While = createToken({
-  name: "While",
-  pattern: /mientras/,
-  longer_alt: Identifier
-});
+const Else = createToken({ name: "Else", pattern: /sino/, longer_alt: Identifier });
+const If = createToken({ name: "If", pattern: /si/, longer_alt: Identifier });
+const For = createToken({ name: "For", pattern: /repetir/, longer_alt: Identifier });
+const While = createToken({ name: "While", pattern: /mientras/, longer_alt: Identifier });
 
 const Comma = createToken({ name: "Comma", pattern: /,/ });
 const DotComma = createToken({ name: "DotComma", pattern: /;/ });
@@ -58,187 +34,63 @@ const LT = createToken({ name: "LT", pattern: /</ });
 const Equal = createToken({ name: "Equal", pattern: /=/ });
 
 
-const AdditionOperator = createToken({
-    name: "AdditionOperator",
-    pattern: Lexer.NA
-});
-const Plus = createToken({
-    name: "Plus",
-    pattern: /\+/,
-    categories: AdditionOperator
-});
-const Minus = createToken({
-    name: "Minus",
-    pattern: /-/,
-    categories: AdditionOperator
-});
-const MultiplicationOperator = createToken({
-    name: "MultiplicationOperator",
-    pattern: Lexer.NA
-});
-const Mult = createToken({
-    name: "Multi",
-    pattern: /\*/,
-    categories: MultiplicationOperator
-});
-const Div = createToken({
-    name: "Div",
-    pattern: /\//,
-    categories: MultiplicationOperator
-});
+const AdditionOperator = createToken({ name: "AdditionOperator", pattern: Lexer.NA });
+const Plus = createToken({ name: "Plus", pattern: /\+/, categories: AdditionOperator });
+const Minus = createToken({ name: "Minus", pattern: /-/, categories: AdditionOperator });
+
+const MultiplicationOperator = createToken({ name: "MultiplicationOperator", pattern: Lexer.NA });
+const Mult = createToken({ name: "Multi", pattern: /\*/, categories: MultiplicationOperator });
+const Div = createToken({ name: "Div", pattern: /\//, categories: MultiplicationOperator });
 
 const Or = createToken({ name: "Or", pattern: /\|/ });
 const And = createToken({ name: "And", pattern: /\&/ });
 const Not = createToken({ name: "Not", pattern: /\~/ });
 
-const Begin = createToken({
-    name: "Begin",
-    pattern: /comenzar/,
-    longer_alt: Identifier
-});
-const End = createToken({
-    name: "End",
-    pattern: /fin/,
-    longer_alt: Identifier
-});
+const Begin = createToken({ name: "Begin", pattern: /comenzar/, longer_alt: Identifier });
+const End = createToken({ name: "End", pattern: /fin/, longer_alt: Identifier });
 
-const Program = createToken({
-    name: "Program",
-    pattern: /programa/,
-    longer_alt: Identifier
-});
+const Program = createToken({ name: "Program", pattern: /programa/, longer_alt: Identifier });
 
-const Procedures = createToken({
-    name: "Procedures",
-    pattern: /procesos/,
-    longer_alt: Identifier
-});
-const Procedure = createToken({
-    name: "Procedure",
-    pattern: /proceso/,
-    longer_alt: Identifier
-});
-const TypeParameter = createToken({
-    name: "TypeParameter",
-    pattern: /ES|E/,
-    longer_alt: Identifier
-});
+const Procedures = createToken({ name: "Procedures", pattern: /procesos/, longer_alt: Identifier });
+const Procedure = createToken({ name: "Procedure", pattern: /proceso/, longer_alt: Identifier });
+const TypeParameter = createToken({ name: "TypeParameter", pattern: /ES|E/, longer_alt: Identifier });
 
-const Variables = createToken({
-    name: "Variables",
-    pattern: /variables/,
-    longer_alt: Identifier
-});
-const TypeValue = createToken({
-    name: "VariableType",
-    pattern: /boolean|numero/,
-    longer_alt: Identifier
-});
+const Variables = createToken({ name: "Variables", pattern: /variables/, longer_alt: Identifier });
+const TypeValue = createToken({ name: "VariableType", pattern: /boolean|numero/, longer_alt: Identifier });
 
-const Areas = createToken({
-    name: "Areas",
-    pattern: /areas/,
-    longer_alt: Identifier
-});
-const AreaType = createToken({
-    name: "AreaType",
-    pattern: /AreaPC|AreaP|AreaC/,
-    longer_alt: Identifier
-});
+const Areas = createToken({ name: "Areas", pattern: /areas/, longer_alt: Identifier });
+const AreaType = createToken({ name: "AreaType", pattern: /AreaPC|AreaP|AreaC/, longer_alt: Identifier });
 
-const Robots = createToken({
-    name: "Robots",
-    pattern: /robots/,
-    longer_alt: Identifier
-});
-const Robot = createToken({
-    name: "Robot",
-    pattern: /robot/,
-    longer_alt: Identifier
-});
+const Robots = createToken({ name: "Robots", pattern: /robots/, longer_alt: Identifier });
+const Robot = createToken({ name: "Robot", pattern: /robot/, longer_alt: Identifier });
 
-const AsignArea = createToken({
-    name: "AsignArea",
-    pattern: /AsignarArea/,
-    longer_alt: Identifier
-});
-const InitRobot = createToken({
-    name: "InitRobot",
-    pattern: /Iniciar/,
-    longer_alt: Identifier
-});
+const AsignArea = createToken({ name: "AsignArea", pattern: /AsignarArea/, longer_alt: Identifier });
+const InitRobot = createToken({ name: "InitRobot", pattern: /Iniciar/, longer_alt: Identifier });
 
-const ReservedFunction = createToken({
-    name: "ReservedFunction",
-    pattern: Lexer.NA
-});
-const ConsultItem = createToken({
-    name: "ConsultItem",
-    pattern: /Hay(Papel)|(Flor)EnLa(Esquina)|(Bolsa)/,
-    longer_alt: Identifier,
-    categories: ReservedFunction
-});
-const ConsultPosition = createToken({
-    name: "ConsultPosition",
-    pattern: /Pos(Ca)|(Av)/,
-    longer_alt: Identifier,
-    categories: ReservedFunction
-});
+const ReservedFunction = createToken({ name: "ReservedFunction", pattern: Lexer.NA });
+const ConsultItem = createToken({ name: "ConsultItem", pattern: /Hay(Papel)|(Flor)EnLa(Esquina)|(Bolsa)/, longer_alt: Identifier, categories: ReservedFunction });
+const ConsultPosition = createToken({ name: "ConsultPosition", pattern: /Pos(Ca)|(Av)/, longer_alt: Identifier, categories: ReservedFunction });
 
-const TakeItem = createToken({
-    name: "TakeItem",
-    pattern: /tomar(Flor)|(Papel)/,
-    longer_alt: Identifier
-});
-const DepositItem = createToken({
-    name: "DepositItem",
-    pattern: /depositar(Flor)|(Papel)/,
-    longer_alt: Identifier
-});
+const TakeItem = createToken({ name: "TakeItem", pattern: /tomar(Flor)|(Papel)/, longer_alt: Identifier });
+const DepositItem = createToken({ name: "DepositItem", pattern: /depositar(Flor)|(Papel)/, longer_alt: Identifier });
 
-const ChangePosition = createToken({
-    name: "ChangePosition",
-    pattern: /Pos/,
-    longer_alt: Identifier
-});
+const ChangePosition = createToken({ name: "ChangePosition", pattern: /Pos/, longer_alt: Identifier });
 
-const Movement = createToken({
-    name: "Movement",
-    pattern: /mover/,
-    longer_alt: Identifier
-});
+const Movement = createToken({ name: "Movement", pattern: /mover/, longer_alt: Identifier });
 
-const ChangeOrientation = createToken({
-    name: "ChangeOrientation",
-    pattern: /derecha/,
-    longer_alt: Identifier
-});
+const ChangeOrientation = createToken({ name: "ChangeOrientation", pattern: /derecha/, longer_alt: Identifier });
 
-const Inform = createToken({
-    name: "Inform",
-    pattern: /Informar/,
-    longer_alt: Identifier
-});
+const Inform = createToken({ name: "Inform", pattern: /Informar/, longer_alt: Identifier });
 
-const GenerateNumber = createToken({
-    name: "GenerateNumber",
-    pattern: /Random/,
-    longer_alt: Identifier
-});
+const GenerateNumber = createToken({ name: "GenerateNumber", pattern: /Random/, longer_alt: Identifier });
 
-const Message = createToken({
-    name: "Message",
-    pattern: /(Enviar)|(Recibir)Mensaje/,
-    longer_alt: Identifier
-});
-const ControlCorner = createToken({
-    name: "ControlCorner",
-    pattern: /(Bloquear)|(Liberar)Esquina/,
-    longer_alt: Identifier
-});
+const Message = createToken({ name: "Message", pattern: /(Enviar)|(Recibir)Mensaje/, longer_alt: Identifier });
+const ControlCorner = createToken({ name: "ControlCorner", pattern: /(Bloquear)|(Liberar)Esquina/, longer_alt: Identifier });
 
 const allTokens = [
     WhiteSpace,
+    LineComment,
+    MultiLineComment,
 
     Program,
 
@@ -596,6 +448,7 @@ class RInfoParser extends CstParser {
 }
 
 const parserInstance = new RInfoParser();
+
 
 const BaseRInfoVisitor = parserInstance.getBaseCstVisitorConstructor();
 
@@ -1119,6 +972,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
 
 const toAstVisitorInstance = new RInfoToAstVisitor();
 
+
 function toAst(inputText) {
     // Lexing
     const lexResult = RInfoLexer.tokenize(inputText);
@@ -1130,7 +984,7 @@ function toAst(inputText) {
         return {
             ast : null,
             error : true,
-            erros : parserInstance.errors
+            errors : parserInstance.errors
         }
     }
 
@@ -1139,7 +993,7 @@ function toAst(inputText) {
     return {
         ast : ast,
         error : false,
-        errors : []
+        errors : null
     }
 };
 

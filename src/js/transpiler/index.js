@@ -10,7 +10,7 @@ for (t of test1) {
         console.log(`Error: ${testResult.errors}`);
         break;
     } else {
-        console.log(`Test: ${t.name}, exitoso`);
+        console.log(JSON.stringify(testResult.ast,null,"   "));
     };
 };
 

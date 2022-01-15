@@ -41,7 +41,7 @@ const test = [
         cuadrado()
         // under line: Pos(1,PosCa()+3)
         Pos(1,3)
-        cuadrado()      
+        c//Updates   
       fin
     variables
       Rinfo: robot1

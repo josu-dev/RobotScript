@@ -30,8 +30,8 @@ class Sprite {
         }
     }
     draw(ctx, cameraObject) {
-        const x = this.cityObject.x + utils.withGrid(16.5) - cameraObject.x;
-        const y = (- this.cityObject.y) + 532 - (utils.withGrid(16.5) - cameraObject.y);
+        const x = this.cityObject.x + utils.withGrid(22.5) - cameraObject.x;
+        const y = (- this.cityObject.y) + 716 - (utils.withGrid(22.5) - cameraObject.y);
 
         const [frameX, frameY] = this.frame;
 

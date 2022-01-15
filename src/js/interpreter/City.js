@@ -12,42 +12,53 @@ class City {
             //Clear off the canvas
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+            //Establish camera
+            const cameraObject = this.map.cityObjects.camera;
 
-            //Updates
-            const entry = {arrow: this.directionInput.direction};
-            //  Camera
-            this.map.camera.update(entry);
-            //  All objects
+            //Update all objects
             Object.values(this.map.cityObjects).forEach(object => {
-                object.update(entry);
+                object.update({
+                    arrow: this.directionInput.direction,
+                    map: this.map,
+                });
             })
 
             
             //Drawing
             //  Map
-            this.map.draw(this.ctx, this.map.camera);
+            this.map.draw(this.ctx, cameraObject);
             //  Map things
+
             //  Robots
             Object.values(this.map.cityObjects).forEach(object => {
-                object.sprite.draw(this.ctx, this.map.camera);
+                object.sprite.draw(this.ctx, cameraObject);
             });
-            //  Camera
-            this.map.camera.sprite.draw(this.ctx, this.map.camera);
 
 
             requestAnimationFrame(() => {
                 step();
             })
         }
-
+        if (!this.loopState) {
+            return
+        }
         step();
     }
     init() {
         this.map = new CityMap( window.CityMaps.default );
+        this.map.mountObjects();
 
         this.directionInput = new DirectionInput();
         this.directionInput.init();
 
+        this.loopState = true;
+        this.startCityLoop();
+    }
+    pause() {
+        this.loopState = false;
+    }
+    continue() {
+        this.loopState = true;
         this.startCityLoop();
     }
 }

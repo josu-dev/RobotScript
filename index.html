@@ -2,16 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>R-Info-2.0</title>
-    <link rel="shortcut icon" href="./src/images/icons/R-Info-Icon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="./src/css/styles.css" type="text/css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS IDE</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./src/images/icons/RS-Icon.ico" >
+    <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/global.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/city.css">
 </head>
 <body>
-    <div class="city-container">
-        <canvas class="city-canvas" width="540" height="540"></canvas>
+    <div class="grid__main">
+        <div class="main__navbar">
+            <div class="grid__navbar">
+                <div class="navbar__logo">
+    
+                </div>
+                <div class="navbar__menu">
+    
+                </div>
+            </div>
+        </div>
+        <div class="main__editor">
+            <div class="grid__editor">
+                <div class="editor__toolbar">
+
+                </div>
+                <div class="editor__body">
+
+                </div>
+                <div class="editor__stats">
+
+                </div>
+            </div>
+        </div>
+        <div class="main__interpreter">
+            <div class="grid__interpreter">
+                <div class="interpreter__toolbar">
+
+                </div>
+                <div class="interpreter__body">
+                    <div class="city-camera">
+                        <div class="city-container">
+                            <canvas class="city-canvas" width="1592" height="1592"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="interpreter__stats">
+                    
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
+    <!-- Page -->
+
+    <!-- Editor -->
+
+    <!-- Interpreter -->
     <script src="./src/js/interpreter/utils.js"> </script>
     <script src="./src/js/interpreter/DirectionInput.js"> </script>
     <script src="./src/js/interpreter/City.js"> </script>

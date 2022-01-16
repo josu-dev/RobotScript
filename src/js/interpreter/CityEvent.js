@@ -54,6 +54,18 @@ class CityEvent {
         message.init(document.querySelector(".city-container"));
     }
 
+    pause(resolve) {
+        this.map.isPaused = true;
+        const menu = new PauseMenu({
+            onComplete: () => {
+                resolve();
+                this.map.isPaused = false;
+                this.map.city.startGameLoop();
+            }
+        });
+        menu.init(document.querySelector(".city-container"));
+    }
+
     init() {
         return new Promise(resolve => {
             this[this.event.type](resolve)

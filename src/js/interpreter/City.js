@@ -35,29 +35,40 @@ class City {
             });
 
 
-            requestAnimationFrame(() => {
-                step();
-            })
+            if (!this.map.isPaused) {
+                requestAnimationFrame(() => {
+                    step();
+                });
+            };
         }
         step();
     }
-    init() {
-        this.map = new CityMap( window.CityMaps.default );
+
+    bindActionInput() {
+        new KeyPressListener("Escape", () => {
+            this.map.startPause([
+                { type: "pause" }
+            ])
+        })
+    }
+
+    startMap(mapConfig) {
+        this.map = new CityMap(mapConfig);
+        this.map.city = this;
         this.map.mountObjects();
+    }
+
+    init() {
+
+        this.hud = new Hud(this);
+        this.hud.init(document.querySelector(".city-container"));
+
+        this.startMap(window.CityMaps.default)
 
         this.directionInput = new DirectionInput();
         this.directionInput.init();
 
         this.startCityLoop();
 
-        this.map.startPause([
-            { type: "textMessage", text: "anduvo"},
-            /*
-            { who: "r1", type: "move", direction: "up"},
-            { who: "r1", type: "move", direction: "up"},
-            { who: "r1", type: "move", direction: "up"},
-            { who: "r1", type: "move", direction: "up"},
-            */
-        ]);
     }
 }

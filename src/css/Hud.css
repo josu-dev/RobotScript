@@ -5,11 +5,7 @@
     image-rendering: pixelated;
 }
 
-.Hud .Something {
+.Hud .RobotStatus {
     position: relative;
     margin-bottom: 10px;
-}
-
-.Hud .Something_type {
-    display:none;
 }

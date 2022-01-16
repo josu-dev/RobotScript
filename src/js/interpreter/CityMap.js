@@ -13,7 +13,7 @@ class CityMap {
         this.image = new Image();
         this.image.src = config.src;
 
-        this.isPauseOn = false;
+        this.isPaused = false;
     }
 
     draw(ctx, cameraObject) {
@@ -39,8 +39,6 @@ class CityMap {
     }
 
     async startPause(events) {
-        this.isPauseOn = true;
-
         for (let i=0; i<events.length; i++) {
             const eventHandler = new CityEvent({
                 event: events[i],
@@ -48,8 +46,6 @@ class CityMap {
             });
             await eventHandler.init();
         }
-
-        this.isPauseOn = false;
     }
 
     addWall(x, y) {
@@ -99,11 +95,10 @@ window.CityMaps = {
                     { type: "move", direction: "left" },
                 ]
             }),
+            flower: new Flower({
+                x: utils.withGrid(4),
+                y: utils.withGrid(10),
+            })
         },
-        walls: {
-            [utils.asGridCoord(-1,  0)] : true,
-            [utils.asGridCoord(-1, -1)] : true,
-            [utils.asGridCoord( 0, -1)] : true,
-        }
     }
 }

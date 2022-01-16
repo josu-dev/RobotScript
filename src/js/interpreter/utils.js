@@ -19,5 +19,11 @@ const utils = {
             default : console.log("Error: no valid direction at nextPosition call");
         };
         return {x, y};
+    },
+    emitEvent(name, detail) {
+        const event = new CustomEvent(name, {
+            detail
+        });
+        document.dispatchEvent(event);
     }
 }

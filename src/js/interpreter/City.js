@@ -39,9 +39,6 @@ class City {
                 step();
             })
         }
-        if (!this.loopState) {
-            return
-        }
         step();
     }
     init() {
@@ -51,14 +48,16 @@ class City {
         this.directionInput = new DirectionInput();
         this.directionInput.init();
 
-        this.loopState = true;
         this.startCityLoop();
-    }
-    pause() {
-        this.loopState = false;
-    }
-    continue() {
-        this.loopState = true;
-        this.startCityLoop();
+
+        this.map.startPause([
+            { type: "textMessage", text: "anduvo"},
+            /*
+            { who: "r1", type: "move", direction: "up"},
+            { who: "r1", type: "move", direction: "up"},
+            { who: "r1", type: "move", direction: "up"},
+            { who: "r1", type: "move", direction: "up"},
+            */
+        ]);
     }
 }

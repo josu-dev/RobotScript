@@ -18,7 +18,7 @@ class Robot extends CityObject {
         } else {
 
             //Case: keyboard ready and have an arrow pressed
-            if (this.isUserControlled && state.arrow) {
+            if (!state.map.isPauseOn && this.isUserControlled && state.arrow) {
                 this.startBehavior(state, {
                     type: "move",
                     direction: state.arrow
@@ -34,18 +34,37 @@ class Robot extends CityObject {
 
             //Stop is place is occuped
             if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
-                return
-            }
+                return;
+            };
+
             //Start moving
             state.map.moveWall(this.x, this.y, this.direction);
-            this.movingProgresRemaining = 16
-        }
+            this.movingProgresRemaining = 16;
+            this.updateSprite();
+        };
+
+        if (behavior.type === "rotate") {
+            this.updateSprite();
+
+            setTimeout(() => {
+                utils.emitEvent("RobotRotateComplete", {
+                    whoId: this.id
+                });
+            }, behavior.time)
+        };
     }
 
     updatePosition() {
         const [property, change] = this.directionUpdate[this.direction];
         this[property] += change;
         this.movingProgresRemaining -= 1;
+
+        if (this.movingProgresRemaining === 0) {
+            //Finish moving
+            utils.emitEvent("RobotMovingComplete", {
+                whoId: this.id
+            });
+        }
     }
 
     updateSprite() {

@@ -1,0 +1,15 @@
+.Hud {
+    position: absolute;
+    left: 2px;
+    top: 10px;
+    image-rendering: pixelated;
+}
+
+.Hud .Something {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.Hud .Something_type {
+    display:none;
+}

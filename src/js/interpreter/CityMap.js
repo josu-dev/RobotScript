@@ -5,13 +5,15 @@ class CityMap {
             src: "./src/images/camera/Camera-Animation-Visible.png",
             isUserControlled: true,
             //moveSpeed: 1,
-            x: utils.withGrid(50),
-            y: utils.withGrid(50),
+            x: utils.withGrid(15),
+            y: utils.withGrid(15),
         });
         this.walls = config.walls || {};
-
+        
         this.image = new Image();
         this.image.src = config.src;
+
+        this.isPauseOn = false;
     }
 
     draw(ctx, cameraObject) {
@@ -28,9 +30,26 @@ class CityMap {
     }
 
     mountObjects() {
-        Object.values(this.cityObjects).forEach(o => {
-            o.mount(this);
+        Object.keys(this.cityObjects).forEach(key => {
+            let object = this.cityObjects[key];
+            object.id = key
+            
+            object.mount(this);
         })
+    }
+
+    async startPause(events) {
+        this.isPauseOn = true;
+
+        for (let i=0; i<events.length; i++) {
+            const eventHandler = new CityEvent({
+                event: events[i],
+                map: this,
+            });
+            await eventHandler.init();
+        }
+
+        this.isPauseOn = false;
     }
 
     addWall(x, y) {
@@ -51,21 +70,35 @@ window.CityMaps = {
     default : {
         src: "./src/images/citys/City-Style.png",
         cityObjects: {
-            r1: new Robot({
+            default: new Robot({
                 //isUserControlled : true,
                 x: utils.withGrid(1),
                 y: utils.withGrid(1),
             }),
-            r2: new Robot({
-                src: "./src/images/robots/Robot-Animation-Red.png",
+            r1: new Robot({
                 x: utils.withGrid(5),
                 y: utils.withGrid(5),
-            }),/*
+                src: "./src/images/robots/Robot-Animation-Red.png",
+                behaviorLoop: [
+                    { type: "rotate", direction: "right" , time: 800 },
+                    { type: "rotate", direction: "down" , time: 400 },
+                    { type: "rotate", direction: "left" , time: 1200 },
+                    { type: "rotate", direction: "up" , time: 2000 },
+                ]
+            }),
             r2: new Robot({
-                x: utils.withGrid(5),
+                x: utils.withGrid(1),
                 y: utils.withGrid(10),
-                src: "./src/images/robots/Robot-Animation-Red.png"
-            })*/
+                src: "./src/images/robots/Robot-Animation-Blue.png",
+                behaviorLoop: [
+                    { type: "move", direction: "up" },
+                    { type: "rotate", direction: "left", time: 800 },
+                    { type: "move", direction: "right" },
+                    { type: "move", direction: "down" },
+                    { type: "rotate", direction: "right", time: 800  },
+                    { type: "move", direction: "left" },
+                ]
+            }),
         },
         walls: {
             [utils.asGridCoord(-1,  0)] : true,

@@ -1,6 +1,4 @@
 .city-camera {
-    display: grid;
-    place-items: center;
     width: 720px;
     height: 720px;
     margin: 0 auto;
@@ -8,6 +6,8 @@
 }
 
 .city-container {
+    width: 720px;
+    height: 720px;
     display: grid;
     place-items: center;
     background-color: #eee;

@@ -15,7 +15,6 @@ class Hud {
         this.element.classList.add("Hud");
 
         const { programState } = window;
-        console.log(programState);
         programState.instances.forEach(key => {
             const robot = programState.robots[key];
             const statusboard = new RobotStatus({

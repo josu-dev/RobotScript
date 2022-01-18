@@ -60,7 +60,7 @@ class CityEvent {
             onComplete: () => {
                 resolve();
                 this.map.isPaused = false;
-                this.map.city.startGameLoop();
+                this.map.city.startCityLoop();
             }
         });
         menu.init(document.querySelector(".city-container"));

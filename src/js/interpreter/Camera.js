@@ -1,7 +1,7 @@
 class Camera extends CityObject {
     constructor() {
         super({
-            src: "./src/images/Camera-Visible.png",
+            src: "./src/image/Camera-Visible.png",
             x: 0,
             y: 8
         });

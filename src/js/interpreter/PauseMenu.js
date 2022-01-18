@@ -45,7 +45,6 @@ class PauseMenu {
         */
         container.appendChild(this.element);
 
-        utils.wait(200);
         this.esc = new KeyPressListener("Escape", () => {
             this.close();
         })

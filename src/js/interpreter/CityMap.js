@@ -1,15 +1,16 @@
 class CityMap {
     constructor(config) {
+
         this.cityObjects = config.cityObjects;
         this.cityObjects.camera = new Robot({
-            src: "./src/images/camera/Camera-Animation-Visible.png",
+            src: "./src/image/camera/Robot-Animation-Empty.png",
             isUserControlled: true,
             //moveSpeed: 1,
             x: utils.withGrid(15),
             y: utils.withGrid(15),
         });
         this.walls = config.walls || {};
-        
+
         this.image = new Image();
         this.image.src = config.src;
 
@@ -19,8 +20,8 @@ class CityMap {
     draw(ctx, cameraObject) {
         ctx.drawImage(
             this.image,
-            utils.withGrid(22.5) - cameraObject.x,
-            -1588 + (utils.withGrid(22.5) + cameraObject.y),
+            window.toolsStatus.cityZoom.originX + utils.withGrid(22.5) - cameraObject.x,
+            -1588 + window.toolsStatus.cityZoom.originY + (utils.withGrid(22.5) + cameraObject.y),
         );
     }
 
@@ -64,7 +65,7 @@ class CityMap {
 
 window.CityMaps = {
     default : {
-        src: "./src/images/citys/City-Style.png",
+        src: "./src/image/citys/City-Style.png",
         cityObjects: {
             default: new Robot({
                 //isUserControlled : true,
@@ -74,7 +75,7 @@ window.CityMaps = {
             r1: new Robot({
                 x: utils.withGrid(5),
                 y: utils.withGrid(5),
-                src: "./src/images/robots/Robot-Animation-Red.png",
+                src: "./src/image/robots/Robot-Animation-Red.png",
                 behaviorLoop: [
                     { type: "rotate", direction: "right" , time: 800 },
                     { type: "rotate", direction: "down" , time: 400 },
@@ -85,7 +86,7 @@ window.CityMaps = {
             r2: new Robot({
                 x: utils.withGrid(1),
                 y: utils.withGrid(10),
-                src: "./src/images/robots/Robot-Animation-Blue.png",
+                src: "./src/image/robots/Robot-Animation-Blue.png",
                 behaviorLoop: [
                     { type: "move", direction: "up" },
                     { type: "rotate", direction: "left", time: 800 },
@@ -95,9 +96,19 @@ window.CityMaps = {
                     { type: "move", direction: "left" },
                 ]
             }),
-            flower: new Flower({
+            flower: new CityItem({
                 x: utils.withGrid(4),
                 y: utils.withGrid(10),
+                type: "flower"
+            }),
+            paper: new CityItem({
+                x: utils.withGrid(20),
+                y: utils.withGrid(20),
+                type: "paper"
+            }),
+            unknow: new CityItem({
+                x: utils.withGrid(0),
+                y: utils.withGrid(20),
             })
         },
     }

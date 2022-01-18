@@ -1,7 +1,7 @@
 .RobotStatus {
     width: 67px;
     height: 14px;
-    background: url("../images/robotstatus/robotstatus-plate.png") no-repeat no-repeat;
+    background: url("../image/robotstatus/robotstatus-plate.png") no-repeat no-repeat;
     position: absolute;
 
     left: 46px;

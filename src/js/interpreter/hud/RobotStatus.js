@@ -4,11 +4,9 @@ class RobotStatus {
             this[key] = config[key];
         })
         this.city = city;
-        console.log(this);
     }
 
     createElement() {
-        console.log(this);
         this.hudElement = document.createElement("div");
         this.hudElement.classList.add("RobotStatus");
         this.hudElement.setAttribute("data-robotstatus", this.id);

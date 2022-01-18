@@ -8,11 +8,9 @@
 .city-container {
     width: 720px;
     height: 720px;
-    display: grid;
-    place-items: center;
     background-color: #eee;
     outline: 1px solid #fff;
-    transform: scale(1);
+    overflow: hidden;
 }
 
 .city-container canvas {

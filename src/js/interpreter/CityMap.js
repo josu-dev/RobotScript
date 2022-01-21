@@ -3,7 +3,7 @@ class CityMap {
 
         this.cityObjects = config.cityObjects;
         this.cityObjects.camera = new Robot({
-            src: "./src/image/camera/Robot-Animation-Empty.png",
+            src: "./src/image/camera/Robot-Style-Animation-Empty.png",
             isUserControlled: true,
             //moveSpeed: 1,
             x: utils.withGrid(15),

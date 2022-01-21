@@ -7,7 +7,6 @@
     <title>IDE</title>
     <!-- Icon -->
     <link rel="shortcut icon" type="image/x-icon" href="./src/image/icons/RobotScript-Icon.ico" >
-    
     <!-- Styles -->
     <!-- Page -->
     <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
@@ -24,30 +23,24 @@
         <div class="main__navbar">
             <div class="grid__navbar">
                 <div class="navbar__logo">
-    
                 </div>
                 <div class="navbar__menu">
-    
                 </div>
             </div>
         </div>
         <div class="main__editor">
             <div class="grid__editor">
                 <div class="editor__toolbar">
-
                 </div>
-                <div class="editor__body">
-
+                <div class="editor__body" id="editorProgram">
                 </div>
                 <div class="editor__stats">
-
                 </div>
             </div>
         </div>
         <div class="main__interpreter">
             <div class="grid__interpreter">
                 <div class="interpreter__toolbar">
-
                 </div>
                 <div class="interpreter__body">
                     <div class="city-camera">
@@ -57,7 +50,6 @@
                     </div>
                 </div>
                 <div class="interpreter__stats">
-                    
                 </div>
             </div>
         </div>
@@ -67,6 +59,11 @@
     <!-- Page -->
 
     <!-- Editor -->
+    <!-- Required Ace Libraries -->
+    <script src="./src/lib/ace/js/ace.js"></script>
+    <script src="./src/lib/ace/js/mode-robotscript.js"></script>
+    <script src="./src/lib/ace/js/ext-language_tools.js"></script>
+    <script src="./src/js/ide/editor.js"></script>
 
     <!-- Interpreter -->
     <script src="./src/js/interpreter/utils.js"> </script>

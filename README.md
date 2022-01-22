@@ -5,6 +5,7 @@ Decidi comenzar este proyecto para intentar conseguir la meta planteada en https
 Librerias usadas:
 
 - Chevrotain, https://github.com/Chevrotain/chevrotain
+- Ace, https://github.com/ajaxorg/ace
 
 Se cambio el nombre para el proyecto
 

@@ -1,0 +1,141 @@
+:root {
+    --clr-pr-000: #ffffff;
+
+    --clr-bg-500: #303030;
+    --clr-bg-600: #282828;
+    --clr-bg-700: #202020;
+    --clr-bg-800: #181818;
+}
+
+/* resets */
+* {
+    padding: 0;
+    border: 0;
+}
+button {
+    all: unset;
+}
+
+body {
+    width: 100%;
+    color: var(--clr-pr-000);
+    font-family: monospace;
+}
+
+.hidden {
+    display: none;
+}
+
+.main--bar {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    background: var(--clr-bg-500);
+    height: 3rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.container--logo {
+    justify-self: start;
+    position: relative;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container--logo p {
+    margin: 0 0 0 0.5rem;
+    font-size: 1.5rem;
+    font-family: monospace;
+}
+
+
+.container--navbar {
+    justify-self: end;
+    position: relative;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.main--content {
+    position: absolute;
+    background: var(--clr-bg-600);
+    top: 3rem;
+    height: calc((100vh - 3rem) * 2);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width:1440px) {
+    .main--content {
+        height: calc(100vh - 3rem);
+        flex-direction: row;
+    }
+}
+
+.content {
+    margin: 0.25rem;
+    height: 100%;
+    width: calc(100% - 0.5rem);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width:1440px) {
+    .content {
+        margin: 1rem;
+        width: calc(100% - 4rem);
+        height: calc(100% - 2rem);
+    }
+}
+
+.tool--bar {
+    background: var(--clr-bg-700);
+    height: 3rem;
+    display: flex;
+    align-items: center;
+}
+
+.tool--button {
+    width: 3rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool--button:hover {
+    background: var(--clr-bg-500);
+}
+
+.tool--button span {
+    display: none;
+}
+
+.window {
+    position: relative;
+    background: var(--clr-bg-800);
+    height: 100%;
+}
+
+.window--editor {
+    position: relative;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.state--bar {
+    background: var(--clr-bg-700);
+    height: 3rem;
+    display: flex;
+    flex-direction: row;
+}

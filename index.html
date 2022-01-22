@@ -7,10 +7,11 @@
     <title>IDE</title>
     <!-- Icon -->
     <link rel="shortcut icon" type="image/x-icon" href="./src/image/icons/RobotScript-Icon.ico" >
+    
     <!-- Styles -->
     <!-- Page -->
     <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
-    <link rel="stylesheet" type= "text/css" href="./src/css/global.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/main.css">
     
     <!-- Interpreter -->
     <link rel="stylesheet" type= "text/css" href="./src/css/city.css">
@@ -19,41 +20,95 @@
     <link rel="stylesheet" type= "text/css" href="./src/css/TextMessage.css">
 </head>
 <body>
-    <div class="grid__main">
-        <div class="main__navbar">
-            <div class="grid__navbar">
-                <div class="navbar__logo">
-                </div>
-                <div class="navbar__menu">
-                </div>
-            </div>
+    <header class="main--bar">
+        <div class="container--logo">
+            <img src="./src/image/icons/RobotScript-Icon.ico" alt="lenguage icon">
+            <p>RobotScript</p>
         </div>
-        <div class="main__editor">
-            <div class="grid__editor">
-                <div class="editor__toolbar">
-                </div>
-                <div class="editor__body" id="editorProgram">
-                </div>
-                <div class="editor__stats">
-                </div>
-            </div>
+        <div class="container--navbar">
+            <button>Menu</button>
+            <nav class="hidden">
+                <button>Repositorio GitHub</button>
+                <button>Servidor Discord</button>
+                <button>Universidad</button>
+            </nav>
         </div>
-        <div class="main__interpreter">
-            <div class="grid__interpreter">
-                <div class="interpreter__toolbar">
+    </header>
+
+    <main class="main--content">
+        <article class="content editor">
+            <section class="tool--bar">
+                <button class="tool--button">
+                    <img src="./src/image/svg/Upload.svg" alt="abrir">
+                    <span>Abrir</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Download.svg" alt="abrir">
+                    <span>Guardar</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Copy.svg" alt="abrir">
+                    <span>Copiar</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Clean.svg" alt="abrir">
+                    <span>Limpiar</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/FontSize.svg" alt="abrir">
+                    <span>Font Size</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Compile.svg" alt="abrir">
+                    <span>Compilar</span>
+                </button>
+            </section>
+
+            <section class="window window--editor" id="editorProgram">
+            </section>
+
+            <section class="state--bar">
+                <p>Ln 1, Col 1</p>
+                <p>Compilador: </p>
+            </section>
+        </article>
+
+        <article class="content interpreter">
+            <section class="tool--bar">
+                <button class="tool--button">
+                    <img src="./src/image/svg/Play.svg" alt="abrir">
+                    <span>Ejecutar</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Pause.svg" alt="abrir">
+                    <span>Pausar</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Reload.svg" alt="abrir">
+                    <span>Reiniciar</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/City.svg" alt="abrir">
+                    <span>Ciudad</span>
+                </button>
+                <button class="tool--button">
+                    <img src="./src/image/svg/Camera.svg" alt="abrir">
+                    <span>Vista</span>
+                </button>
+            </section>
+
+            <section class="window">
+                <div id="editorProgram"></div>
+            </section>
+
+            <section class="state--bar">
+                <div>
+                    <p>Interpretador: </p>
                 </div>
-                <div class="interpreter__body">
-                    <div class="city-camera">
-                        <div class="city-container">
-                            <canvas class="city-canvas" width="1592" height="1592"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="interpreter__stats">
-                </div>
-            </div>
-        </div>
-    </div>
+            </section>
+        </article>
+
+    </main>
 
     <!-- Scripts -->
     <!-- Page -->

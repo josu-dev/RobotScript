@@ -21,8 +21,9 @@ let editorLib = {
             showPrintMargin: false,
             displayIndentGuides : true,
             fontFamily : "monospace",
-            fontSize : "20px",
+            fontSize : "1rem",
             scrollPastEnd : 1,
+            fixedWidthGutter : true,
             theme : "ace/theme/dracula",
         });
 
@@ -46,4 +47,3 @@ let editorLib = {
 
 
 editorLib.init();
-console.log("hola")

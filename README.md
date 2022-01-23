@@ -8,5 +8,6 @@ Librerias usadas:
 - Ace, https://github.com/ajaxorg/ace
 
 Se cambio el nombre para el proyecto
+Se creo la primera version de la interfaz de la pagina
 
 Añadire los avances con el tiempo

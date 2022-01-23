@@ -21,7 +21,7 @@ color: #f8f8f0\
 .ace-dracula .ace_marker-layer .ace_selection {\
 background: #44475a\
 }\
-.ace-dracula.ace_multiselect .ace_selection.ace_start {\
+.ace-dracula .ace_multiselect .ace_selection.ace_start {\
 box-shadow: 0 0 3px 0px #282a36;\
 border-radius: 2px\
 }\

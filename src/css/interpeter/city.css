@@ -1,7 +1,7 @@
 .city-camera {
     width: 720px;
     height: 720px;
-    margin: 0 auto;
+    margin: auto;
     overflow: hidden;
 }
 
@@ -10,7 +10,6 @@
     height: 720px;
     background-color: #eee;
     outline: 1px solid #fff;
-    overflow: hidden;
 }
 
 .city-container canvas {

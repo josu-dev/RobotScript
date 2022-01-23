@@ -4,35 +4,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>IDE</title>
+
+    <!-- Styles -->
     <!-- Icon -->
     <link rel="shortcut icon" type="image/x-icon" href="./src/image/icons/RobotScript-Icon.ico" >
     
-    <!-- Styles -->
     <!-- Page -->
     <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
-    <link rel="stylesheet" type= "text/css" href="./src/css/main.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/index.css">
     
     <!-- Interpreter -->
-    <link rel="stylesheet" type= "text/css" href="./src/css/city.css">
-    <link rel="stylesheet" type= "text/css" href="./src/css/RobotStatus.css">
-    <link rel="stylesheet" type= "text/css" href="./src/css/Hud.css">
-    <link rel="stylesheet" type= "text/css" href="./src/css/TextMessage.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/interpeter/city.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/interpeter/RobotStatus.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/interpeter/Hud.css">
+    <link rel="stylesheet" type= "text/css" href="./src/css/interpeter/TextMessage.css">
 </head>
 <body>
-    <header class="main--bar">
+
+    <header class="primary-bar flex">
         <div class="container--logo">
             <img src="./src/image/icons/RobotScript-Icon.ico" alt="lenguage icon">
             <p>RobotScript</p>
         </div>
-        <div class="container--navbar">
-            <button>Menu</button>
-            <nav class="hidden">
-                <button>Repositorio GitHub</button>
-                <button>Servidor Discord</button>
-                <button>Universidad</button>
-            </nav>
-        </div>
+
+        <button class="primary-nav-toggle" aria-expanded="false">
+        </button>
+
+        <nav>
+            <ul data-visible="false" class="primary-navigation flex">
+                <li>
+                    <a href="https://www.info.unlp.edu.ar/"
+                    target="_blank">Universidad</a>
+                </li>
+                <li>
+                    <a href="https://github.com/J-Josu/RobotScript"
+                    target="_blank">Repositorio</a>
+                </li>
+                <li>
+                    <a href="https://discord.gg/Y28Sv4HnKr"
+                    target="_blank">Discord</a>
+                </li>
+            </ul>
+        </nav>
     </header>
 
     <main class="main--content">
@@ -97,8 +112,10 @@
                 </button>
             </section>
 
-            <section class="window">
-                <div id="editorProgram"></div>
+            <section class="window city-camera">
+                <div class="city-container">
+                    <canvas class="city-canvas" width="1592" height="1592"></canvas>
+                </div>
             </section>
 
             <section class="state--bar">
@@ -112,9 +129,9 @@
 
     <!-- Scripts -->
     <!-- Page -->
+    <script src="./src/js/index.js"></script>
 
-    <!-- Editor -->
-    <!-- Required Ace Libraries -->
+    <!-- Editor and Ace Library-->
     <script src="./src/lib/ace/js/ace.js"></script>
     <script src="./src/lib/ace/js/mode-robotscript.js"></script>
     <script src="./src/lib/ace/js/ext-language_tools.js"></script>

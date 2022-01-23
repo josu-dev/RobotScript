@@ -12,7 +12,7 @@ var RobotScriptHighlightRules = function() {
     );
     
     var storageType = (
-        "boolean|numero|string|AreaC|AreaPC|AreaP|area|programa|proceso|robot"
+        "boolean|numero|string|AreaC|AreaPC|AreaP|area|proceso|robot"
     );
 
     var storageModifiers = (
@@ -20,7 +20,7 @@ var RobotScriptHighlightRules = function() {
     );
 
     var keywordOthers = (
-        "Iniciar|AsignarArea|procesos|areas|robots|variables|comenzar|fin"
+        "programa|procesos|areas|robots|variables|comenzar|fin"
     );
 
     var builtinConstants = (

@@ -29,7 +29,7 @@ button {
 
 /* Main */
 body {
-    width: 100%;
+    width: 100vw;
     color: var(--clr-pr-000);
     font-family: monospace;
     overflow-x: hidden;
@@ -117,7 +117,7 @@ body {
 
 /* Main */
 
-.main--content {
+.main {
     position: absolute;
     background: var(--clr-bg-700);
     top: 3rem;
@@ -125,10 +125,11 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 @media (min-width:1440px) {
-    .main--content {
+    .main {
         height: calc(100vh - 3rem);
         flex-direction: row;
     }
@@ -136,7 +137,7 @@ body {
 
 .content {
     margin: 0.25rem;
-    height: 100%;
+    height: calc((100% - 1rem)/2);
     width: calc(100% - 0.5rem);
     display: flex;
     flex-direction: column;
@@ -145,7 +146,7 @@ body {
 @media (min-width:1440px) {
     .content {
         margin: 1rem;
-        width: calc(100% - 4rem);
+        width: calc((100% - 4rem)/2);
         height: calc(100% - 2rem);
     }
 }
@@ -175,7 +176,7 @@ body {
 
 .window {
     position: relative;
-    height: 100%;
+    height: calc(100% - 6rem);
 }
 
 .window--editor {
@@ -186,9 +187,37 @@ body {
     right: 0;
 }
 
+
 .state--bar {
     background: var(--clr-bg-600);
     height: 3rem;
     display: flex;
     flex-direction: row;
+}
+
+
+/*------------*/
+/* Scroll bar */
+/*------------*/
+
+::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--clr-bg-700);
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    background: linear-gradient(to bottom, #ff0000a0 , #ff8000a0);
+}
+::-webkit-scrollbar-thumb:vertical:hover {
+    background: linear-gradient(to bottom, #ff0000 , #ff8000);
+}
+::-webkit-scrollbar-thumb:horizontal {
+    background: linear-gradient(to left, #ff0000a0 , #ff7f00a0);
+}
+::-webkit-scrollbar-thumb:horizontal:hover {
+    background: linear-gradient(to left, #ff0000 , #ff8000);
 }

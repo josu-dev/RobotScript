@@ -3,13 +3,14 @@
     height: 720px;
     margin: auto;
     overflow: hidden;
+    border: 1px solid #ffff00;
 }
 
 .city-container {
     width: 720px;
     height: 720px;
     background-color: #eee;
-    outline: 1px solid #fff;
+    border: 1px solid rgb(255, 0, 0);
 }
 
 .city-container canvas {

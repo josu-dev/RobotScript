@@ -3,6 +3,10 @@ define("ace/theme/darkplus",["require","exports","module","ace/lib/dom"], functi
     exports.isDark = true;
     exports.cssClass = "ace-darkplus";
     exports.cssText = "\
+    .ace-darkplus ::-webkit-scrollbar-track {\
+    background: transparent;\
+    }\
+    \
     .ace-darkplus .ace_gutter {\
     background: #181818;\
     color: #aaaaaa\
@@ -130,12 +134,12 @@ define("ace/theme/darkplus",["require","exports","module","ace/lib/dom"], functi
     
     var dom = require("../lib/dom");
     dom.importCssString(exports.cssText, exports.cssClass, false);
-    });
+});
     
-    (function() {
-        window.require(["ace/theme/darkplus"], function(m) {
-            if (typeof module == "object" && typeof exports == "object" && module) {
-                module.exports = m;
-            }
-        });
-    })();
+(function() {
+    window.require(["ace/theme/darkplus"], function(m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();

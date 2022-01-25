@@ -54,7 +54,7 @@ fin
 //ace.edit need and element or an id
 const codeEditor = ace.edit("editorProgram");
 
-let editorLib = { 
+let editorLib = {
     init() {
         // Configure editor
         codeEditor.setOptions({
@@ -93,3 +93,14 @@ let editorLib = {
 
 
 editorLib.init();
+
+const editorCursorPosition = document.querySelector(".editor-cursor-position");
+
+codeEditor.selection.on("changeCursor", () => {
+    const { row, column } = codeEditor.session.selection.getCursor();
+
+    if (editorCursorPosition) {
+        editorCursorPosition.innerText= `Ln ${row + 1}, Col ${column + 1}`;
+    };
+});
+

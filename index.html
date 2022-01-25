@@ -53,37 +53,39 @@
     <main class="main">
         <article class="content editor">
             <section class="tool--bar">
-                <button class="tool--button">
+                <button class="tool--button btnUpload">
                     <img src="./src/image/svg/Upload.svg" alt="abrir">
                     <span>Abrir</span>
                 </button>
-                <button class="tool--button">
-                    <img src="./src/image/svg/Download.svg" alt="abrir">
-                    <span>Guardar</span>
+                <button class="tool--button btnDownload">
+                    <img src="./src/image/svg/Download.svg" alt="bajar">
+                    <span>Bajar</span>
                 </button>
-                <button class="tool--button">
-                    <img src="./src/image/svg/Copy.svg" alt="abrir">
+                <button class="tool--button btnCopy">
+                    <img src="./src/image/svg/Copy.svg" alt="copiar">
                     <span>Copiar</span>
                 </button>
-                <button class="tool--button">
-                    <img src="./src/image/svg/Clean.svg" alt="abrir">
+                <button class="tool--button btnClear">
+                    <img src="./src/image/svg/Clean.svg" alt="limpiar">
                     <span>Limpiar</span>
                 </button>
-                <button class="tool--button">
-                    <img src="./src/image/svg/FontSize.svg" alt="abrir">
+                <button class="tool--button btnFontSize">
+                    <img src="./src/image/svg/FontSize.svg" alt="font size">
                     <span>Font Size</span>
                 </button>
-                <button class="tool--button">
-                    <img src="./src/image/svg/Compile.svg" alt="abrir">
+                <button class="tool--button btnCompile">
+                    <img src="./src/image/svg/Compile.svg" alt="compilar">
                     <span>Compilar</span>
                 </button>
             </section>
 
-            <section class="window window--editor" id="editorProgram">
+            <section class="window window-editor editorWindow">
             </section>
 
-            <section class="state--bar">
-                <p>Ln 1, Col 1</p>
+            <section class="state-bar">
+                <div class="cursor-state">
+                    <p class="editor-cursor-position">Ln 1, Col 1</p>
+                </div>
                 <p>Compilador: </p>
             </section>
         </article>
@@ -118,24 +120,23 @@
                 </div>
             </section>
 
-            <section class="state--bar">
+            <section class="state-bar">
                 <div>
                     <p>Interpretador: </p>
                 </div>
             </section>
         </article>
-
     </main>
 
     <!-- Scripts -->
     <!-- Page -->
-    <script src="./src/js/index.js"></script>
+    <script src="./src/js/index.js" type="module"></script>
 
     <!-- Editor and Ace Library-->
     <script src="./src/lib/ace/js/ace.js"></script>
     <script src="./src/lib/ace/js/mode-robotscript.js"></script>
     <script src="./src/lib/ace/js/ext-language_tools.js"></script>
-    <script src="./src/js/ide/editor.js"></script>
+    <script src="./src/js/ide/EditorManager.js" type="module"></script>
 
     <!-- Interpreter -->
     <script src="./src/js/interpreter/utils.js"> </script>

@@ -1,4 +1,4 @@
-const toAst = require("./parser");
+import toAst from "./parser";
 
 const { test1 } = require("./testPrograms");
 

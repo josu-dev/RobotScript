@@ -179,16 +179,9 @@ body {
     height: calc(100% - 6rem);
 }
 
-.window--editor {
+
+.state-bar {
     position: relative;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
-
-
-.state--bar {
     background: var(--clr-bg-600);
     height: 3rem;
     display: flex;
@@ -220,4 +213,48 @@ body {
 }
 ::-webkit-scrollbar-thumb:horizontal:hover {
     background: linear-gradient(to left, #ff0000 , #ff8000);
+}
+
+
+/*--------*/
+/* Editor */
+/*--------*/
+
+
+.window--editor {
+    position: relative;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.cursor-state {
+    position: absolute;
+    right: 0;
+    bottom: 3.5rem;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.5rem;
+    background: #181818f0;
+}
+
+.cursor-state:hover {
+    background: var(--clr-bg-600);
+    border-bottom: var(--clr-bg-400);
+}
+
+.editor-cursor-position {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 300;
+}
+
+@media (min-width:720px) {
+    .editor-cursor-position {
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
 }

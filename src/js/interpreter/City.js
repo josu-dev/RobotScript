@@ -57,7 +57,6 @@ class City {
         this.map = new CityMap(mapConfig);
         this.map.city = this;
         this.map.mountObjects();
-        console.log(Object.values(this.map.cityObjects))
     }
 
     init() {

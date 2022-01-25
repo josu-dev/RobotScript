@@ -1,3 +1,5 @@
+import EditorManager from "./ide/EditorManager.js";
+
 const primaryNav = document.querySelector(".primary-navigation");
 const navToggle = document.querySelector(".primary-nav-toggle");
 
@@ -12,3 +14,7 @@ navToggle.addEventListener("click", () => {
         navToggle.setAttribute("aria-expanded", false);
     }
 });
+
+const myEditor = new EditorManager(document.querySelector(".editor"));
+
+myEditor.init();

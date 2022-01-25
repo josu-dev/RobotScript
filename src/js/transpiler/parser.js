@@ -1,4 +1,4 @@
-const { CstParser, Lexer, createToken } = require("chevrotain")
+import { CstParser, Lexer, createToken } from "../../lib/chevrotain.js"
 
 
 const WhiteSpace = createToken({ name: "WhiteSpace", pattern: /\s+/, group: Lexer.SKIPPED });
@@ -997,7 +997,7 @@ function toAst(inputText) {
     }
 };
 
-module.exports = toAst;
+export default toAst;
 
 /*
 const inputText = `programa P1_1

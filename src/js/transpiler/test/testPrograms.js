@@ -396,11 +396,9 @@ const test = [
     description: "Mientras el robot trabajador pueda juntar una flor de la esquina 11/11, avanzara por su avenida. Luego se comunica quien ha avanzado la mayor longitud",
     test: `programa Prueba7
     procesos
-      proceso chequearEsquina(ES termino: boolean; ES hayFlor: boolean)
+      proceso chequearEsquina()
       comenzar
-        si HayFlorEnLaEsquina
-          tomarFlor
-          hayFlor:= V 
+        si (HayFlorEnLaEsquina) { tomarFlor hayFlor:= V }
         termino:= HayFlorEnLaEsquina
       fin
       proceso movimientoA11(ES termino: boolean; E AvO: numero; ES hayFlor: boolean)
@@ -411,7 +409,7 @@ const test = [
         Calle:= PosCa
         BloquearEsquina(11,11)
         Pos(11,11)
-        chequearEsquina(termino, hayFlor)
+        chequearEsquina(HayFlorEnLaEsquina, hayFlor)
         Pos(AvO,Calle)
         LiberarEsquina(11,11)
       fin
@@ -442,6 +440,7 @@ const test = [
         RecibirMensaje(id, robot5)
         EnviarMensaje(id, robot5)
         EnviarMensaje(Ca, robot5)
+        miProce()
       fin
       robot coordinador
       variables
@@ -455,7 +454,7 @@ const test = [
         EnviarMensaje(2, robot2)
         EnviarMensaje(3, robot3)
         EnviarMensaje(4, robot4)
-        repetir 4
+        repetir 4 & |
           RecibirMensaje(id, *)
           si (id = 1)
             RecibirMensaje(cantEsq, robot1)
@@ -468,8 +467,8 @@ const test = [
               sino
                 RecibirMensaje(cantEsq, robot4)
           si (cantEsq>cantEsqMax)
-            cantEsqMax:= cantEsq
-            idMax:= id
+            cantEsqMax := cantEsq
+            idMax := id
         Informar(idMax)
       fin
     variables

@@ -33,7 +33,7 @@ const LET = createToken({ name: "LET", pattern: /<=/ });
 const GT = createToken({ name: "GT", pattern: />/ });
 const LT = createToken({ name: "LT", pattern: /</ });
 const NotEqual = createToken({ name: "NotEqual", pattern: /\!=/ });
-const Equal = createToken({ name: "Equal", pattern: /==/ });
+const Equal = createToken({ name: "Equal", pattern: /=/ });
 
 const Asignation = createToken({ name: "Asignation", pattern: Lexer.NA });
 const SimpleAssign = createToken({ name: "SimpleAssign", pattern: /:=/, categories: Asignation });
@@ -74,7 +74,7 @@ const InitRobot = createToken({ name: "InitRobot", pattern: /Iniciar/, longer_al
 
 const StateMethod = createToken({ name: "StateMethod", pattern: Lexer.NA });
 const ConsultItem = createToken({ name: "ConsultItem", pattern: /Hay(Papel)|(Flor)EnLa(Esquina)|(Bolsa)/, longer_alt: Identifier, categories: StateMethod });
-const ConsultPosition = createToken({ name: "ConsultPosition", pattern: /Pos(Ca)|(Av)/, longer_alt: Identifier, categories: StateMethod });
+const ConsultPosition = createToken({ name: "ConsultPosition", pattern: /PosCa|PosAv/, longer_alt: Identifier, categories: StateMethod });
 
 const ActionMethod = createToken({ name: "ActionMethod", pattern: Lexer.NA });
 const TakeItem = createToken({ name: "TakeItem", pattern: /tomar(Flor)|(Papel)/, longer_alt: Identifier, categories: StateMethod });
@@ -89,8 +89,8 @@ const Inform = createToken({ name: "Inform", pattern: /Informar/, longer_alt: Id
 
 const GenerateNumber = createToken({ name: "GenerateNumber", pattern: /Random/, longer_alt: Identifier });
 
-const Message = createToken({ name: "Message", pattern: /RecibirMensaje|EnviarMensaje/, longer_alt: Identifier });
-const ControlCorner = createToken({ name: "ControlCorner", pattern: /(Bloquear)|(Liberar)Esquina/, longer_alt: Identifier });
+const Message = createToken({ name: "Message", pattern: /EnviarMensaje|RecibirMensaje/, longer_alt: Identifier });
+const ControlCorner = createToken({ name: "ControlCorner", pattern: /BloquearEsquina|LiberarEsquina/, longer_alt: Identifier });
 
 const allTokens = [
     WhiteSpace,
@@ -101,7 +101,6 @@ const allTokens = [
 
     Procedures,
     Procedure,
-    TypeParameter,
 
     Areas,
     Variables,
@@ -145,6 +144,7 @@ const allTokens = [
 
     String,
 
+    TypeParameter,
     Identifier,
 
     Comma,
@@ -330,7 +330,10 @@ class RInfoParser extends CstParser {
         })
 
         $.RULE("stateMethod", () => {
-            $.CONSUME(StateMethod)
+            $.OR([
+                { ALT: () => $.CONSUME(ConsultItem, { LABEL : "stateMethod"}) },
+                { ALT: () => $.CONSUME(ConsultPosition, { LABEL : "stateMethod"}) }
+            ])
         })
 
 
@@ -895,24 +898,25 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         if (ctx.Integer){
             return {
                 type : "LITERAL_INTEGER",
-                value : ctx.Integer[0].image
+                value : Number(ctx.Integer[0].image)
             }
-        } else if (ctx.Boolean){
+        }
+        if (ctx.Boolean){
             return {
                 type : "LITERAL_BOOLEAN",
-                value : ctx.Boolean[0].image
+                value : (ctx.Boolean[0].image === "verdad")
             }
-        } else if (ctx.StateMethod){
-            return {
-                type : "STATE_METHOD",
-                identifier : ctx.StateMethod[0].image
-            }
-        } else if (ctx.Identifier){
+        }
+        if (ctx.stateMethod){
+            return this.visit(ctx.stateMethod);
+        }
+        if (ctx.Identifier){
             return {
                 type : "VARIABLE",
                 identifier : ctx.Identifier[0].image
             }
-        } else if (ctx.paren_expr){
+        }
+        if (ctx.paren_expr){
             return this.visit(ctx.paren_expr)
         }
     }
@@ -1176,27 +1180,45 @@ function toAst(inputText) {
 };
 
 
-const program = `programa Prueba4
+const program = `programa P1_1
+procesos
+  proceso juntarFlor (ES flor: numero; ES noFlor: numero)
+  comenzar
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina) {
+        tomarFlor
+        flor:= flor + 1
+      }
+    sino
+      noFlor:= noFlor +1
+  fin
 areas
-  ciudad1: AreaP(1,1,1,10)
-  ciudad2: AreaP(2,11,2,20)
-robots
+  ciudad : AreaP(1,1,1,100)
+robots 
   robot tipo1
   variables
-    flores: numero
-    floresR: numero
+    flor: numero
+    noFlor: numero
   comenzar
-    flores:= 0
-    RecibirMensaje(floresR, robot2)
-    flores := flores + 1
-    EnviarMensaje (flores,robot2)
+    flor:= 0
+  //  noFlor:= 0
+    juntarFlor(flor, noFlor)
+    repetir (99)
+      mover
+      juntarFlor(flor, noFlor)
+    repetir (flor)
+      depositarFlor
+    Informar(flor)
+    Informar("soy una string")
+    Informar("soy una string", (flor +4)/2)
   fin
-variables
-  robot2: tipo2
-comenzar
-  AsignarArea(robot2, ciudad2)
+variables 
+  robot1: tipo1
+comenzar 
+  AsignarArea(robot1,ciudad)
   Iniciar(robot1, 1, 1)
-fin`
+fin
+`
 
 const lexResult = RInfoLexer.tokenize(program);
 parserInstance.input = lexResult.tokens;
@@ -1205,7 +1227,7 @@ const cst = parserInstance.program();
 //console.log(JSON.stringify(cst, null, "   "));
 console.log(JSON.stringify(parserInstance.errors, null, "   "));
 const ast = toAstVisitorInstance.visit(cst);
-//console.log(JSON.stringify(ast, null, "   "))
+console.log(JSON.stringify(ast, null, "   "))
 
 /*
 programa Prueba3

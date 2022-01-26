@@ -1,8 +1,14 @@
-import toAst from "./parser";
-
+//import toAst, {RInfoLexer, RInfoParser} from "../ast-generator.js";
+const {RInfoLexer, RInfoParser} = require("../ast-generator");
 const { test1 } = require("./testPrograms");
+const program = `(3 + 4) * 2 >= 10`
 
-
+const lexResult = RInfoLexer.tokenize(program);
+const parser = new RInfoParser();
+parser.input = lexResult;
+const cst = parser.expression();
+console.log(cst);
+/*
 for (t of test1) {
     const testResult = toAst(t.test);
 
@@ -12,7 +18,7 @@ for (t of test1) {
     } else {
         console.log(`Test: ${t.name}, exitoso`);
     };
-};
+};*/
 
 /*
     TODO

@@ -68,7 +68,7 @@ body {
     display: block;
     position: absolute;
     z-index: 3000;
-    background: url("../image/svg/Menu.svg");
+    background: url("../assets/svg/Menu.svg");
     background-repeat: no-repeat;
     width: 2rem;
     height: 2rem;
@@ -77,7 +77,7 @@ body {
 }
 
 .primary-nav-toggle[aria-expanded="true"]{
-    background: url("../image/svg/Cross.svg");
+    background: url("../assets/svg/Cross.svg");
 }
 
 .primary-navigation {

@@ -3,7 +3,7 @@ class CityMap {
 
         this.cityObjects = config.cityObjects;
         this.cityObjects.camera = new Robot({
-            src: "./src/image/camera/Robot-Style-Animation-Empty.png",
+            src: "./src/assets/city/object/camera/camera-32x8-invisible.png",
             isUserControlled: true,
             //moveSpeed: 1,
             x: utils.withGrid(15),
@@ -14,10 +14,16 @@ class CityMap {
         this.image = new Image();
         this.image.src = config.src;
 
+        this.imageBg = new Image();
+        this.imageBg.src = "./src/assets/city/map/background-grass-1920x1920.png"
+
         this.isPaused = false;
     }
 
     draw(ctx, cameraObject) {
+        const pattern = ctx.createPattern(this.imageBg, "repeat");
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0,0,1920,1920)
         ctx.drawImage(
             this.image,
             window.toolsStatus.cityZoom.originX + utils.withGrid(22.5) - cameraObject.x,
@@ -65,7 +71,7 @@ class CityMap {
 
 window.CityMaps = {
     default : {
-        src: "./src/image/citys/City-Style.png",
+        src: "./src/assets/city/map/city-default.png",
         cityObjects: {
             default: new Robot({
                 //isUserControlled : true,
@@ -75,7 +81,7 @@ window.CityMaps = {
             r1: new Robot({
                 x: utils.withGrid(5),
                 y: utils.withGrid(5),
-                src: "./src/image/robots/Robot-Animation-Red.png",
+                src: "./src/assets/city/object/robot/Robot-Animation-Red.png",
                 behaviorLoop: [
                     { type: "rotate", direction: "right" , time: 800 },
                     { type: "rotate", direction: "down" , time: 400 },
@@ -86,7 +92,7 @@ window.CityMaps = {
             r2: new Robot({
                 x: utils.withGrid(1),
                 y: utils.withGrid(10),
-                src: "./src/image/robots/Robot-Animation-Blue.png",
+                src: "./src/assets/city/object/robot/Robot-Animation-Blue.png",
                 behaviorLoop: [
                     { type: "move", direction: "up" },
                     { type: "rotate", direction: "left", time: 800 },

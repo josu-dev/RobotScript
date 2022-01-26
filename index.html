@@ -9,7 +9,7 @@
 
     <!-- Styles -->
     <!-- Icon -->
-    <link rel="shortcut icon" type="image/x-icon" href="./src/image/icons/RobotScript-Icon.ico" >
+    <link rel="shortcut icon" type="image/x-icon" href="./src/assets/RobotScript-Icon.ico" >
     
     <!-- Page -->
     <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
@@ -25,7 +25,7 @@
 
     <header class="primary-bar flex">
         <div class="container--logo">
-            <img src="./src/image/icons/RobotScript-Icon.ico" alt="lenguage icon">
+            <img src="./src/assets/RobotScript-Icon.ico" alt="lenguage icon">
             <p>RobotScript</p>
         </div>
 
@@ -54,27 +54,27 @@
         <article class="content editor">
             <section class="tool--bar">
                 <button class="tool--button btnUpload">
-                    <img src="./src/image/svg/Upload.svg" alt="abrir">
+                    <img src="./src/assets/svg/Upload.svg" alt="abrir">
                     <span>Abrir</span>
                 </button>
                 <button class="tool--button btnDownload">
-                    <img src="./src/image/svg/Download.svg" alt="bajar">
+                    <img src="./src/assets/svg/Download.svg" alt="bajar">
                     <span>Bajar</span>
                 </button>
                 <button class="tool--button btnCopy">
-                    <img src="./src/image/svg/Copy.svg" alt="copiar">
+                    <img src="./src/assets/svg/Copy.svg" alt="copiar">
                     <span>Copiar</span>
                 </button>
                 <button class="tool--button btnClear">
-                    <img src="./src/image/svg/Clean.svg" alt="limpiar">
+                    <img src="./src/assets/svg/Clean.svg" alt="limpiar">
                     <span>Limpiar</span>
                 </button>
                 <button class="tool--button btnFontSize">
-                    <img src="./src/image/svg/FontSize.svg" alt="font size">
+                    <img src="./src/assets/svg/FontSize.svg" alt="font size">
                     <span>Font Size</span>
                 </button>
                 <button class="tool--button btnCompile">
-                    <img src="./src/image/svg/Compile.svg" alt="compilar">
+                    <img src="./src/assets/svg/Compile.svg" alt="compilar">
                     <span>Compilar</span>
                 </button>
             </section>
@@ -93,30 +93,30 @@
         <article class="content interpreter">
             <section class="tool--bar">
                 <button class="tool--button">
-                    <img src="./src/image/svg/Play.svg" alt="abrir">
+                    <img src="./src/assets/svg/Play.svg" alt="abrir">
                     <span>Ejecutar</span>
                 </button>
                 <button class="tool--button">
-                    <img src="./src/image/svg/Pause.svg" alt="abrir">
+                    <img src="./src/assets/svg/Pause.svg" alt="abrir">
                     <span>Pausar</span>
                 </button>
                 <button class="tool--button">
-                    <img src="./src/image/svg/Reload.svg" alt="abrir">
+                    <img src="./src/assets/svg/Reload.svg" alt="abrir">
                     <span>Reiniciar</span>
                 </button>
                 <button class="tool--button">
-                    <img src="./src/image/svg/City.svg" alt="abrir">
+                    <img src="./src/assets/svg/City.svg" alt="abrir">
                     <span>Ciudad</span>
                 </button>
                 <button class="tool--button">
-                    <img src="./src/image/svg/Camera.svg" alt="abrir">
+                    <img src="./src/assets/svg/Camera.svg" alt="abrir">
                     <span>Vista</span>
                 </button>
             </section>
 
             <section class="window window--interpreter city-camera">
                 <div class="city-container">
-                    <canvas class="city-canvas" width="1592" height="1592"></canvas>
+                    <canvas class="city-canvas" width="1920" height="1920"></canvas>
                 </div>
             </section>
 
@@ -138,9 +138,15 @@
     <script src="./src/lib/ace/js/ext-language_tools.js"></script>
     <script src="./src/js/ide/EditorManager.js" type="module"></script>
 
+
+    <!-- Transpiler -->
+    <script src="./src/lib/chevrotain/chevrotain.js"></script>
+    <script src="./src/js/transpiler/ast-generator.js" type="module"></script>
+    <script src="./src/js/transpiler/ast-validator.js" type="module"></script>
+
     <!-- Interpreter -->
     <script src="./src/js/interpreter/utils.js"> </script>
-    <script src="./src/status/toolsStatus.js"> </script>
+    <script src="./src/js/status/toolsStatus.js"> </script>
     <script src="./src/js/interpreter/DirectionInput.js"> </script>
     <script src="./src/js/interpreter/ZoomHandler.js"> </script>
     <script src="./src/js/interpreter/City.js"> </script>

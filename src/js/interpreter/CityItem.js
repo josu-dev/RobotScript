@@ -4,7 +4,7 @@ class CityItem extends CityObject {
         this.type = config.type;
         this.sprite = new Sprite({
             cityObject: this,
-            src: this.type === "flower" ? "./src/image/city_objects/Flower-Icon.png" : "./src/image/city_objects/Paper-Icon.png",
+            src: this.type === "flower" ? "./src/assets/city/object/item/flower-8x8.png" : "./src/assets/city/object/item/paper-8x8.png",
         });
         this.cuantity = config.cuantity || 0;
     }

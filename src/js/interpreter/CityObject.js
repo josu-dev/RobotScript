@@ -7,7 +7,7 @@ class CityObject {
 
         this.sprite = new Sprite({
             cityObject: this,
-            src: config.src || "./src/image/Sprite-Default.png",
+            src: config.src || "./src/assets/city/sprite-default.png",
         });
 
         this.behaviorLoop = config.behaviorLoop || [];

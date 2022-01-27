@@ -1,3 +1,4 @@
+"use strict";
 import EditorManager from "./ide/EditorManager.js";
 
 const primaryNav = document.querySelector(".primary-navigation");

@@ -1,3 +1,4 @@
+"use strict";
 /*const createToken = chevrotain.createToken;
 const Lexer = chevrotain.Lexer;
 const CstParser = chevrotain.CstParser;*/
@@ -77,8 +78,8 @@ const ConsultItem = createToken({ name: "ConsultItem", pattern: /Hay(Papel)|(Flo
 const ConsultPosition = createToken({ name: "ConsultPosition", pattern: /PosCa|PosAv/, longer_alt: Identifier, categories: StateMethod });
 
 const ActionMethod = createToken({ name: "ActionMethod", pattern: Lexer.NA });
-const TakeItem = createToken({ name: "TakeItem", pattern: /tomar(Flor)|(Papel)/, longer_alt: Identifier, categories: StateMethod });
-const DepositItem = createToken({ name: "DepositItem", pattern: /depositar(Flor)|(Papel)/, longer_alt: Identifier, categories: StateMethod });
+const TakeItem = createToken({ name: "TakeItem", pattern: /tomarFlor|tomarPapel/, longer_alt: Identifier, categories: StateMethod });
+const DepositItem = createToken({ name: "DepositItem", pattern: /depositarFlor|depositarPapel/, longer_alt: Identifier, categories: StateMethod });
 const Movement = createToken({ name: "Movement", pattern: /mover/, longer_alt: Identifier, categories: StateMethod });
 const ChangeOrientation = createToken({ name: "ChangeOrientation", pattern: /derecha/, longer_alt: Identifier, categories: StateMethod });
 
@@ -481,12 +482,13 @@ class RInfoParser extends CstParser {
             $.CONSUME(DDot)
             $.CONSUME(AreaType)
             $.CONSUME(LParen)
-            $.AT_LEAST_ONE_SEP({
-                SEP: Comma,
-                DEF: () => {
-                    $.CONSUME(Integer)
-                }
-            })
+            $.CONSUME1(Integer)
+            $.CONSUME1(Comma)
+            $.CONSUME2(Integer)
+            $.CONSUME2(Comma)
+            $.CONSUME3(Integer)
+            $.CONSUME3(Comma)
+            $.CONSUME4(Integer)
             $.CONSUME(RParen)
         });
 
@@ -928,21 +930,21 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
     //Program estructure
     program(ctx) {
         const name = this.visit(ctx.section_Name);
-        const procedures = ctx.section_Procedures != null? this.visit(ctx.section_Procedures) : null;
+        const procedures = ctx.section_Procedures? this.visit(ctx.section_Procedures) : [];
         const areas = this.visit(ctx.section_Areas);
         const robots = this.visit(ctx.section_Robots);
         const instances = this.visit(ctx.section_Instances);
         const main = this.visit(ctx.section_Main);
 
         return {
-            type: "PROGRAM",
+            type: "ROBOT_SCRIPT_PROGRAM",
             value: {
                 NAME: name,
                 PROCEDURES: procedures,
                 AREAS: areas,
                 ROBOT_TYPES: robots,
-                ROBOT_INSTANCES: instances,
-                INITIALIZATION: main
+                INSTANCES: instances,
+                INITS: main
             }
         };
     };
@@ -1021,20 +1023,34 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
     };
     declaration_Area(ctx) {
         const identifier = ctx.Identifier[0].image;
-        const area_type = ctx.AreaType[0].image;
 
-        let coords = []
-        if (ctx.Integer) {
-            ctx.Integer.forEach( int => {
-                const integer = Number(int.image);
-                coords.push(integer);
-            })
+        let area_type = "";
+        const type = ctx.AreaType[0].image;
+        if (type === "AreaC") {
+            area_type = "SHARED"
         }
+        else if (type === "AreaPC") {
+            area_type = "SEMI_PRIVATE"
+        }
+        else if (type === "AreaP") {
+            area_type = "PRIVATE"
+        }
+        
+        const a = {
+            x : Number(ctx.Integer[0].image),
+            y : Number(ctx.Integer[1].image),
+        };
+
+        const b = {
+            x : Number(ctx.Integer[2].image),
+            y : Number(ctx.Integer[3].image),
+        };
 
         return {
             type: area_type,
             identifier : identifier,
-            coords : coords
+            a : a,
+            b : b
         }
     };
 
@@ -1179,178 +1195,93 @@ function toAst(inputText) {
     };
 };
 
+module.exports.toAst = toAst;
 
-const program = `programa P1_1
+const program = `programa Prueba3
 procesos
-  proceso juntarFlor (ES flor: numero; ES noFlor: numero)
+  proceso juntarFlorPapel(ES papel: numero; ES flor: numero)
+  variables
+    florE: numero
+    papelE: numero
+  comenzar  
+    florE:= 0
+    papelE:= 0
+    mientras (HayFlorEnLaEsquina){
+      tomarFlor
+      florE:= florE + 1
+    }
+    repetir (florE)
+      depositarFlor
+    mientras (HayPapelEnLaEsquina){
+      tomarPapel
+      papelE:= papelE + 1
+    }
+    repetir (papelE)
+      depositarPapel
+    flor:= flor + florE
+    papel:= papel + papelE
+  fin
+  proceso escalon(E tamano: numero; ES cantE: numero)
+  variables
+    papel: numero
+    flor: numero
   comenzar
-    si (HayFlorEnLaEsquina)
-      mientras (HayFlorEnLaEsquina) {
-        tomarFlor
-        flor:= flor + 1
+    papel:= 0
+    flor:= 0
+    repetir (2){
+      repetir (tamano){
+        juntarFlorPapel(papel, flor)
+        mover
       }
-    sino
-      noFlor:= noFlor +1
+      juntarFlorPapel(papel, flor)
+      derecha
+    }
+    repetir (2)
+      derecha
+    // under 2 line: si ((papel - flor) = 1)
+    papel:= papel - flor
+    si (papel > 1)
+      cantE:= cantE + 1
   fin
 areas
-  ciudad : AreaP(1,1,1,100)
+  ciudad : AreaC(2,2,50,50)
+  campo : AreaP(1,1,1,1)
 robots 
   robot tipo1
   variables
-    flor: numero
-    noFlor: numero
+    tamano: numero
+    cantE: numero
   comenzar
-    flor:= 0
-  //  noFlor:= 0
-    juntarFlor(flor, noFlor)
-    repetir (99)
-      mover
-      juntarFlor(flor, noFlor)
-    repetir (flor)
-      depositarFlor
-    Informar(flor)
-    Informar("soy una string")
-    Informar("soy una string", (flor +4)/2)
+    tamano:= 1
+    cantE:= 0
+    repetir (4){
+      escalon(tamano, cantE)
+      tamano:= tamano + 1
+    }
+    Informar(cantE)
   fin
 variables 
   robot1: tipo1
+  robot2: tipo1
+  robot3: tipo1
 comenzar 
-  AsignarArea(robot1,ciudad)
+  AsignarArea(robot1,campo)
+  AsignarArea(robot2,ciudad)
+  AsignarArea(robot3,ciudad)
+  Iniciar(robot2, 20, 20)
+  Iniciar(robot3, 22, 6)
   Iniciar(robot1, 1, 1)
-fin
-`
+fin`;
 
+module.exports.testProgram = program;
+
+/*
 const lexResult = RInfoLexer.tokenize(program);
 parserInstance.input = lexResult.tokens;
 console.log(lexResult.tokens);
 const cst = parserInstance.program();
-//console.log(JSON.stringify(cst, null, "   "));
+console.log(JSON.stringify(cst, null, "   "));
 console.log(JSON.stringify(parserInstance.errors, null, "   "));
 const ast = toAstVisitorInstance.visit(cst);
 console.log(JSON.stringify(ast, null, "   "))
-
-/*
-programa Prueba3
-    procesos
-      proceso juntarFlorPapel(ES papel: numero; ES flor: numero)
-      variables
-        florE: numero
-        papelE: numero
-      comenzar  
-        florE:= 0
-        papelE:= 0
-        mientras (HayFlorEnLaEsquina){
-          tomarFlor()
-          florE:= florE + 1
-        }
-        repetir (florE)
-          depositarFlor()
-        mientras (HayPapelEnLaEsquina){
-          tomarPapel()
-          papelE:= papelE + 1
-        }
-        repetir (papelE)
-          depositarPapel()
-        flor:= flor + florE
-        papel:= papel + papelE
-      fin
-      proceso escalon(E tamano: numero; ES cantE: numero)
-      variables
-        papel: numero
-        flor: numero
-      comenzar
-        papel:= 0
-        flor:= 0
-        repetir (2){
-          repetir (tamano){
-            juntarFlorPapel(papel, flor)
-            mover()
-          }
-          juntarFlorPapel(papel, flor)
-          derecha()
-        }
-        repetir (2)
-          derecha()
-        // under 2 line: si ((papel - flor) = 1)
-        papel:= papel - flor
-        si (papel)
-          cantE:= cantE + 1
-      fin
-    areas
-      ciudad : AreaC(1,1,100,100)
-    robots 
-      robot tipo1
-      variables
-        tamano: numero
-        cantE: numero
-      comenzar
-        tamano:= 1
-        cantE:= 0
-        repetir (4){
-          escalon(tamano, cantE)
-          tamano:= tamano + 1
-        }
-        Informar(cantE)
-      fin
-    variables 
-      robot1: tipo1
-      robot2: tipo1
-      robot3: tipo1
-    comenzar 
-      AsignarArea(robot1,ciudad)
-      AsignarArea(robot2,ciudad)
-      AsignarArea(robot3,ciudad)
-      Iniciar(robot1, 12, 14)
-      Iniciar(robot2, 17, 10)
-      Iniciar(robot3, 22, 6)
-    fin
-*/
-/*
-const inputText = `programa P1_1
-procesos
-  proceso juntarFlor (ES flor: numero; ES noFlor: numero)
-  comenzar
-    si (HayFlorEnLaEsquina) {
-      mientras (HayFlorEnLaEsquina){
-        tomarFlor()
-        flor:= flor + 1
-      }
-    }
-    sino {
-      noFlor:= noFlor +1
-    }
-  fin
-areas
-    cuadrante : AreaC(5,5,5,5)
-  ciudad : AreaP(1,1,1,100)
-robots 
-  robot tipo1
-  variables
-    flor: numero
-    noFlor: numero
-  comenzar
-    flor:= 0
-    noFlor:= 0
-    juntarFlor(flor, noFlor)
-    repetir (99){
-      mover()
-      juntarFlor(flor, noFlor)}
-    repetir (flor){
-      depositarFlor()}
-    Informar(flor)
-    Informar(noFlor)
-  fin
-variables 
-  robot1: tipo1
-  ro: tipo3
-comenzar 
-AsignarArea(robot1,ciudad)
-  AsignarArea(robot1,ciudad)
-  Iniciar(robot1, 1, 1)
-fin`;
-
-const astResult = toAst(inputText);
-
-//console.log(astResult);
-console.log(JSON.stringify(astResult, null, " "));
 */

@@ -2,7 +2,8 @@
 /*const createToken = chevrotain.createToken;
 const Lexer = chevrotain.Lexer;
 const CstParser = chevrotain.CstParser;*/
-const { CstParser, Lexer, createToken } = require("chevrotain")
+//const { CstParser, Lexer, createToken } = require("chevrotain")
+import { CstParser, Lexer, createToken } from "chevrotain"
 
 const WhiteSpace = createToken({ name: "WhiteSpace", pattern: /\s+/, group: Lexer.SKIPPED });
 const LineComment = createToken({ name: "WhiteSpace", pattern: /\/\/.*/, group: Lexer.SKIPPED });
@@ -74,7 +75,7 @@ const AsignArea = createToken({ name: "AsignArea", pattern: /AsignarArea/, longe
 const InitRobot = createToken({ name: "InitRobot", pattern: /Iniciar/, longer_alt: Identifier });
 
 const StateMethod = createToken({ name: "StateMethod", pattern: Lexer.NA });
-const ConsultItem = createToken({ name: "ConsultItem", pattern: /Hay(Papel)|(Flor)EnLa(Esquina)|(Bolsa)/, longer_alt: Identifier, categories: StateMethod });
+const ConsultItem = createToken({ name: "ConsultItem", pattern: /HayFlorEnLaBolsa|HayPapelEnLaBolsa|HayFlorEnLaEsquina|HayPapelEnLaEsquina/, longer_alt: Identifier, categories: StateMethod });
 const ConsultPosition = createToken({ name: "ConsultPosition", pattern: /PosCa|PosAv/, longer_alt: Identifier, categories: StateMethod });
 
 const ActionMethod = createToken({ name: "ActionMethod", pattern: Lexer.NA });
@@ -701,7 +702,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         }
 
         return {
-            type: "STATEMENT_CALL_PROCEDURE",
+            type: "CALL_PROCEDURE",
             identifier : identifier,
             parameters : parameters
         }
@@ -771,7 +772,6 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         }
     }
     message(ctx) {
-        console.log(ctx)
         let mode = "";
         const identifier = ctx.Message[0].image;
         if (identifier === "EnviarMensaje") {
@@ -1195,7 +1195,7 @@ function toAst(inputText) {
     };
 };
 
-module.exports.toAst = toAst;
+export {toAst};
 
 const program = `programa Prueba3
 procesos
@@ -1205,21 +1205,20 @@ procesos
     papelE: numero
   comenzar  
     florE:= 0
-    papelE:= 0
     mientras (HayFlorEnLaEsquina){
       tomarFlor
       florE:= florE + 1
     }
     repetir (florE)
       depositarFlor
-    mientras (HayPapelEnLaEsquina){
-      tomarPapel
-      papelE:= papelE + 1
-    }
-    repetir (papelE)
-      depositarPapel
-    flor:= flor + florE
-    papel:= papel + papelE
+    si (papel > 1)
+        florE:= florE + 1
+    Informar("hola",florE)
+    Pos(1,5)
+    EnviarMensaje (papelE, robot4)
+    RecibirMensaje (papel, robot1)
+    BloquearEsquina(1+3, florE)
+    LiberarEsquina(flor, flor)
   fin
   proceso escalon(E tamano: numero; ES cantE: numero)
   variables
@@ -1238,16 +1237,27 @@ procesos
     }
     repetir (2)
       derecha
+    flor:= papel + 1
     // under 2 line: si ((papel - flor) = 1)
     papel:= papel - flor
-    si (papel > 1)
-      cantE:= cantE + 1
   fin
 areas
   ciudad : AreaC(2,2,50,50)
   campo : AreaP(1,1,1,1)
 robots 
-  robot tipo1
+robot tipo1
+variables
+  tamano: numero
+  cantE: numero
+comenzar
+  tamano:= 1
+  cantE:= 0
+  repetir (4){
+    escalon(tamano, cantE)
+    tamano:= tamano + 1
+  }
+fin
+  robot tipo2
   variables
     tamano: numero
     cantE: numero
@@ -1258,22 +1268,45 @@ robots
       escalon(tamano, cantE)
       tamano:= tamano + 1
     }
-    Informar(cantE)
+  fin
+  robot tipo3
+  variables
+    tamano: numero
+    cantE: numero
+  comenzar
+    tamano:= 1
+    cantE:= 0
+    repetir (4){
+      escalon(tamano, cantE)
+      tamano:= tamano + 1
+    }
+  fin
+  robot tipo
+  variables
+    tamano: numero
+    cantE: numero
+  comenzar
+    tamano:= 1
+    cantE:= 0
+    repetir (4){
+      escalon(tamano, cantE)
+      tamano:= tamano + 1
+    }
   fin
 variables 
   robot1: tipo1
-  robot2: tipo1
+  robot4: tipo1
   robot3: tipo1
 comenzar 
   AsignarArea(robot1,campo)
-  AsignarArea(robot2,ciudad)
+  AsignarArea(robot4,ciudad)
   AsignarArea(robot3,ciudad)
-  Iniciar(robot2, 20, 20)
+  Iniciar(robot4, 20, 20)
   Iniciar(robot3, 22, 6)
   Iniciar(robot1, 1, 1)
 fin`;
 
-module.exports.testProgram = program;
+export {program as testProgram};
 
 /*
 const lexResult = RInfoLexer.tokenize(program);

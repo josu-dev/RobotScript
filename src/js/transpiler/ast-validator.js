@@ -1,10 +1,34 @@
 "use strict";
-const { toAst, testProgram } = require("./ast-generator.js");
-
+//const { toAst, testProgram } = require("./ast-generator.js");
+import { toAst, testProgram } from "./ast-generator.js"
 
 const astResult = toAst(testProgram);
 
-//Util function
+// Error class
+class ValidationError {
+    constructor() {
+        this.error = false;
+        this.type = "";
+        this.context = "";
+    }
+
+    setError( type = "", context = "" ) {
+        this.error = true;
+        this.type = type;
+        this.context = context;
+    }
+
+    addContext( additionalContext = "" ) {
+        this.context = this.context.concat(additionalContext);
+    }
+
+    changeContext( newContext = "" ) {
+        this.context = newContext;
+    }
+}
+
+
+//Common functions
 const pointInArea = ( point, a, b ) => {
     const xInRange = (point.x >= a.x) && (point.x <= b.x);
     const yInRange = (point.y >= a.y) && (point.y <= b.y);
@@ -33,6 +57,22 @@ const getIdentifiers = ( baseArray ) => {
     }
     return identifiers;
 }
+const getValidProcedures = ( baseProcedures ) => {
+    let procedures = [];
+
+    if ( baseProcedures && (baseProcedures.length > 0)) {
+        baseProcedures.forEach( e => {
+            const identifier = e.identifier;
+            const parameters = e.parameters;
+            procedures.push({
+                identifier : identifier,
+                parameters : parameters
+            })
+        })
+    }
+
+    return procedures;
+}
 const identifierExist = ( identifier, validIdentifiers ) => {
     let match = false;
     for (const possibleId of validIdentifiers) {
@@ -43,6 +83,7 @@ const identifierExist = ( identifier, validIdentifiers ) => {
     }
     return match;
 }
+
 const identifiersAreUnique = ( baseArray, context ) => {
     const result = {
         error : false,
@@ -359,53 +400,402 @@ const validateInits = (inits, instances, areas) => {
     return result;
 }
 
-const validateProcedures = (procedures, instancesIds) => {
-    const result = {
-        error : false,
-        errorType : "",
-        errorContext : "",
-    };
-    if (procedures.length === 0) return result;
+const validateExpression = (exp, varIds) => {
+    let r = new ValidationError();
+    if (!exp.type) return r;
 
+    const type = exp.type;
+
+    if ( type === "BINARY_OPERATION" ) {
+        const resultLeft = validateExpression(exp.lhs, varIds);
+        if (resultLeft.error) {
+            r = resultLeft;
+            return r;
+        }
+
+        const resultRight = validateExpression(exp.rhs, varIds);
+        if (resultRight.error) {
+            r = resultRight;
+            return r;
+        }
+
+        return r;
+    }
+
+    if ( type === "UNARY_OPERATION" ) {
+        const resultRight = validateExpression(exp.rhs, varIds);
+        if (resultRight.error) {
+            r = resultRight;
+            return r;
+        }
+
+        return r;
+    }
+
+    if ( type === "VARIABLE" ) {
+        if (!identifierExist(exp.identifier, varIds)) {
+            r.setError(
+                "Invalid variable",
+                `Variable '${exp.identifier}' has never been declared`
+            )
+            return r;
+        }
+
+        return r;
+    }
+
+    return r;
+}
+
+const validateStatement = (statement, varIds, instancesIds, validProcedures) => {
+    const r = new ValidationError();
+    if (!statement.type) return r;
+
+    const type = statement.type;
+
+    if ( type === "STATEMENT_ASSIGN" ) {
+        const identifier = statement.identifier;
+        if (!identifierExist(identifier, varIds)) {
+            r.setError(
+                "Invalid assignation",
+                `Variable ${identifier} has never been declared`
+            )
+            return r;
+        }
+        const value = statement.value;
+        const resultExp = validateExpression(value, varIds);
+        if (resultExp.error) {
+            r.setError(
+                resultExp.type,
+                `${resultExp.context} at statement assignation`,
+            )
+            return r;
+        }
+        return r;
+    }
+
+    if ( type === "STATEMENT_BLOCK" ) {
+        const resultBody = validateBody(statement.body, varIds, instancesIds, validProcedures);
+        if (resultBody.error) {
+            r.setError(
+                resultBody.type,
+                `${resultBody.context} at block code`,
+            )
+            return r;
+        }
+        return r;
+    }
+
+    if ( type === "IF" || type === "FOR" || type === "WHILE" ) {
+        const condition = statement.condition;
+        const resultCond = validateExpression(condition, varIds);
+        if (resultCond.error) {
+            r.setError(
+                resultCond.type,
+                `${resultCond.context} at condition declaration`,
+            )
+            return r;
+        }
+
+        const resultBody = validateStatement(statement.body, varIds, instancesIds, validProcedures)
+        if (resultBody.error) {
+            r.setError(
+                resultBody.type,
+                `${resultBody.context} at statement declaration`,
+            )
+            return r;
+        }
+
+        if (type === "IF") {
+            const resultElse = validateStatement(statement.body, varIds, instancesIds, validProcedures)
+            if (resultElse.error) {
+                r.setError(
+                    resultElse.type,
+                    `${resultElse.context} at else declaration`,
+                )
+                return r;
+            }
+        }
+
+        return r;
+    }
+
+    if ( type === "INFORM" ) {
+        const { arg1, arg2 } = statement;
+        let resultExp = new ValidationError();
+
+        if (arg1.type === "STRING_LITERAL" && arg2.type) {
+            resultExp = validateExpression(arg2, varIds);
+        }
+        else if (arg1.type !== "STRING_LITERAL") {
+            resultExp = validateExpression(arg1, varIds);
+        }
+        if (resultExp.error) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultExp.context} at parameter declaration of inform`
+            )
+            return r;
+        }
+
+        return r;
+    }
+
+    if ( type === "CHANGE_POSITION" ) {
+        const { x, y } = statement;
+
+        let resultExp = validateExpression(x, varIds);
+        if (resultExp.error) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultExp.context} at x coordinate declaration of pos`
+            )
+            return r;
+        }
+
+        resultExp = validateExpression(y, varIds);
+        if (resultExp.error) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultExp.context} at y coordinate declaration of pos`
+            )
+            return r;
+        }
+
+        return r;
+    }
+
+    if ( type === "MESSAGE" ) {
+        const { val, who } = statement;
+
+        const resultExp = validateExpression(val, varIds);
+        if (resultExp.error) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultExp.context} at value declaration in message statement`
+            )
+            return r;
+        }
+        instancesIds.push("*");
+        const resultWho = identifierExist(who, instancesIds);
+        if (!resultWho) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `Instance '${who}' has never been declared and used in message emitter/reciver`
+            )
+            return r;
+        }
+
+        return r;
+    }
+
+    if ( type === "CONTROL_CORNER" ) {
+        const { x, y } = statement;
+
+        let resultExp = validateExpression(x, varIds);
+        if (resultExp.error) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultExp.context} at x coordinate declaration of control corner`
+            )
+            return r;
+        }
+
+        resultExp = validateExpression(y, varIds);
+        if (resultExp.error) {
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultExp.context} at y coordinate declaration of control corner`
+            )
+            return r;
+        }
+
+        return r;
+    }
+
+    if ( type === "CALL_PROCEDURE" ) {
+        const { identifier, parameters } = statement;
+
+        const validProceduresIds = getIdentifiers(validProcedures);
+
+        const identifierIndex = validProceduresIds.indexOf(identifier);
+        if (identifierIndex === -1) {
+            r.setError(
+                `Invalid procedure call`,
+                `Procedure '${identifier}' has never been declared`
+            )
+            return r;
+        }
+
+        const formalParameters = validProcedures[identifierIndex].parameters;
+        const actualParameters = parameters;
+
+        if (formalParameters.length > actualParameters.length) {
+            r.setError(
+                `Invalid procedure call`,
+                `Less parameters in procedure call than in procedure declaration '${identifier}'`
+            )
+            return r;
+        }
+        else if (formalParameters.length < actualParameters.length) {
+            r.setError(
+                `Invalid procedure call`,
+                `More parameters in procedure call than in procedure declaration '${identifier}'`
+            );
+            return r;
+        }
+        
+        if (formalParameters.length === 0) return r;
+
+        for (let i = 0; i < formalParameters.length; i++) {
+            if (formalParameters[i].type_parameter = "ES") {
+                if (actualParameters[i].type !== "VARIABLE"){
+                    r.setError(
+                        `Invalid procedure call`,
+                        `Parameter ${i + 1} in procedure call '${identifier}' must be a variable because the corresponding formal parameter is ES`
+                    )
+                    break;
+                }
+                if (!identifierExist(actualParameters[i].identifier, varIds)) {
+                    r.setError(
+                        `Invalid procedure call`,
+                        `Variable '${actualParameters[i].identifier}' has not been declared and used in procedure call '${identifier}'`
+                    )
+                    break;
+                }
+            }
+            else {
+                const resultExp = validateExpression(actualParameters[i].value, varIds);
+                if (resultExp.error) {
+                    r.setError(
+                        `Invalid parameter declaration`,
+                        `${resultExp.context} at parameter declaration ${i + 1} in procedure call '${identifier}'`
+                    )
+                    break;
+                }
+            }
+        }
+
+        return r;
+    }
+
+    return r;
+}
+
+const validateBody = (body, varIds, instancesIds, validProcedures) => {
+    const r = new ValidationError();
+
+    if (body.length === 0) return r;
+
+    for(let i = 0; i < body.length; i++) {
+        const statement = body[i];
+        const statementResult = validateStatement(statement, varIds, instancesIds, validProcedures);
+        
+        if (statementResult.error) {
+            r.setError(
+                statementResult.type,
+                statementResult.context
+            )
+            break;
+        }
+    }
+
+    return r;
+}
+
+const validateProcedures = (procedures, instancesIds) => {
+    const r = new ValidationError();
+
+    if (procedures.length === 0) return r;
+
+    const validProcedures = getValidProcedures(procedures);
 
     for(let i = 0; i < procedures.length; i++) {
         const procedureId = procedures[i].identifier;
 
         const resultPar = identifiersAreUnique(procedures[i].parameters, "parameter");
         if (resultPar.error) {
-            result.error = true;
-            result.errorType = "Invalid parameter declaration";
-            result.errorContext = `${resultPar.errorContext} at procedure declaration '${procedureId}'`;
+            r.setError(
+                `Invalid parameter declaration`,
+                `${resultPar.errorContext} at procedure declaration '${procedureId}'`
+            )
             break;
         }
 
         const resultVar = identifiersAreUnique(procedures[i].local_variables, "variable");
         if (resultVar.error) {
-            result.error = true;
-            result.errorType = "Invalid variable declaration";
-            result.errorContext = `${resultVar.errorContext} at procedure declaration '${procedureId}'`;
+            r.setError(
+                `Invalid variable declaration`,
+                `${resultVar.errorContext} at procedure declaration '${procedureId}'`
+            )
             break;
         }
 
         const allVarIds = getIdentifiers(procedures[i].local_variables).concat(getIdentifiers(procedures[i].parameters));
         
-        console.log(procedures[i].body);
         const body = procedures[i].body;
-        for (let j= 0; j < body.length; j++){
-            const s = body[j];
-        }
+        const resultBody = validateBody(body, allVarIds, instancesIds, validProcedures);
 
-        if (result.error) break;
+        if (resultBody.error) {
+            r.setError(
+                `${resultBody.type}`,
+                `${resultBody.context}`
+            )
+            break;
+        }
     }
 
-    return result;
+    return r;
 }
 
+const validateRobotTypes = (robot_types, procedures, instancesIds) => {
+    const r = new ValidationError();
 
-const test = astResult.ast.value;
-console.log(test.PROCEDURES);
-console.log(validateProcedures(test.PROCEDURES, test.INSTANCES));
+    let validProcedures = [];
+    if (procedures.length > 0) {
+        validProcedures = getValidProcedures(procedures);
+    }
 
+    const validPobotTypeIds = [];
+    for(let i = 0; i < robot_types.length; i++) {
+        const robotTypeId = robot_types[i].identifier;
+
+        const indexIdExist = validPobotTypeIds.indexOf(robotTypeId)
+        if (indexIdExist !== -1) {
+            r.setError(
+                `Invalid robot type declaration`,
+                `Identifier '${robotTypeId}' is in robot type declaration ${indexIdExist + 1} and ${i + 1}`
+            )
+            break;
+        }
+
+        const resultVar = identifiersAreUnique(robot_types[i].local_variables, "variable");
+        if (resultVar.error) {
+            r.setError(
+                `Invalid variable declaration`,
+                `${resultVar.errorContext} at procedure declaration '${robotTypeId}'`
+            )
+            break;
+        }
+
+        const allVarIds = getIdentifiers(robot_types[i].local_variables);
+        
+        const body = robot_types[i].body;
+        const resultBody = validateBody(body, allVarIds, instancesIds, validProcedures);
+
+        if (resultBody.error) {
+            r.setError(
+                `${resultBody.type}`,
+                `${resultBody.context}`
+            )
+            break;
+        }
+
+        validPobotTypeIds.push(robotTypeId);
+    }
+
+    return r;
+}
 
 
 function validateAst(inputAst) {
@@ -435,15 +825,21 @@ function validateAst(inputAst) {
     
     if (result.error) return result;
 
-    const proceduresIds = getIdentifiers(PROCEDURES);
-    result = validateRobotTypes(ROBOT_TYPES, proceduresIds, instancesIds);
+    result = validateRobotTypes(ROBOT_TYPES, PROCEDURES, instancesIds);
 
     return result;
 };
 
-//console.log(validateAst(test));
-// console.log(validateAst(astResult.ast))
-//console.log(ast.value);
+//module.exports.validateAst = validateAst;
+export {validateAst}
+
+if (astResult.error) {
+    console.log(astResult.errors[0])
+}
+else {
+    console.log(validateAst(astResult.ast.value))
+}
+
 /*
 const areas = [
     {

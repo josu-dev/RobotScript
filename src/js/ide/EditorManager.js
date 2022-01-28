@@ -1,51 +1,61 @@
 "use Strict";
 
-const DEFAULT_EDITOR_CODE_TEXT =  `programa P1_2
+import { toAst } from "../transpiler/ast-generator.js";
+import { validateAst } from "../transpiler/ast-validator.js";
+
+const DEFAULT_EDITOR_CODE =  `programa test
 procesos
-  proceso juntarPapel (ES papel: numero)
-  comenzar
-    mientras HayPapelEnLaEsquina
-      tomarPapel
-      papel:= papel + 1
-  fin
-  
-areas
-  ciudad : AreaP(1,1,50,50)
-robots 
-  robot tipo1
+  proceso juntarFlores()
   variables
-    papel: numero
+    flores: numero
   comenzar
-    papel:= 0
-    si (PosAv=10) & (PosCa=30)
-      derecha
-    sino
-      si (PosAv=30) & (PosCa=30)
-        repetir 2
-          derecha
-      sino
-        si (PosAv=30) & (PosCa=10)
-          repetir 3
-            derecha
-    repetir 19
-      mover
-      juntarPapel(papel)
-    Informar(papel)
+    mientras (HayFlorEnLaEsquina) {
+      tomarFlor
+      flores:= flores +1
+    }
   fin
-variables 
-  robot1: tipo1
-  robot2: tipo1
-  robot3: tipo1
-  robot4: tipo1
-comenzar 
-  AsignarArea(robot1,ciudad)
-  AsignarArea(robot2,ciudad)
-  AsignarArea(robot3,ciudad)
-  AsignarArea(robot4,ciudad)
-  Iniciar(robot1, 10, 10)
-  Iniciar(robot2, 10, 30)
-  Iniciar(robot3, 30, 30)
-  Iniciar(robot4, 30, 10)
+  proceso juntarPapeles(ES papeles: numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina) {
+      tomarPapel
+      papeles:= papeles +1
+    }
+  fin
+areas
+  ciudad: AreaC(1,1,100,100)
+robots
+  robot juntador
+  variables
+    flores : numero
+    aux : numero
+  comenzar
+    flores:= 0
+    repetir (9) {
+      juntarFlores()
+      mover
+    }
+    juntarFlores()
+    si (PosAv = 1) {
+      EnviarMensaje(flores,r2)
+      RecibirMensaje(aux,r2)
+    }
+    sino {
+      RecibirMensaje(aux,r1)
+      EnviarMensaje(flores,r1)
+    }
+    si (flores>aux) {
+      flores:= flores - aux
+      Informar(flores)
+    }
+  fin
+variables
+  r1: juntador
+  r2: juntador
+comenzar
+  AsignarArea(r1,ciudad)
+  AsignarArea(r2,ciudad)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 2,11)
 fin`;
 
 class EditorManager {
@@ -62,6 +72,9 @@ class EditorManager {
         this.btnCompile = this.mainContainer.querySelector(".btnCompile");
 
         this.cursorPosition = this.mainContainer.querySelector(".editor-cursor-position");
+        this.customConsole = this.mainContainer.querySelector(".console-compiler");
+
+        this.programAst = {};
     }
 
     init() {
@@ -96,7 +109,7 @@ class EditorManager {
         });
 
         //Set initial text
-        this.aceEditor.setValue(DEFAULT_EDITOR_CODE_TEXT);
+        this.aceEditor.setValue(DEFAULT_EDITOR_CODE);
 
 
         //Handling some ace events
@@ -168,6 +181,35 @@ class EditorManager {
             if ( this.aceEditor ) {
                 this.aceEditor.setValue("");
             };
+        });
+
+        this.btnCompile.addEventListener("click", () => {
+            const actualCode = this.aceEditor.getValue();
+            const parsedCode = toAst(actualCode);
+
+            const consoleName = this.customConsole.querySelector(".console-name");
+            const consoleLogs = this.customConsole.querySelector(".console-logs");
+
+            if (parsedCode.error) {
+                console.log(parsedCode.errors[0]);
+                consoleLogs.innerText = parsedCode.errors[0].toString();
+                consoleName.setAttribute("data-estate", "error");
+                return;
+            }
+
+            const ast = parsedCode.ast;
+            const validation = validateAst(ast.value);
+
+            if (validation.error) {
+                consoleLogs.innerText = validation.context;
+                consoleName.setAttribute("data-estate", "error");
+                return;
+            }
+
+            this.programAst = ast;
+            consoleLogs.innerText = "Compilado con exito, listo para ejecucion";
+            consoleName.setAttribute("data-estate", "valid");
+            console.log(this.programAst);
         });
     }
 

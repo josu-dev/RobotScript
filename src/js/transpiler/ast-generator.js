@@ -1,9 +1,9 @@
 "use strict";
-/*const createToken = chevrotain.createToken;
+const createToken = chevrotain.createToken;
 const Lexer = chevrotain.Lexer;
-const CstParser = chevrotain.CstParser;*/
-//const { CstParser, Lexer, createToken } = require("chevrotain")
-import { CstParser, Lexer, createToken } from "chevrotain"
+const CstParser = chevrotain.CstParser;
+// const { CstParser, Lexer, createToken } = require("../../lib/chevrotain/chevrotain.js")
+// import * as c from "../../lib/chevrotain/chevrotain.js"
 
 const WhiteSpace = createToken({ name: "WhiteSpace", pattern: /\s+/, group: Lexer.SKIPPED });
 const LineComment = createToken({ name: "WhiteSpace", pattern: /\/\/.*/, group: Lexer.SKIPPED });
@@ -1220,6 +1220,12 @@ procesos
     BloquearEsquina(1+3, florE)
     LiberarEsquina(flor, flor)
   fin
+proceso izq()
+comenzar
+  derecha
+  derecha
+  derecha
+fin
   proceso escalon(E tamano: numero; ES cantE: numero)
   variables
     papel: numero
@@ -1301,8 +1307,6 @@ comenzar
   AsignarArea(robot1,campo)
   AsignarArea(robot4,ciudad)
   AsignarArea(robot3,ciudad)
-  Iniciar(robot4, 20, 20)
-  Iniciar(robot3, 22, 6)
   Iniciar(robot1, 1, 1)
 fin`;
 

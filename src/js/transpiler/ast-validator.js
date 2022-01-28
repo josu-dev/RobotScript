@@ -1,8 +1,6 @@
 "use strict";
-//const { toAst, testProgram } = require("./ast-generator.js");
-import { toAst, testProgram } from "./ast-generator.js"
-
-const astResult = toAst(testProgram);
+// const { toAst, testProgram } = require("./ast-generator.js");
+// import { toAst, testProgram } from "./ast-generator.js"
 
 // Error class
 class ValidationError {
@@ -22,11 +20,16 @@ class ValidationError {
         this.context = this.context.concat(additionalContext);
     }
 
-    changeContext( newContext = "" ) {
+    setContext( newContext = "" ) {
         this.context = newContext;
     }
-}
 
+    update( newError = ValidationError ) {
+        this.error = newError.error;
+        this.type = newError.type;
+        this.context = newError.context;
+    }
+}
 
 //Common functions
 const pointInArea = ( point, a, b ) => {
@@ -83,14 +86,9 @@ const identifierExist = ( identifier, validIdentifiers ) => {
     }
     return match;
 }
-
 const identifiersAreUnique = ( baseArray, context ) => {
-    const result = {
-        error : false,
-        errorType : "",
-        errorContext : "",
-    };
-    if (baseArray.length === 0) return result;
+    const r = new ValidationError();
+    if (baseArray.length === 0) return r;
 
     for(let i = 0; i < baseArray.length; i++) {
         const idBase = baseArray[i].identifier;
@@ -99,18 +97,20 @@ const identifiersAreUnique = ( baseArray, context ) => {
             const idComp = baseArray[j].identifier;
 
             if (idBase === idComp) {
-                result.error = true;
-                result.errorContext = `Name '${idComp}' is in ${context} declaration ${j + 1} and ${i + 1}`;
+                r.setError(
+                    ``,
+                    `Identificador '${idComp}' se encuentra en la declaracion ${j + 1} y ${i + 1}`
+                );
                 break;
             }     
         }
-        if (result.error) break;
+        if (r.error) break;
     }
 
-    return result;
+    return r;
 }
 
-
+//Validations
 const validateAreas = (areas) => {
     const pointsInOrder = ( p1, p2 ) => {
         const xInOrder = (p1.x <= p2.x);
@@ -131,11 +131,7 @@ const validateAreas = (areas) => {
         return true;
     }
 
-    const result = {
-        error : false,
-        errorType : "",
-        errorContext : "",
-    };
+    const r = new ValidationError();
 
     for(let i = 0; i < areas.length; i++) {
         const nameBase = areas[i].identifier;
@@ -146,25 +142,24 @@ const validateAreas = (areas) => {
         const bValid = pointInArea(bBase, {x: 1, y: 1}, {x: 100, y: 100});
 
         if (!(aValid && bValid)) {
-            result.error = true;
-            result.errorType = "Invalid area declaration";
+            r.setError(`Invalida declaracion de area`);
             if (!aValid && bValid) {
-                result.errorContext = `Coordinates of first point in area '${nameBase}' must be in range 1 - 100 on either axis`;
+                r.setContext(`Coordenadas del primer punto del area '${nameBase}' debe estar en el rango de 1 a 100 en cada eje`);
             }
             else if (aValid && !bValid) {
-                result.errorContext = `Coordinates of second point in area '${nameBase}' must be in range 1 - 100 on either axis`;
+                r.setContext(`Coordenadas del segundo punto del area '${nameBase}' debe estar en el rango de 1 a 100 en cada eje`);
             }
             else {
-                result.errorContext = `Coordinates of first point in area '${nameBase}' must be in range 1 - 100 on either axis
-                Coordinates of second point in area '${nameBase}' must be in range 1 - 100 on either axis`;
+                r.setContext(`Coordenadas de ambos puntos del area '${nameBase}' deben estar en el rango de 1 a 100 en cada eje`);
             }
             break;
         }
 
         if (!pointsInOrder(aBase, bBase)) {
-            result.error = true;
-            result.errorType = "Invalid area declaration";
-            result.errorContext = `Coordinates of second point in area '${nameBase}' must be greater or equal to coordinates of the first point`;
+            r.setError(
+                `Invalida declaracion de area`,
+                `Coordinates of second point in area '${nameBase}' must be greater or equal to coordinates of the first point`
+            );
             break; 
         }
 
@@ -174,32 +169,30 @@ const validateAreas = (areas) => {
             const bComp = areas[j].b;
 
             if (nameBase === nameComp) {
-                result.error = true;
-                result.errorType = "Invalid area declaration";
-                result.errorContext = `Area name '${nameComp}' is in area declaration ${j + 1} and ${i + 1}`
+                r.setError(
+                    `Invalida declaracion de area`,
+                    `Identificador '${nameComp}' se utiliza en la declaracion del area ${j + 1} y ${i + 1}`
+                );
                 break;
             }
 
             if (areasOverlap(aComp, bComp, aBase, bBase)) {
-                result.error = true;
-                result.errorType = "Invalid area declaration";
-                result.errorContext = `Area '${nameComp}' share points with area '${nameBase}'`;
+                r.setError(
+                    `Invalida declaracion de area`,
+                    `El area '${nameComp}' comparte puntos con el area '${nameBase}'`
+                );
                 break;
             }            
         }
 
-        if (result.error) break;
+        if (r.error) break;
     }
 
-    return result;
+    return r;
 }
 
 const validateInstances = (instances, robot_types) => {
-    const result = {
-        error : false,
-        errorType : "",
-        errorContext : "",
-    };
+    const r = new ValidationError();
     
     const validRobotTypes = [];
     robot_types.forEach(dec => validRobotTypes.push(dec.identifier));
@@ -209,9 +202,10 @@ const validateInstances = (instances, robot_types) => {
         const typeBase = instances[i].type;
         
         if (!robotTypeExist(typeBase, validRobotTypes)) {
-            result.error = true;
-            result.errorType = "Invalid instance declaration";
-            result.errorContext = `Robot type '${typeBase}' has never been declared and used in instance declaration ${i + 1}`;
+            r.setError(
+                `Invalida declaracion de instancia`,
+                `Tipo de robot '${typeBase}' no fue declarado y se uso en la declaracion de instancia ${i + 1}`
+            );
             break;
         }
 
@@ -219,25 +213,22 @@ const validateInstances = (instances, robot_types) => {
             const nameComp = instances[j].identifier;
 
             if (nameBase === nameComp) {
-                result.error = true;
-                result.errorType = "Invalid instance declaration";
-                result.errorContext = `Instance name '${nameComp}' is in instance declaration ${j + 1} and ${i + 1}`;
+                r.setError(
+                    `Invalida declaracion de instancia`,
+                    `Identificador '${nameComp}' se utiliza en la declaracion de instancia ${j + 1} y ${i + 1}`
+                );
                 break;
             }     
         }
 
-        if (result.error) break;
+        if (r.error) break;
     }
 
-    return result;
+    return r;
 }
 
 const validateInits = (inits, instances, areas) => {
-    const result = {
-        error : false,
-        errorType : "",
-        errorContext : "",
-    };
+    const r = new ValidationError();
 
     const validAreas = [];
     areas.forEach(area => {
@@ -287,59 +278,65 @@ const validateInits = (inits, instances, areas) => {
         const areaIndex = validAreas.findIndex( e => e.type === type);
 
         if (areaIndex === -1) {
-            result.error = true;
-            result.errorType = "Invalid area asignation";
-            result.errorContext = `Area type '${type}' has never been declared and used in area asignation ${i + 1}`;
+            r.setError(
+                `Invalida asignacion de area`,
+                `Tipo de area '${type}' no fue declarada y se usa en la asignacion de area ${i + 1}`
+            );
             break;
         }
 
         if (validAreas[areaIndex].max === validAreas[areaIndex].uses) {
-            result.error = true;
-            result.errorType = "Invalid area asignation";
-            result.errorContext = `Exceded the limit of instances for area type '${type}' in area asignation ${i + 1}`;
+            r.setError(
+                `Invalida asignacion de area`,
+                `Se exedio el limite de asignaciones para el tipo '${type}' en la asignacion de area ${i + 1}`
+            );
             break;
         }
 
         const instanceIndex = validInstances.findIndex( e => e.identifier === identifier);
 
         if (instanceIndex === -1) {
-            result.error = true;
-            result.errorType = "Invalid area asignation";
-            result.errorContext = `Instance '${identifier}' has never been declared and used in area asignation ${i + 1}`;
+            r.setError(
+                `Invalida asignacion de area`,
+                `La instancia '${identifier}' no fue declarada y se usa en la asignacion de area ${i + 1}`
+            );
             break;
         }
 
         if (validInstances[instanceIndex].areas.indexOf(type) !== -1) {
-            result.error = true;
-            result.errorType = "Invalid area asignation";
-            result.errorContext = `Already asigned area '${type}' at instance '${identifier}'`;
+            r.setError(
+                `Invalida asignacion de area`,
+                `Ya se le asigno el area '${type}' a la instancia '${identifier}'`
+            );
             break;
         }
 
         validAreas[areaIndex].uses += 1;
         validInstances[instanceIndex].areas.push(type);
     }
-    if (result.error) return result;
+    if (r.error) return r;
 
     for (const area of validAreas) {
         if (area.uses === 0) {
-            result.error = true;
-            result.errorType = "Area never asigned";
-            result.errorContext = `Area '${area.type}' hasn't been asigned to any instance`;
+            r.setError(
+                `Area no asignada`,
+                `El area '${area.type}' no fue asignada a ninguna instancia`
+            );
             break;
         }
     }
-    if (result.error) return result;
+    if (r.error) return r;
 
     for (const instance of validInstances) {
         if (instance.areas.length === 0) {
-            result.error = true;
-            result.errorType = "Area never asigned";
-            result.errorContext = `No asigned any area to instance '${instance.identifier}'`;
+            r.setError(
+                `Area no asignada`,
+                `La instancia '${instance.identifier}' no tiene ningun area asignada`
+            );
             break;
         }
     }
-    if (result.error) return result;
+    if (r.error) return r;
     
     const initials = inits.initial_positions;
 
@@ -353,16 +350,18 @@ const validateInits = (inits, instances, areas) => {
         const instanceIndex = validInstances.findIndex( e => e.identifier === identifier);
 
         if (instanceIndex === -1) {
-            result.error = true;
-            result.errorType = "Invalid area asignation";
-            result.errorContext = `Instance '${identifier}' has never been declared and used in initialization ${i + 1}`;
+            r.setError(
+                `Invalida inicializacion`,
+                `Instancia '${identifier}' no fue declarada y se usa en la inicializacion ${i + 1}`
+            );
             break;
         }
 
         if (validInstances[instanceIndex].initial_position.x) {
-            result.error = true;
-            result.errorType = "Initial position";
-            result.errorContext = `Already asigned a initial position for '${identifier}' at initialization ${i + 1}`;
+            r.setError(
+                `Invalida inicializacion`,
+                `La instancia '${identifier}' solo puede tener un punto inicial, segundo punto en la inicializacion ${i + 1}`
+            );
             break;
         }
 
@@ -377,57 +376,49 @@ const validateInits = (inits, instances, areas) => {
             }
         }
         if (!isValidOrigin) {
-            result.error = true;
-            result.errorType = "Invalid origin";
-            result.errorContext = `Initial coordinates for '${identifier}' doesn't belongs to their areas at initialization ${i + 1}`;
+            r.setError(
+                `Invalida inicializacion`,
+                `Coordenadas iniciales para la instancia '${identifier}' no pertenen a su area en la inicializacion ${i + 1}`
+            );
             break;
         }
 
         validInstances[instanceIndex].initial_position = origin;
-
     }
-    if (result.error) return result;
+    if (r.error) return r;
 
     for (const instance of validInstances) {
         if (!instance.initial_position.x) {
-            result.error = true;
-            result.errorType = "Initial position";
-            result.errorContext = `No asigned a initial position for '${instance.identifier}'`;
+            r.setError(
+                `Invalida inicializacion`,
+                `No se asigno un punto inicial para la instancia '${instance.identifier}'`
+            );
             break;
         }
     }
 
-    return result;
+    return r;
 }
 
 const validateExpression = (exp, varIds) => {
-    let r = new ValidationError();
+    const r = new ValidationError();
     if (!exp.type) return r;
 
     const type = exp.type;
 
     if ( type === "BINARY_OPERATION" ) {
         const resultLeft = validateExpression(exp.lhs, varIds);
-        if (resultLeft.error) {
-            r = resultLeft;
-            return r;
-        }
+        if (resultLeft.error) return resultLeft;
 
         const resultRight = validateExpression(exp.rhs, varIds);
-        if (resultRight.error) {
-            r = resultRight;
-            return r;
-        }
+        if (resultRight.error) return resultRight;
 
         return r;
     }
 
     if ( type === "UNARY_OPERATION" ) {
         const resultRight = validateExpression(exp.rhs, varIds);
-        if (resultRight.error) {
-            r = resultRight;
-            return r;
-        }
+        if (resultRight.error) return resultRight;
 
         return r;
     }
@@ -435,10 +426,9 @@ const validateExpression = (exp, varIds) => {
     if ( type === "VARIABLE" ) {
         if (!identifierExist(exp.identifier, varIds)) {
             r.setError(
-                "Invalid variable",
-                `Variable '${exp.identifier}' has never been declared`
-            )
-            return r;
+                "Invalida variable",
+                `Variable '${exp.identifier}' no fue declarada`
+            );
         }
 
         return r;
@@ -457,8 +447,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         const identifier = statement.identifier;
         if (!identifierExist(identifier, varIds)) {
             r.setError(
-                "Invalid assignation",
-                `Variable ${identifier} has never been declared`
+                "Invalida asignacion",
+                `Variable '${identifier}' no fue declarada`
             )
             return r;
         }
@@ -467,9 +457,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         if (resultExp.error) {
             r.setError(
                 resultExp.type,
-                `${resultExp.context} at statement assignation`,
+                `${resultExp.context}, en la asignacion de la variable ${identifier}`,
             )
-            return r;
         }
         return r;
     }
@@ -479,9 +468,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         if (resultBody.error) {
             r.setError(
                 resultBody.type,
-                `${resultBody.context} at block code`,
+                resultBody.context,
             )
-            return r;
         }
         return r;
     }
@@ -492,7 +480,7 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         if (resultCond.error) {
             r.setError(
                 resultCond.type,
-                `${resultCond.context} at condition declaration`,
+                `${resultCond.context}, en declaracion de condicion`,
             )
             return r;
         }
@@ -501,7 +489,7 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         if (resultBody.error) {
             r.setError(
                 resultBody.type,
-                `${resultBody.context} at statement declaration`,
+                resultBody.context,
             )
             return r;
         }
@@ -511,9 +499,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
             if (resultElse.error) {
                 r.setError(
                     resultElse.type,
-                    `${resultElse.context} at else declaration`,
+                    `${resultElse.context}, en la declaracion del sino`,
                 )
-                return r;
             }
         }
 
@@ -532,10 +519,9 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         }
         if (resultExp.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultExp.context} at parameter declaration of inform`
+                `Invalida declaracion de parametro`,
+                `${resultExp.context}, en la declaracion del parametro para el Informar`
             )
-            return r;
         }
 
         return r;
@@ -547,8 +533,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         let resultExp = validateExpression(x, varIds);
         if (resultExp.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultExp.context} at x coordinate declaration of pos`
+                `Invalida declaracion de parametro`,
+                `${resultExp.context}, en la coordenada x del Pos`
             )
             return r;
         }
@@ -556,47 +542,46 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         resultExp = validateExpression(y, varIds);
         if (resultExp.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultExp.context} at y coordinate declaration of pos`
+                `Invalida declaracion de parametro`,
+                `${resultExp.context}, en la coordenada y del Pos`
             )
-            return r;
         }
 
         return r;
     }
 
     if ( type === "MESSAGE" ) {
-        const { val, who } = statement;
+        const { val, who, mode } = statement;
 
         const resultExp = validateExpression(val, varIds);
         if (resultExp.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultExp.context} at value declaration in message statement`
+                `Invalida declaracion de parametro`,
+                `${resultExp.context}, en el parametro de valor del ${mode === "SEND"? "Enviar" : "Recibir"}Mensaje`
             )
             return r;
         }
+
         instancesIds.push("*");
         const resultWho = identifierExist(who, instancesIds);
         if (!resultWho) {
             r.setError(
-                `Invalid parameter declaration`,
-                `Instance '${who}' has never been declared and used in message emitter/reciver`
+                `Invalida declaracion de parametro`,
+                `Instancia '${who}' no fue declarada y se usa en el parametro de instancia del Mensaje`
             )
-            return r;
         }
 
         return r;
     }
 
     if ( type === "CONTROL_CORNER" ) {
-        const { x, y } = statement;
+        const { x, y, mode } = statement;
 
         let resultExp = validateExpression(x, varIds);
         if (resultExp.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultExp.context} at x coordinate declaration of control corner`
+                `Invalida declaracion de parametro`,
+                `${resultExp.context}, en la coordenada x del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina`
             )
             return r;
         }
@@ -604,10 +589,9 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         resultExp = validateExpression(y, varIds);
         if (resultExp.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultExp.context} at y coordinate declaration of control corner`
+                `Invalida declaracion de parametro`,
+                `${resultExp.context}, en la coordenada x del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina`
             )
-            return r;
         }
 
         return r;
@@ -621,8 +605,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         const identifierIndex = validProceduresIds.indexOf(identifier);
         if (identifierIndex === -1) {
             r.setError(
-                `Invalid procedure call`,
-                `Procedure '${identifier}' has never been declared`
+                `Invalido llamado de proceso`,
+                `El proceso '${identifier}' no fue declarado`
             )
             return r;
         }
@@ -632,15 +616,15 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
 
         if (formalParameters.length > actualParameters.length) {
             r.setError(
-                `Invalid procedure call`,
-                `Less parameters in procedure call than in procedure declaration '${identifier}'`
+                `Invalido llamado de proceso`,
+                `Menos parametros en la llamada del proceso que los correspondientes para el proceso '${identifier}'`
             )
             return r;
         }
         else if (formalParameters.length < actualParameters.length) {
             r.setError(
-                `Invalid procedure call`,
-                `More parameters in procedure call than in procedure declaration '${identifier}'`
+                `Invalido llamado de proceso`,
+                `Mas parametros en la llamada del proceso que los correspondientes para el proceso '${identifier}'`
             );
             return r;
         }
@@ -651,15 +635,15 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
             if (formalParameters[i].type_parameter = "ES") {
                 if (actualParameters[i].type !== "VARIABLE"){
                     r.setError(
-                        `Invalid procedure call`,
-                        `Parameter ${i + 1} in procedure call '${identifier}' must be a variable because the corresponding formal parameter is ES`
+                        `Invalido llamado de proceso`,
+                        `Parametro ${i + 1} en la llamada del proceso '${identifier}' debe ser una variable ya que la posicion corresponde a uno parametro ES`
                     )
                     break;
                 }
                 if (!identifierExist(actualParameters[i].identifier, varIds)) {
                     r.setError(
-                        `Invalid procedure call`,
-                        `Variable '${actualParameters[i].identifier}' has not been declared and used in procedure call '${identifier}'`
+                        `Invalido llamado de proceso`,
+                        `Variable '${actualParameters[i].identifier}' no fue declarada y se usa en el llamado del proceso '${identifier}'`
                     )
                     break;
                 }
@@ -668,8 +652,8 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
                 const resultExp = validateExpression(actualParameters[i].value, varIds);
                 if (resultExp.error) {
                     r.setError(
-                        `Invalid parameter declaration`,
-                        `${resultExp.context} at parameter declaration ${i + 1} in procedure call '${identifier}'`
+                        `Invalido llamado de proceso`,
+                        `${resultExp.context}, en la declaracion del paramtro ${i + 1} en el llamado del proceso '${identifier}'`
                     )
                     break;
                 }
@@ -710,14 +694,24 @@ const validateProcedures = (procedures, instancesIds) => {
 
     const validProcedures = getValidProcedures(procedures);
 
+    const validProceduresIds = [];
     for(let i = 0; i < procedures.length; i++) {
         const procedureId = procedures[i].identifier;
 
-        const resultPar = identifiersAreUnique(procedures[i].parameters, "parameter");
+        const indexIdExist = validProceduresIds.indexOf(procedureId)
+        if (indexIdExist !== -1) {
+            r.setError(
+                `Invalida declaracion de proceso`,
+                `Identificador '${procedureId}' se usa en la declaracion del proceso ${indexIdExist + 1} y ${i + 1}`
+            )
+            break;
+        }
+
+        const resultPar = identifiersAreUnique(procedures[i].parameters, "parametro");
         if (resultPar.error) {
             r.setError(
-                `Invalid parameter declaration`,
-                `${resultPar.errorContext} at procedure declaration '${procedureId}'`
+                `Invalida declaracion de parametro`,
+                `${resultPar.errorContext}, en la declaracion del proceso '${procedureId}'`
             )
             break;
         }
@@ -725,8 +719,8 @@ const validateProcedures = (procedures, instancesIds) => {
         const resultVar = identifiersAreUnique(procedures[i].local_variables, "variable");
         if (resultVar.error) {
             r.setError(
-                `Invalid variable declaration`,
-                `${resultVar.errorContext} at procedure declaration '${procedureId}'`
+                `Invalida declaracion de variable`,
+                `${resultVar.errorContext}, en la declaracion del proceso '${procedureId}'`
             )
             break;
         }
@@ -739,10 +733,12 @@ const validateProcedures = (procedures, instancesIds) => {
         if (resultBody.error) {
             r.setError(
                 `${resultBody.type}`,
-                `${resultBody.context}`
+                `${resultBody.context}, en la declaracion del proceso '${procedureId}'`
             )
             break;
         }
+
+        validProceduresIds.push(procedureId);
     }
 
     return r;
@@ -756,15 +752,15 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
         validProcedures = getValidProcedures(procedures);
     }
 
-    const validPobotTypeIds = [];
+    const validRobotTypeIds = [];
     for(let i = 0; i < robot_types.length; i++) {
         const robotTypeId = robot_types[i].identifier;
 
-        const indexIdExist = validPobotTypeIds.indexOf(robotTypeId)
+        const indexIdExist = validRobotTypeIds.indexOf(robotTypeId)
         if (indexIdExist !== -1) {
             r.setError(
-                `Invalid robot type declaration`,
-                `Identifier '${robotTypeId}' is in robot type declaration ${indexIdExist + 1} and ${i + 1}`
+                `Invalida declaracion de tipo de robot`,
+                `Identificador '${robotTypeId}' se usa en la declaracion de tipo de robot ${indexIdExist + 1} y ${i + 1}`
             )
             break;
         }
@@ -772,8 +768,8 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
         const resultVar = identifiersAreUnique(robot_types[i].local_variables, "variable");
         if (resultVar.error) {
             r.setError(
-                `Invalid variable declaration`,
-                `${resultVar.errorContext} at procedure declaration '${robotTypeId}'`
+                `Invalida declaracion de variable`,
+                `${resultVar.errorContext}, en la declaracion del tipo de robot '${robotTypeId}'`
             )
             break;
         }
@@ -786,12 +782,12 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
         if (resultBody.error) {
             r.setError(
                 `${resultBody.type}`,
-                `${resultBody.context}`
+                `${resultBody.context}, en la declaracion del tipo de robot '${robotTypeId}'`
             )
             break;
         }
 
-        validPobotTypeIds.push(robotTypeId);
+        validRobotTypeIds.push(robotTypeId);
     }
 
     return r;
@@ -801,31 +797,27 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
 function validateAst(inputAst) {
     const { PROCEDURES, AREAS, ROBOT_TYPES, INSTANCES, INITS } = inputAst;
 
-    let result = {
-        error : false,
-        errorType : "",
-        errorContext : "",
-    };
+    const result = new ValidationError();
 
-    result = validateAreas(AREAS);
+    result.update(validateAreas(AREAS));
 
     if (result.error) return result;
 
 
-    result = validateInstances(INSTANCES, ROBOT_TYPES);
+    result.update(validateInstances(INSTANCES, ROBOT_TYPES));
 
     if (result.error) return result;
 
-    result = validateInits(INITS, INSTANCES, AREAS);
+    result.update(validateInits(INITS, INSTANCES, AREAS));
 
     if (result.error) return result;
 
     const instancesIds = getIdentifiers(INSTANCES);
-    result = validateProcedures(PROCEDURES, instancesIds);
+    result.update(validateProcedures(PROCEDURES, instancesIds));
     
     if (result.error) return result;
 
-    result = validateRobotTypes(ROBOT_TYPES, PROCEDURES, instancesIds);
+    result.update(validateRobotTypes(ROBOT_TYPES, PROCEDURES, instancesIds));
 
     return result;
 };
@@ -833,68 +825,9 @@ function validateAst(inputAst) {
 //module.exports.validateAst = validateAst;
 export {validateAst}
 
-if (astResult.error) {
-    console.log(astResult.errors[0])
-}
-else {
-    console.log(validateAst(astResult.ast.value))
-}
-
-/*
-const areas = [
-    {
-        type: 'AreaP',
-        identifier: 'ciudad',
-        a: { x: 50, y: 50 },
-        b: { x: 21, y: 20 }
-    },
-    {
-        type: 'AreaP',
-        identifier: 'campo',
-        a: { x: 22, y: 9 },
-        b: { x: 30, y: 20 }
-    }
-]
-const instances = [
-    {
-        type: 'tipo1',
-        identifier: 'r1',
-    },
-    {
-        type: 'corredor',
-        identifier: 'R1',
-    },
-    {
-        type: 'tipo1',
-        identifier: 'r6',
-    }
-]
-const inits = {
-    assign_areas : [
-        {
-            type: "ciudad",
-            identifier: "r1"
-        },
-        {
-            type: "ciudad",
-            identifier: "r2"
-        },
-        {
-            type: "campo",
-            identifier: "r2"
-        }
-    ],
-    initial_positions : [
-        {
-            identifier: "r1",
-            x: 1,
-            y: 1
-        },
-        {
-            identifier: "r2",
-            x: 10,
-            y: 10
-        }
-    ]
-}
-*/
+// if (astResult.error) {
+//     console.log(astResult.errors[0])
+// }
+// else {
+//     console.log(validateAst(astResult.ast.value))
+// }

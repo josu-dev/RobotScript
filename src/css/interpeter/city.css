@@ -9,7 +9,7 @@
 .city-container {
     width: 720px;
     height: 720px;
-    background-color: #eee;
+    background-color: rgb(255, 0, 255);
     border: 1px solid rgb(255, 0, 0);
 }
 

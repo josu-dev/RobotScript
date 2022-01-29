@@ -1,5 +1,8 @@
 "use strict";
-import EditorManager from "./ide/EditorManager.js";
+
+import StorageAdministrator from "./utils/StorageAdministrator.js";
+import EditorManager from "./editor/EditorManager.js";
+import InterpreterManager from "./interpreter/InterpreterManager.js"
 
 const primaryNav = document.querySelector(".primary-navigation");
 const navToggle = document.querySelector(".primary-nav-toggle");
@@ -16,6 +19,14 @@ navToggle.addEventListener("click", () => {
     }
 });
 
-const myEditor = new EditorManager(document.querySelector(".editor"));
+const myStorage = new StorageAdministrator();
 
-myEditor.init();
+const myEditor = new EditorManager({
+    container : document.querySelector(".editor"),
+    storage : myStorage
+});
+
+const myInterpreter = new InterpreterManager({
+    container : document.querySelector(".interpreter"),
+    storage : myStorage
+});

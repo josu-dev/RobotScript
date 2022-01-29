@@ -37,8 +37,8 @@ class CameraHandler {
     update(event) {
         const {layerX, layerY} = event;
 
-        console.log(layerX, layerY)
-        console.log(window.toolsStatus.cityZoom.originX,window.toolsStatus.cityZoom.originY)
+        // console.log(layerX, layerY)
+        // console.log(window.toolsStatus.cityZoom.originX,window.toolsStatus.cityZoom.originY)
 
         if (this.zoom > 0.5 && event.deltaY < 0 || this.zoom < 4 && event.deltaY > 0 ) {
             event.deltaY > 0 ? this.zoom += this.change : this.zoom -= this.change;

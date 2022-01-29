@@ -9,7 +9,7 @@ const WhiteSpace = createToken({ name: "WhiteSpace", pattern: /\s+/, group: Lexe
 const LineComment = createToken({ name: "WhiteSpace", pattern: /\/\/.*/, group: Lexer.SKIPPED });
 const MultiLineComment = createToken({ name: "WhiteSpace", pattern: /\/\*[\s\S]*?\*\//, group: Lexer.SKIPPED });
 
-const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-Z]\w*/ });
+const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-ZñÑ](\w|ñ|Ñ)*/ });
 
 const Natural = createToken({ name: "Natural", pattern: /0|[1-9]\d*/ });
 const Integer = createToken({ name: "Integer", pattern: /0|[1-9]\d*/ });

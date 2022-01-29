@@ -1,6 +1,4 @@
 "use strict";
-// const { toAst, testProgram } = require("./ast-generator.js");
-// import { toAst, testProgram } from "./ast-generator.js"
 
 // Error class
 class ValidationError {
@@ -822,7 +820,6 @@ function validateAst(inputAst) {
     return result;
 };
 
-//module.exports.validateAst = validateAst;
 export {validateAst}
 
 // if (astResult.error) {

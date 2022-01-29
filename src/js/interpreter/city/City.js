@@ -5,6 +5,7 @@ class City {
         this.ctx = this.canvas.getContext("2d");
         this.map = null;
         this.zoom = new CameraHandler(this.element, this);
+        
     }
 
     startCityLoop() {
@@ -35,7 +36,6 @@ class City {
                 object.sprite.draw(this.ctx, cameraObject);
             });
 
-
             if (!this.map.isPaused) {
                 requestAnimationFrame(() => {
                     step();
@@ -45,34 +45,36 @@ class City {
         step();
     }
 
-    bindActionInput() {
-        new KeyPressListener("Escape", () => {
-            this.map.startPause([
-                { type: "pause" }
-            ])
-        })
-    }
-
     startMap(mapConfig) {
         this.map = new CityMap(mapConfig);
         this.map.city = this;
         this.map.mountObjects();
     }
 
-    init() {
+    init(config) {
 
-        this.hud = new Hud(this);
-        //this.hud.init(document.querySelector(".city-container"));
-
-        this.startMap(window.CityMaps.default)
+        // this.hud = new Hud(this);
+        // this.hud.init(document.querySelector(".city-container"));
+            console.log(config);
+        config.forEach(c => {
+            console.log(c);
+            window.CityMaps.default.cityObjects[c.identifier] = new Robot(c);
+        })
+        this.startMap(window.CityMaps.default);
 
         //Create controls
-        this.bindActionInput();
+        // this.bindActionInput();
 
         this.directionInput = new DirectionInput();
         this.directionInput.init();
 
         this.startCityLoop();
+    }
 
+    
+    pause() {
+        this.map.isPaused = true;
     }
 }
+
+export { City };

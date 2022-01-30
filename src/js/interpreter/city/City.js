@@ -1,4 +1,3 @@
-
 class City {
     constructor(config) {
         this.element = config.element;
@@ -59,13 +58,19 @@ class City {
                 index -= 8;
             }
 
+            const strBody = JSON.stringify(type.body);
+            const newBody = JSON.parse(strBody);
+            
+            const strProcedures = JSON.stringify(ast.PROCEDURES);
+            const newProcedures = JSON.parse(strProcedures);
             return {
                 identifier : id,
                 areas : areas,
                 x : x,
                 y : y,
                 variables : type.variables,
-                statements : type.body,
+                statements : newBody,
+                procedures : newProcedures,
                 inventory : {
                     flower : 0,
                     paper : 0
@@ -145,7 +150,7 @@ class City {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
             //Establish camera
-            const cameraObject = this.map.robots.camera;
+            const cameraObject = this.map.robots.r1;
 
             //Update all objects
             Object.values(this.map.robots).forEach(robot => {

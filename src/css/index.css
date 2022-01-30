@@ -160,7 +160,7 @@ body {
 }
 
 .tool--button {
-    width: 3rem;
+    min-width: 3rem;
     height: 100%;
     display: flex;
     align-items: center;
@@ -173,6 +173,25 @@ body {
 
 .tool--button span {
     display: none;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    padding-inline: 1rem;
+}
+
+@media (min-width:720px) {
+    .tool--button {
+        max-width: 100%;
+        height: 100%;
+    }
+
+    .tool--button img{
+        display: none;
+    }
+
+    .tool--button span {
+        display: block;
+    }
 }
 
 .window {

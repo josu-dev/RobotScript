@@ -86,9 +86,11 @@
                 <div class="cursor-state">
                     <p class="cursor-position">Ln 1, Col 1</p>
                 </div>
-                <div class="console console-compiler flex">
-                    <p class="console-name" data-estate="default">Editor: </p>
-                    <p class="console-logs"></p>
+                <div class="container-console">
+                    <div class="console console-compiler flex">
+                        <p class="console-name" data-estate="default">Editor: </p>
+                        <p class="console-logs"></p>
+                    </div>
                 </div>
             </section>
         </article>
@@ -124,9 +126,11 @@
             </section>
 
             <section class="state-bar">
-                <div class="console console-interpreter flex">
-                    <p class="console-name" data-estate="default">Interpretador: </p>
-                    <p class="console-logs"></p>
+                <div class="container-console">
+                    <div class="console console-interpreter flex">
+                        <p class="console-name" data-estate="default">Interpretador: </p>
+                        <p class="console-logs"></p>
+                    </div>
                 </div>
             </section>
         </article>
@@ -137,7 +141,6 @@
     <script src="./src/js/index.js" type="module"></script>
     <script src="./src/js/utils/StorageAdministrator.js" type="module"></script>
     <script src="./src/js/utils/Manager.js" type="module"></script>
-    <script src="./src/js/interpreter/createInstances.js" type="module"></script>
 
     <!-- Library Ace - Chevrotain, Editor -->
     <script src="./src/lib/ace/js/ace.js"></script>
@@ -151,17 +154,10 @@
 
     <!-- Interpreter -->
     <script src="./src/js/interpreter/city/utils.js"> </script>
-    <script src="./src/js/utils/toolsStatus.js"> </script>
-    <script src="./src/js/interpreter/city/DirectionInput.js"> </script>
-    <script src="./src/js/interpreter/city/ZoomHandler.js"> </script>
+    <script src="./src/js/interpreter/city/CameraHandler.js"> </script>
     <script src="./src/js/interpreter/city/City.js" type="module"> </script>
     <script src="./src/js/interpreter/city/CityObject.js"> </script>
-    <script src="./src/js/interpreter/city/Sprite.js"> </script>
     <script src="./src/js/interpreter/city/CityMap.js"> </script>
-    <script src="./src/js/interpreter/city/CityEvent.js"> </script>
-    <script src="./src/js/interpreter/city/ProgramState.js"> </script>
-    <script src="./src/js/interpreter/city/TextMessage.js"> </script>
-    <script src="./src/js/interpreter/city/KeyPressListener.js"> </script>
     <script src="./src/js/interpreter/InterpreterManager.js" type="module"> </script>
 </body>
 </html>

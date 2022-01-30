@@ -1,33 +1,118 @@
 class CityMap {
     constructor(config) {
+        this.city = config.city;
 
-        this.cityObjects = config.cityObjects;
-        this.cityObjects.camera = new Robot({
+        this.storage = this.city.storage;
+        this.robots = config.robots || {};
+        this.robots.camera = new Robot({
+            city : this.city,
+            map : this,
             src: "./src/assets/city/object/camera/camera-32x8-invisible.png",
-            isUserControlled: true,
-            //moveSpeed: 1,
-            x: utils.withGrid(1),
-            y: utils.withGrid(1),
+            isMountable: false,
+            x: 1,
+            y: 1,
+            identifier: "Free Cam",
         });
+
         this.walls = config.walls || {};
 
-        this.image = new Image();
-        this.image.src = config.src;
+        this.isPaused = false;
 
         this.imageBg = new Image();
-        this.imageBg.src = "./src/assets/city/map/background-grass-1920x1920.png"
+        this.imageBg.src = "./src/assets/city/map/background-grass-1920x1920.png";
 
-        this.isPaused = false;
+        this.image = new Image();
+        this.image.src = config.src || "./src/assets/city/map/city-default.png";
+
+        this.imageAreas = new Image();
+
+        this.areas = config.areas || [];
+
+        this.blockedCorners = {};
+
+
+        this.items = {
+            flower : {},
+            paper : {}
+        };
+
+        this.action = {
+            take : (type, x, y) => {
+                const isItem = this.items[type][`${x},${y}`];
+                if (!isItem) return false;
+
+                this.items[type][`${x},${y}`].cuantity -= 1;
+
+                if (this.items[type][`${x},${y}`].cuantity === 0) {
+                    delete this.items[type][`${x},${y}`];
+                }
+
+                return true;
+            },
+            add : (type, x, y) => {
+                const isItem = this.items[type][`${x},${y}`];
+                if (!isItem) {
+                    this.items[type][`${x},${y}`] = new CityItem({
+                        type : type,
+                        x : (x/16),
+                        y : (y/16),
+                        cuantity : 1,
+                        city : this.city
+                    });
+                    return;
+                }
+
+                this.items[type][`${x},${y}`].cuantity += 1;
+            },
+            block : (x, y) => {
+                const xFixed = utils.withGrid(x);
+                const yFixed = utils.withGrid(y);
+
+                const coord = `${xFixed},${yFixed}`;
+                if ( this.blockedCorners[coord] ) return false;
+
+                this.blockedCorners[coord] = true;
+                return true;
+            },
+            unblock : (x, y) => {
+                const xFixed = utils.withGrid(x);
+                const yFixed = utils.withGrid(y);
+
+                const coord = `${xFixed},${yFixed}`;
+                if ( !this.blockedCorners[coord] ) return false;
+
+                delete this.blockedCorners[coord];
+                return true;
+            }
+        }
+        this.state = {
+            item : (type, x, y) => {
+                const isItem = this.items[type][`${x},${y}`];
+                if (!isItem) return false;
+                return true;
+            },
+        }
+
+        this.logs = [];
+
+        this.addLog = (type, message, id) => {
+            const log = {
+                type : type,
+                text : `${message}`,
+                id : id
+            }
+            this.logs.push(log);
+        }
     }
 
-    draw(ctx, cameraObject) {
-        const pattern = ctx.createPattern(this.imageBg, "repeat");
-        ctx.fillStyle = pattern;
-        ctx.fillRect(0,0,1920,1920)
+    draw(ctx, cameraObject, dimension) {
+        const bgPattern = ctx.createPattern(this.imageBg, "repeat");
+        ctx.fillStyle = bgPattern;
+        ctx.fillRect(0,0,dimension.width,dimension.height)
         ctx.drawImage(
             this.image,
-            utils.withGrid(22.5) - cameraObject.x,
-            -1588  + (utils.withGrid(22.5) + cameraObject.y),
+            this.storage.interpreter.zoom.origin.x + utils.withGrid(22.5) - cameraObject.x,
+            this.storage.interpreter.zoom.origin.y - 1588  + (utils.withGrid(22.5) + cameraObject.y),
         );
     }
 
@@ -37,22 +122,12 @@ class CityMap {
     }
 
     mountObjects() {
-        Object.keys(this.cityObjects).forEach(key => {
-            let object = this.cityObjects[key];
-            object.id = key
+        Object.keys(this.robots).forEach(key => {
+            let object = this.robots[key];
+            if (!object.isMountable) return;
             
             object.mount(this);
         })
-    }
-
-    async startPause(events) {
-        for (let i=0; i<events.length; i++) {
-            const eventHandler = new CityEvent({
-                event: events[i],
-                map: this,
-            });
-            await eventHandler.init();
-        }
     }
 
     addWall(x, y) {
@@ -66,57 +141,44 @@ class CityMap {
         const {x, y} = utils.nextPosition(oldX, oldY, direction);
         this.addWall(x, y);
     }
-}
 
+    setAreas(config) {
+        this.areas = config.areas;
+    }
+    setRobots(config) {
+        config.forEach(c => {
+            this.robots[c.identifier] = new Robot({
+                ...c,
+                city : this.city,
+                map : this,
+            });
+            console.log(c.statements)
+        });
+    }
+    setItems(config) {
+        const { flowers, papers } = config;
 
-window.CityMaps = {
-    default : {
-        src: "./src/assets/city/map/city-default.png",
-        cityObjects : {},
-        // cityObjects: {
-        //     default: new Robot({
-        //         //isUserControlled : true,
-        //         x: utils.withGrid(1),
-        //         y: utils.withGrid(1),
-        //     }),
-        //     r1: new Robot({
-        //         x: utils.withGrid(5),
-        //         y: utils.withGrid(5),
-        //         src: "./src/assets/city/object/robot/Robot-Animation-Red.png",
-        //         behaviorLoop: [
-        //             { type: "rotate", direction: "right" , time: 800 },
-        //             { type: "rotate", direction: "down" , time: 400 },
-        //             { type: "rotate", direction: "left" , time: 1200 },
-        //             { type: "rotate", direction: "up" , time: 2000 },
-        //         ]
-        //     }),
-        //     r2: new Robot({
-        //         x: utils.withGrid(1),
-        //         y: utils.withGrid(10),
-        //         src: "./src/assets/city/object/robot/Robot-Animation-Blue.png",
-        //         behaviorLoop: [
-        //             { type: "move", direction: "up" },
-        //             { type: "rotate", direction: "left", time: 800 },
-        //             { type: "move", direction: "right" },
-        //             { type: "move", direction: "down" },
-        //             { type: "rotate", direction: "right", time: 800  },
-        //             { type: "move", direction: "left" },
-        //         ]
-        //     }),
-        //     flower: new CityItem({
-        //         x: utils.withGrid(4),
-        //         y: utils.withGrid(10),
-        //         type: "flower"
-        //     }),
-        //     paper: new CityItem({
-        //         x: utils.withGrid(20),
-        //         y: utils.withGrid(20),
-        //         type: "paper"
-        //     }),
-        //     unknow: new CityItem({
-        //         x: utils.withGrid(0),
-        //         y: utils.withGrid(20),
-        //     })
-        // },
+        flowers.forEach( f => {
+            const x = utils.withGrid(f.x);
+            const y = utils.withGrid(f.x);
+            this.items.flower[`${x},${y}`] = new CityItem({
+                type : "flower",
+                x : f.x,
+                y : f.y,
+                cuantity : f.cuantity,
+                city : this.city
+            });
+        });
+        papers.forEach( p => {
+            const x = utils.withGrid(p.x);
+            const y = utils.withGrid(p.x);
+            this.items.paper[`${x},${y}`] = new CityItem({
+                type : "paper",
+                x : p.x,
+                y : p.y,
+                cuantity : p.cuantity,
+                city : this.city
+            });
+        });
     }
 }

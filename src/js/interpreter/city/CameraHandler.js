@@ -1,4 +1,3 @@
-
 class CameraHandler {
     constructor(element, city) {
         this.element = element;
@@ -11,11 +10,8 @@ class CameraHandler {
         this.canvas = this.element.querySelector(".city-canvas");
         this.diferential = 0;
         this.city = city;
+        this.storage = this.city.storage;
         
-        this.canvasOrigin = {
-            x : 0,
-            y : 0,
-        }
 
         this.onMouseUp = (event) => {
             this.isMouseDown = false;
@@ -24,35 +20,27 @@ class CameraHandler {
         }
     
         this.onMouseMove = ({ movementX, movementY }) => {
-            if (this.isMouseDown) {
-                
-                this.city.map.cityObjects.camera.x -= (movementX/this.zoom)*1.2;
-                this.city.map.cityObjects.camera.y  += (movementY/this.zoom)*1.2;
-                //window.toolsStatus.cityZoom.originX += movementX/ this.zoom;
-                //window.toolsStatus.cityZoom.originY += movementY/ this.zoom;
+            if (this.isMouseDown) { 
+                this.city.map.robots.camera.x -= (movementX/this.zoom)*1.2;
+                this.city.map.robots.camera.y += (movementY/this.zoom)*1.2;
             }
         }
     }
 
     update(event) {
-        const {layerX, layerY} = event;
-
-        // console.log(layerX, layerY)
-        // console.log(window.toolsStatus.cityZoom.originX,window.toolsStatus.cityZoom.originY)
-
         if (this.zoom > 0.5 && event.deltaY < 0 || this.zoom < 4 && event.deltaY > 0 ) {
             event.deltaY > 0 ? this.zoom += this.change : this.zoom -= this.change;
             const newSize = this.width / this.zoom;
             this.diferential = -(newSize - this.width)/2
-            window.toolsStatus.cityZoom.scale = this.zoom;
+            this.storage.interpreter.zoom.scale = this.zoom;
 
             this.element.style.width = `${newSize}px`;
             this.element.style.height = `${newSize}px`;
             this.element.style.transform = `translate(${this.diferential}px,${this.diferential}px) scale(${this.zoom})`;
 
 
-            window.toolsStatus.cityZoom.originX = -this.diferential;
-            window.toolsStatus.cityZoom.originY = -this.diferential;
+            this.storage.interpreter.zoom.origin.x = -this.diferential;
+            this.storage.interpreter.zoom.origin.y = -this.diferential;
         }
     }
 
@@ -62,4 +50,3 @@ class CameraHandler {
         this.element.addEventListener("mouseup", this.onMouseUp);
     }
 }
-

@@ -30,24 +30,33 @@ robots
     flores : numero
     aux : numero
   comenzar
-    flores:= 0
-    repetir (9) {
-      juntarFlores()
-      mover
-    }
-    juntarFlores()
-    si (PosAv = 1) {
-      EnviarMensaje(flores,r2)
-      RecibirMensaje(aux,r2)
-    }
-    sino {
-      RecibirMensaje(aux,r1)
-      EnviarMensaje(flores,r1)
-    }
-    si (flores>aux) {
-      flores:= flores - aux
-      Informar(flores)
-    }
+    //simples
+    tomarPapel
+    tomarPapel
+    mover
+    depositarPapel
+    mover
+    depositarPapel
+    derecha
+    tomarFlor
+    tomarPapel
+    depositarFlor
+    depositarPapel
+
+    //complejos
+    Pos(1,4)
+    Informar(45)
+    Random(aux,5,8)
+    EnviarMensaje(aux,r1)
+    RecibirMensaje(aux,r1)
+    LiberarEsquina(1,7)
+    BloquearEsquina(1,7)
+    si (aux)
+        Informar("hola")
+    repetir (aux)
+        Informar("hola")
+    mientras (aux)
+        Informar("hola")
   fin
 variables
   r1: juntador
@@ -206,8 +215,10 @@ class EditorManager extends Manager {
                 const parsedCode = toAst(this.programCode);
 
                 if (parsedCode.error) {
-                    const errorLog = parsedCode.errors[0].toString();
+                    let errorLog = "";
+                    parsedCode.errors.forEach( e => errorLog = errorLog.concat(e));
                     this.consoleLog("error", errorLog);
+                    this.storage.loadProgram({});
                     return;
                 }
 
@@ -217,10 +228,11 @@ class EditorManager extends Manager {
                 if (validation.error) {
                     const errorLog = validation.context;
                     this.consoleLog("error", errorLog);
+                    this.storage.loadProgramAst({});
                     return;
                 }
 
-                this.storage.loadProgramAst(ast);
+                this.storage.loadProgram(ast);
                 this.consoleLog("valid", "Compilado con exito, listo para ejecucion");
             });
         }

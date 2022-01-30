@@ -549,9 +549,9 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
     }
 
     if ( type === "MESSAGE" ) {
-        const { val, who, mode } = statement;
+        const { value, who, mode } = statement;
 
-        const resultExp = validateExpression(val, varIds);
+        const resultExp = validateExpression(value, varIds);
         if (resultExp.error) {
             r.setError(
                 `Invalida declaracion de parametro`,

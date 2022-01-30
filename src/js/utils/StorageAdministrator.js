@@ -1,4 +1,4 @@
-class StorageItem {
+class LocalItem {
     constructor(key = "", defaultValue = "") {
         if (!localStorage.getItem(key)) {
             localStorage.setItem(key, defaultValue);
@@ -22,15 +22,28 @@ class StorageAdministrator {
 
         Object.keys(localStorage).forEach(key => {
             this.keys.push(key);
-            this.items.push(new StorageItem(key, ""))
+            this.items.push(new LocalItem(key, ""))
         })
 
-        this.programAst = {};
+        this.program = {
+            new : false,
+            ast : {}
+        }
+
+        this.interpreter = {
+            zoom : {
+                scale : 1,
+                origin : {
+                    x : 0,
+                    y : 0
+                }
+            }
+        }
     }
   
     addItem (key = "", defaultValue = "") {
         this.keys.push(key);
-        const newItem = new StorageItem(key, defaultValue);
+        const newItem = new LocalItem(key, defaultValue);
         this.items.push(newItem);
     }
 
@@ -60,11 +73,13 @@ class StorageAdministrator {
         localStorage.clear();
     }
 
-    loadProgramAst ( newProgramAst = {} ) {
-        this.programAst = newProgramAst;
+    loadProgram ( newProgram = {} ) {
+        this.program.new = true;
+        this.program.ast = newProgram;
     }
-    getProgramAst () {
-        return this.programAst;
+
+    getProgram () {
+        return this.program;
     }
 }
 

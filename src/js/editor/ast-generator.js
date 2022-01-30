@@ -14,7 +14,7 @@ const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-ZñÑ](\w|�
 const Natural = createToken({ name: "Natural", pattern: /0|[1-9]\d*/ });
 const Integer = createToken({ name: "Integer", pattern: /0|[1-9]\d*/ });
 const Boolean = createToken({ name: "Boolean", pattern: /verdad|falso/, longer_alt: Identifier });
-const String =createToken({ name: "String", pattern: /"(?:[^\\"]|\\(?:[bfnrtv"\\/]|u[0-9a-fA-F]{4}))*"/ });
+const String = createToken({ name: "String", pattern: /["](.+)?["]|['](.+)?[']/ });
 
 const Else = createToken({ name: "Else", pattern: /sino/, longer_alt: Identifier });
 const If = createToken({ name: "If", pattern: /si/, longer_alt: Identifier });
@@ -634,7 +634,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         }
         
         return {
-            category: "STATEMENT_CONTROL",
+            // category: "STATEMENT_CONTROL",
             type: "IF",
             condition: condition,
             body: bodyIf,
@@ -647,7 +647,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         const body = this.visit(ctx.statement);
         
         return {
-            category: "STATEMENT_CONTROL",
+            // category: "STATEMENT_CONTROL",
             type: "FOR",
             condition: condition,
             body: body
@@ -659,7 +659,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         const body = this.visit(ctx.statement);
 
         return {
-            category: "STATEMENT_CONTROL",
+            // category: "STATEMENT_CONTROL",
             type: "WHILE",
             condition: condition,
             body: body
@@ -755,7 +755,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         if (ctx.String) {
             arg1 = {
                 type : "STRING_LITERAL",
-                val : ctx.String[0].image
+                value : ctx.String[0].image.replaceAll('"', "")
             }
             if (ctx.expression) {
                 arg2 = this.visit(ctx.expression)
@@ -786,7 +786,7 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
         return {
             type : "MESSAGE",
             mode : mode,
-            val : val,
+            value : val,
             who : who
         }
     }

@@ -1,6 +1,5 @@
 import Manager from "../utils/Manager.js";
 import { City } from "./city/City.js";
-import {createRobots} from "./createInstances.js";
 
 class InterpreterManager extends Manager {
     constructor(config) {
@@ -18,23 +17,20 @@ class InterpreterManager extends Manager {
         }
 
         this.city = new City({
-            element : this.window.querySelector(".city-container")
+            element : this.window.querySelector(".city-container"),
+            storage : this.storage
         })
 
-        this.programAst = {};
-
-        this.initCity = (config) => {
-            this.city.init(config);
-        }
+        this.program = {};
 
         this.initToolBar = () => {
             this.toolBar.run.addEventListener("click", () => {
-                this.programAst = this.storage.getProgramAst();
+                this.program = this.storage.getProgram();
     
-                if (this.programAst.type) {
+                if (this.program.ast.type) {
                     this.consoleLog("valid", "Ejecutando programa");
-                    const programConfig = createRobots(this.programAst.value);
-                    this.initCity(programConfig);
+                    this.city.setUpProgram(this.program.ast.value);
+                    this.city.init();
                 }
                 else {
                     this.consoleLog("error", "No se compilo ningun programa para ejecutar")
@@ -45,6 +41,7 @@ class InterpreterManager extends Manager {
             });
 
             this.toolBar.reset.addEventListener("click", () => {
+
             });
 
             this.toolBar.city.addEventListener("click", () => {

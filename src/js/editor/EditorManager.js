@@ -9,10 +9,10 @@ procesos
   proceso juntarFlor (ES flor: numero; ES noFlor: numero)
   comenzar
     si (HayFlorEnLaEsquina)
-      mientras (HayFlorEnLaEsquina) {
+      mientras (HayFlorEnLaEsquina) comenzar
       	tomarFlor
         flor:= flor + 1
-      }
+      fin
     sino
       noFlor:= noFlor +1
   fin
@@ -26,21 +26,21 @@ robots
     av: numero
   comenzar
     av:= 1
-    repetir (3) {
+    repetir (3) comenzar
       flor:= 0
       noFlor:= 0
       Pos(av,1)
       juntarFlor(flor, noFlor)
-      repetir (99){
+      repetir (99) comenzar
         mover
         juntarFlor(flor, noFlor)
-      }
+      fin
       repetir (flor)
         depositarFlor
       Informar(flor)
       Informar(noFlor)
       av:= av + 2
-    }
+    fin
   fin
 variables 
   robot1: tipo1
@@ -200,17 +200,21 @@ class EditorManager extends Manager {
             });
 
             this.toolBar.compile.addEventListener("click", () => {
-                const parsedCode = toAst(this.programCode);
+                const astResult = toAst(this.programCode);
 
-                if (parsedCode.error) {
+                if (astResult.error) {
                     let errorLog = "";
-                    parsedCode.errors.forEach( e => errorLog = errorLog.concat(e));
+                    if (astResult.error === "lexer") {
+                        astResult.errors.forEach( e => errorLog = errorLog.concat(e.message));
+                    } else {
+                        astResult.errors.forEach( e => errorLog = errorLog.concat(e.message));
+                    }
                     this.consoleLog("error", errorLog);
                     this.storage.loadProgram(null);
                     return;
                 }
 
-                const ast = parsedCode.ast;
+                const ast = astResult.ast;
                 const validation = validateAst(ast.value);
 
                 if (validation.error) {

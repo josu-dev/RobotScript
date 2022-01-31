@@ -2,6 +2,7 @@
 const createToken = chevrotain.createToken;
 const Lexer = chevrotain.Lexer;
 const CstParser = chevrotain.CstParser;
+const defaultParserErrorProvider = chevrotain.defaultParserErrorProvider;
 // const { CstParser, Lexer, createToken } = require("../../lib/chevrotain/chevrotain.js")
 // import * as c from "../../lib/chevrotain/chevrotain.js"
 
@@ -157,8 +158,8 @@ const allTokens = [
 
     LParen,
     RParen,
-    LCurly,
-    RCurly,
+    // LCurly,
+    // RCurly,
 
     GET,
     LET,
@@ -181,15 +182,61 @@ const allTokens = [
 ];
 
 
-const lexerConfig = ({
-    positionTracking: "onlyStart"
-});
-const RSLexer = new Lexer(allTokens, lexerConfig);
+const RSLexerErrorProvider = {
+    buildUnexpectedCharactersMessage(
+        fullText,
+        startOffset,
+        length,
+        line,
+        column
+    ) { 
+        if (length === 1) return (
+            `Error de escritura, el caracter '${fullText.charAt(startOffset)}' en la Ln: ${line}, Col: ${column} no es valido en el lenguaje`
+        )
+        return (
+            `Error de escritura, la palabra '${fullText.slice(startOffset, (startOffset + length))}' en la Ln: ${line}, Col: ${column} no es valido en el lenguaje`
+        )
+    }
+}
+const lexerConfig = {
+    errorMessageProvider : RSLexerErrorProvider,
+    positionTracking : "onlyStart"
+};
+const RSLexerInstance = new Lexer(allTokens, lexerConfig);
 
 
+
+const RSParserErrorProvider = {
+    // improve mismatch type handling
+    buildMismatchTokenMessage: function (options) {
+        return (
+            `Se esperaba ${options.expected.name} en la Ln ${options.actual.startLine}, Col ${options.actual.startColumn} pero se encontro '${options.actual.image}', en la declaracion de ${options.ruleName}`
+        );
+    },
+
+    buildNotAllInputParsedMessage: function (options) {
+        return `Existe codigo extra despues de la inicializacion del programa, en Ln ${options.firstRedundant.startLine}, Col ${options.firstRedundant.startColumn}`
+    },
+
+    buildNoViableAltMessage: function (options) {
+        let posiblePaths = "";
+        console.log(options.expectedPathsPerAlt);
+        options.expectedPathsPerAlt.forEach(path => posiblePaths = posiblePaths.concat(`${path[0][0].name}\n`));
+        return (
+            `Se esperaba: ${posiblePaths}En la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].image}', en la declaracion de ${options.ruleName}`
+        );
+    },
+
+    buildEarlyExitMessage: function (options) {
+        return `Se esperaba por lo menos una declaracion de: ${options.expectedIterationPaths[0][0].name} en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn}`
+    }
+};
+const parserConfig = {
+    errorMessageProvider: RSParserErrorProvider
+}
 class RobotScriptParser extends CstParser {
     constructor() {
-        super(allTokens);
+        super(allTokens, parserConfig);
         
         const $ = this;
 
@@ -237,11 +284,11 @@ class RobotScriptParser extends CstParser {
             $.SUBRULE($.statement)
         })
         $.RULE("blockStatement", () => {
-            $.CONSUME(LCurly)
+            $.CONSUME(Begin)
             $.AT_LEAST_ONE(() => {
               $.SUBRULE($.statement)
             })
-            $.CONSUME(RCurly)
+            $.CONSUME(End)
         })
         $.RULE("assignStatement", () => {
             $.CONSUME(Identifier)
@@ -562,12 +609,11 @@ class RobotScriptParser extends CstParser {
         this.performSelfAnalysis()
     }
 }
+const RSParserInstance = new RobotScriptParser();
 
-const parserInstance = new RobotScriptParser();
 
 
-const BaseRSVisitor = parserInstance.getBaseCstVisitorConstructor();
-
+const BaseRSVisitor = RSParserInstance.getBaseCstVisitorConstructor();
 class RSToAstVisitor extends BaseRSVisitor {
     constructor(){
         super();
@@ -1167,22 +1213,31 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     };
 };
-
 const toAstVisitorInstance = new RSToAstVisitor();
+
 
 
 function toAst(inputText) {
     // Lexing
-    const lexResult = RSLexer.tokenize(inputText);
-    parserInstance.input = lexResult.tokens;
+    const lexResult = RSLexerInstance.tokenize(inputText);
 
-    // Parsing
-    const cst = parserInstance.program();
-    if (parserInstance.errors.length > 0) {
+    if (lexResult.errors.length > 0) {
         return {
             ast : null,
-            error : true,
-            errors : parserInstance.errors
+            error : "lexer",
+            errors : lexResult.errors
+        };
+    };
+
+    // Parsing
+    RSParserInstance.input = lexResult.tokens;
+    
+    const cst = RSParserInstance.program();
+    if (RSParserInstance.errors.length > 0) {
+        return {
+            ast : null,
+            error : "parser",
+            errors : RSParserInstance.errors
         };
     };
 
@@ -1190,124 +1245,10 @@ function toAst(inputText) {
     const ast = toAstVisitorInstance.visit(cst);
     return {
         ast : ast,
-        error : false,
+        error : null,
         errors : null
     };
 };
 
 export {toAst};
 
-const program = `programa Prueba3
-procesos
-  proceso juntarFlorPapel(ES papel: numero; ES flor: numero)
-  variables
-    florE: numero
-    papelE: numero
-  comenzar  
-    florE:= 0
-    mientras (HayFlorEnLaEsquina){
-      tomarFlor
-      florE:= florE + 1
-    }
-    repetir (florE)
-      depositarFlor
-    si (papel > 1)
-        florE:= florE + 1
-    Informar("hola",florE)
-    Pos(1,5)
-    EnviarMensaje (papelE, robot4)
-    RecibirMensaje (papel, robot1)
-    BloquearEsquina(1+3, florE)
-    LiberarEsquina(flor, flor)
-  fin
-proceso izq()
-comenzar
-  derecha
-  derecha
-  derecha
-fin
-  proceso escalon(E tamano: numero; ES cantE: numero)
-  variables
-    papel: numero
-    flor: numero
-  comenzar
-    papel:= 0
-    flor:= 0
-    repetir (2){
-      repetir (tamano){
-        juntarFlorPapel(papel, flor)
-        mover
-      }
-      juntarFlorPapel(papel, flor)
-      derecha
-    }
-    repetir (2)
-      derecha
-    flor:= papel + 1
-    // under 2 line: si ((papel - flor) = 1)
-    papel:= papel - flor
-  fin
-areas
-  ciudad : AreaC(2,2,50,50)
-  campo : AreaP(1,1,1,1)
-robots 
-robot tipo1
-variables
-  tamano: numero
-  cantE: numero
-comenzar
-  tamano:= 1
-  cantE:= 0
-  repetir (4){
-    escalon(tamano, cantE)
-    tamano:= tamano + 1
-  }
-fin
-  robot tipo2
-  variables
-    tamano: numero
-    cantE: numero
-  comenzar
-    tamano:= 1
-    cantE:= 0
-    repetir (4){
-      escalon(tamano, cantE)
-      tamano:= tamano + 1
-    }
-  fin
-  robot tipo3
-  variables
-    tamano: numero
-    cantE: numero
-  comenzar
-    tamano:= 1
-    cantE:= 0
-    repetir (4){
-      escalon(tamano, cantE)
-      tamano:= tamano + 1
-    }
-  fin
-  robot tipo
-  variables
-    tamano: numero
-    cantE: numero
-  comenzar
-    tamano:= 1
-    cantE:= 0
-    repetir (4){
-      escalon(tamano, cantE)
-      tamano:= tamano + 1
-    }
-  fin
-variables 
-  robot1: tipo1
-  robot4: tipo1
-  robot3: tipo1
-comenzar 
-  AsignarArea(robot1,campo)
-  AsignarArea(robot4,ciudad)
-  AsignarArea(robot3,ciudad)
-  Iniciar(robot1, 1, 1)
-fin`;
-
-export {program as testProgram};

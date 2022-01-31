@@ -184,10 +184,10 @@ const allTokens = [
 const lexerConfig = ({
     positionTracking: "onlyStart"
 });
-const RInfoLexer = new Lexer(allTokens, lexerConfig);
+const RSLexer = new Lexer(allTokens, lexerConfig);
 
 
-class RInfoParser extends CstParser {
+class RobotScriptParser extends CstParser {
     constructor() {
         super(allTokens);
         
@@ -563,12 +563,12 @@ class RInfoParser extends CstParser {
     }
 }
 
-const parserInstance = new RInfoParser();
+const parserInstance = new RobotScriptParser();
 
 
-const BaseRInfoVisitor = parserInstance.getBaseCstVisitorConstructor();
+const BaseRSVisitor = parserInstance.getBaseCstVisitorConstructor();
 
-class RInfoToAstVisitor extends BaseRInfoVisitor {
+class RSToAstVisitor extends BaseRSVisitor {
     constructor(){
         super();
         this.validateVisitor();
@@ -1168,12 +1168,12 @@ class RInfoToAstVisitor extends BaseRInfoVisitor {
     };
 };
 
-const toAstVisitorInstance = new RInfoToAstVisitor();
+const toAstVisitorInstance = new RSToAstVisitor();
 
 
 function toAst(inputText) {
     // Lexing
-    const lexResult = RInfoLexer.tokenize(inputText);
+    const lexResult = RSLexer.tokenize(inputText);
     parserInstance.input = lexResult.tokens;
 
     // Parsing
@@ -1311,14 +1311,3 @@ comenzar
 fin`;
 
 export {program as testProgram};
-
-/*
-const lexResult = RInfoLexer.tokenize(program);
-parserInstance.input = lexResult.tokens;
-console.log(lexResult.tokens);
-const cst = parserInstance.program();
-console.log(JSON.stringify(cst, null, "   "));
-console.log(JSON.stringify(parserInstance.errors, null, "   "));
-const ast = toAstVisitorInstance.visit(cst);
-console.log(JSON.stringify(ast, null, "   "))
-*/

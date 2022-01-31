@@ -5,9 +5,9 @@
 # RobotScript
 
 
-Decidi comenzar este proyecto para intentar conseguir la meta planteada en https://github.com/J-Josu/R-Info-Web
+Despues de lograr un editor de codigo para R-Info ,puede ser usado en: https://github.com/J-Josu/R-Info-Web, me plantee como meta lograr una version que corra completamente en el navegador y esto es lo que logre hasta el momento
 
-Actualmente ya se puede probar el progreso en https://j-josu.github.io/RobotScript/
+En https://j-josu.github.io/RobotScript/ se puede usar el proyecto
 
 <br>
 
@@ -18,11 +18,36 @@ Actualmente ya se puede probar el progreso en https://j-josu.github.io/RobotScri
 
 <br>
 
-### Updates del progreso:
+### Capacidades:
 
-- Se cambio el nombre para el proyecto
-- Se creo la primera version de la interfaz de la pagina
+- Editar codigo comodamente
+- Compilacion con validaciones
+- Interpretacion
+- Multiples instancias
+- Apto movil
+- Otras cosas mas
+
+### Cosas por hacer
+
+- Enbellecer errores de parseo
+- Hacer ajuste de tamaño de fuente en editor
+- En movil que se seleccione el editor o interpretador para evitar el scrolling de pagina
+- Validar en interpretacion:
+    - Tipos de datos
+    - Posicionamientos
+    - Colisiones
+
+- Implementar:
+    - Comunicar errores de ejecucion
+    - Hud de estado de instancias
+    - Crear de las areas para visualizarlas sobre la ciudad
+    - Creacion de los trazados de las instancias
+    - Colocacion de flores y papeles por el usuario
+    - Seleccion de camara, libre o seguir una instancia
+    - Sistema de control estable para el tiempo entre actualizaciones de la ciudad
+
+- Alguna otra cosa que me este olvidando
 
 <br>
 
-Agradecimiento a los compañeros que hacen el aguante
+Si te queres comunicar me encontras en discord: Josu#0987

@@ -27,9 +27,8 @@ class InterpreterManager extends Manager {
             this.toolBar.run.addEventListener("click", () => {
                 this.program = this.storage.getProgram();
     
-                if (this.program.ast.type) {
+                if (this.program) {
                     this.consoleLog("valid", "Ejecutando programa");
-                    this.city.setUpProgram(this.program.ast.value);
                     this.city.init();
                 }
                 else {
@@ -38,10 +37,13 @@ class InterpreterManager extends Manager {
             });
 
             this.toolBar.pause.addEventListener("click", () => {
+                this.city.pause();
+                this.consoleLog("default", "Ejecucion pausada");
             });
 
             this.toolBar.reset.addEventListener("click", () => {
-
+                this.city.resetCity();
+                this.consoleLog("default", "Ciudad reseteada, es necesario ejecutar para manipular la vista");
             });
 
             this.toolBar.city.addEventListener("click", () => {

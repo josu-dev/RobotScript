@@ -196,7 +196,8 @@ body {
 
 .window {
     position: relative;
-    height: calc(100% - 6rem);
+    width: 100%;
+    height: calc(100% - 7rem);
 }
 
 
@@ -317,4 +318,25 @@ body {
         font-size: 1.25rem;
         font-weight: 500;
     }
+}
+
+
+/*-------------*/
+/* Interpreter */
+/*-------------*/
+
+.city-camera {
+    overflow: hidden;
+    background: url("../assets/city/map/background-grass-1920x1920.png") repeat;
+}
+
+.city-container {
+    width: 100%;
+    height: 100%;
+}
+
+.city-container canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
 }

@@ -16,8 +16,6 @@ class CityMap {
 
         this.walls = config.walls || {};
 
-        this.isPaused = false;
-
         this.imageBg = new Image();
         this.imageBg.src = "./src/assets/city/map/background-grass-1920x1920.png";
 
@@ -105,14 +103,11 @@ class CityMap {
         }
     }
 
-    draw(ctx, cameraObject, dimension) {
-        const bgPattern = ctx.createPattern(this.imageBg, "repeat");
-        ctx.fillStyle = bgPattern;
-        ctx.fillRect(0,0,dimension.width,dimension.height)
+    draw(ctx, cameraObject) {
         ctx.drawImage(
             this.image,
-            this.storage.interpreter.zoom.origin.x + utils.withGrid(22.5) - cameraObject.x,
-            this.storage.interpreter.zoom.origin.y - 1588  + (utils.withGrid(22.5) + cameraObject.y),
+            this.storage.camera.origin.x + (this.storage.camera.width / 2) - cameraObject.x,
+            this.storage.camera.origin.y - 1588  + (this.storage.camera.height / 2) + cameraObject.y,
         );
     }
 
@@ -143,6 +138,7 @@ class CityMap {
     }
 
     setAreas(config) {
+        //crear la imagen de las areas para printear en el mapa
         this.areas = config.areas;
     }
     setRobots(config) {
@@ -152,7 +148,6 @@ class CityMap {
                 city : this.city,
                 map : this,
             });
-            console.log(c.statements)
         });
     }
     setItems(config) {

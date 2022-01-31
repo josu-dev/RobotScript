@@ -4,69 +4,51 @@ import Manager from "../utils/Manager.js";
 import { toAst } from "./ast-generator.js";
 import { validateAst } from "./ast-validator.js";
 
-const DEFAULT_EDITOR_CODE =  `programa test
+const DEFAULT_EDITOR_CODE =  `programa Ejemplo
 procesos
-  proceso juntarFlores()
-  variables
-    flores: numero
+  proceso juntarFlor (ES flor: numero; ES noFlor: numero)
   comenzar
-    mientras (HayFlorEnLaEsquina) {
-      tomarFlor
-      flores:= flores +1
-    }
-  fin
-  proceso juntarPapeles(ES papeles: numero)
-  comenzar
-    mientras (HayPapelEnLaEsquina) {
-      tomarPapel
-      papeles:= papeles +1
-    }
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina) {
+      	tomarFlor
+        flor:= flor + 1
+      }
+    sino
+      noFlor:= noFlor +1
   fin
 areas
-  ciudad: AreaC(1,1,100,100)
-robots
-  robot juntador
+  ciudad : AreaC(1,1,5,5)
+robots 
+  robot tipo1
   variables
-    flores : numero
-    aux : numero
+    flor: numero
+    noFlor: numero
+    av: numero
   comenzar
-    //simples
-    tomarPapel
-    tomarPapel
-    mover
-    depositarPapel
-    mover
-    depositarPapel
-    derecha
-    tomarFlor
-    tomarPapel
-    depositarFlor
-    depositarPapel
-
-    //complejos
-    Pos(1,4)
-    Informar(45)
-    Random(aux,5,8)
-    EnviarMensaje(aux,r1)
-    RecibirMensaje(aux,r1)
-    LiberarEsquina(1,7)
-    BloquearEsquina(1,7)
-    si (aux)
-        Informar("hola")
-    repetir (aux)
-        Informar("hola")
-    mientras (aux)
-        Informar("hola")
+    av:= 1
+    repetir (3) {
+      flor:= 0
+      noFlor:= 0
+      Pos(av,1)
+      juntarFlor(flor, noFlor)
+      repetir (99){
+        mover
+        juntarFlor(flor, noFlor)
+      }
+      repetir (flor)
+        depositarFlor
+      Informar(flor)
+      Informar(noFlor)
+      av:= av + 2
+    }
   fin
-variables
-  r1: juntador
-  r2: juntador
-comenzar
-  AsignarArea(r1,ciudad)
-  AsignarArea(r2,ciudad)
-  Iniciar(r1, 1,1)
-  Iniciar(r2, 2,11)
-fin`;
+variables 
+  robot1: tipo1
+comenzar 
+  AsignarArea(robot1,ciudad)
+  Iniciar(robot1, 1, 1)
+fin
+`;
 
 class EditorManager extends Manager {
     constructor(config) {
@@ -182,17 +164,23 @@ class EditorManager extends Manager {
                     document.body.appendChild(element);
                 
                     element.click();
+                    this.consoleLog("default", "Programa descargado con exito");
                 
                     document.body.removeChild(element);
                 };
                 const textToDownload = this.aceEditor?.getValue()
                 const i = textToDownload?.indexOf('programa');
             
-                if (!textToDownload || i === -1) return
+                if (!textToDownload || i === -1) return;
             
                 let j = textToDownload.indexOf('\n',i);
                 if ( j == -1 ) j = textToDownload.length;
                 const fileName = textToDownload.substring(i,j).replace('programa','').trimStart();
+                if (fileName === "") {
+                    this.consoleLog("error", "Se necesita nombre del programa");
+                    return;
+                }
+                
                 downloadFileToUser( `${fileName}.rs`, textToDownload )
             });
 
@@ -218,7 +206,7 @@ class EditorManager extends Manager {
                     let errorLog = "";
                     parsedCode.errors.forEach( e => errorLog = errorLog.concat(e));
                     this.consoleLog("error", errorLog);
-                    this.storage.loadProgram({});
+                    this.storage.loadProgram(null);
                     return;
                 }
 
@@ -228,11 +216,11 @@ class EditorManager extends Manager {
                 if (validation.error) {
                     const errorLog = validation.context;
                     this.consoleLog("error", errorLog);
-                    this.storage.loadProgramAst({});
+                    this.storage.loadProgram(null);
                     return;
                 }
 
-                this.storage.loadProgram(ast);
+                this.storage.loadProgram(ast.value);
                 this.consoleLog("valid", "Compilado con exito, listo para ejecucion");
             });
         }

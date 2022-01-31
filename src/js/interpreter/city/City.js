@@ -2,14 +2,18 @@ class City {
     constructor(config) {
         this.element = config.element;
         this.storage = config.storage;
+        this.storage.camera.width = this.element.clientWidth;
+        this.storage.camera.height = this.element.clientHeight;
         this.canvas = this.element.querySelector(".city-canvas");
         this.ctx = this.canvas.getContext("2d");
         this.map = new CityMap({city : this});
-        this.zoom = new CameraHandler(this.element, this);
+        this.view = new CameraHandler(this);
         this.isPaused = false;
+        this.isRunning = false;
+        this.program = null;
     }
 
-    setUpProgram(ast) {
+    setUpProgram() {
         const extractConfig = (ast, index) => {
             const instance = ast.INSTANCES[index];
             const id = instance.identifier;
@@ -79,6 +83,8 @@ class City {
             }
         }
 
+        const ast = this.storage.getProgram();
+
         const quantity = ast.INSTANCES.length;
         const robotsConfig = [];
         for (let i=0; i< quantity; i++) {
@@ -137,32 +143,34 @@ class City {
         this.map.mountObjects();
     }
 
-    setUpMap(config) {
-        this.map.setItems(config);
+    resetCity() {
+        this.isRunning = false;
+        this.isPaused = false;
+        requestAnimationFrame(() => {});
+        this.map = new CityMap({city : this});
+    }
+    
+    pause() {
+        this.isPaused = true;
     }
 
-
     startProgram() {
-        let nTimes = 10;
         const step = () => {
+            if (!this.isRunning) return;
 
             //Clear off the canvas
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
             //Establish camera
-            const cameraObject = this.map.robots.r1;
+            const cameraObject = this.map.robots.camera;
 
-            //Update all objects
-            Object.values(this.map.robots).forEach(robot => {
-                robot.update({
-                    map: this.map,
-                });
-            })
+            if (this.isPaused) this.map.robots.camera.update();
+            else Object.values(this.map.robots).forEach(robot => robot.update())
 
             //Drawing
             //  Map
-            this.map.draw(this.ctx, cameraObject, {width: this.canvas.width, height : this.canvas.height});
-            //  Map things
+            this.map.draw(this.ctx, cameraObject);
+            //  Items
             Object.values(this.map.items).forEach(type => {
                 Object.values(type).forEach(item => {
                     item.sprite.draw(this.ctx, cameraObject);
@@ -173,45 +181,29 @@ class City {
                 robot.sprite.draw(this.ctx, cameraObject);
             });
 
-            // if (nTimes > 0) {
-            //     nTimes--;
-            //     requestAnimationFrame(() => {
-            //         step();
-            //     });
-            // };
-            if (!this.map.isPaused) {
-                requestAnimationFrame(() => {
-                    step();
-                });
-            };
+            requestAnimationFrame(() => {
+                step();
+            });
         }
         step();
     }
 
-    
-    resetCity() {
-
-    }
-    
-    pause() {
-        this.isPaused = true;
-    }
-
-    reset() {
-        this.isPaused = false;
-
-    }
-
-    init(config) {
-        const program = this.storage.getProgram();
-
-        if (program.new) {
+    init() {
+        if (!this.isRunning) {
+            this.program = this.storage.getProgram();
+            this.setUpProgram();
+            this.isRunning = true;
             this.startProgram();
         }
-        else if (this.isPaused) {
-            this.startProgram();
+        else {
+            if (!this.isPaused) {
+                console.log("Ciudad esta corriendo, no esta en pausa, no se maneja este caso");
+            }
+            else {
+                this.isPaused = false;
+                this.startProgram();
+            }
         }
-
     }
 }
 

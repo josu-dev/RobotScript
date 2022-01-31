@@ -27,17 +27,17 @@ class StorageAdministrator {
 
         this.program = {
             new : false,
-            ast : {}
+            ast : null
         }
 
-        this.interpreter = {
-            zoom : {
-                scale : 1,
-                origin : {
-                    x : 0,
-                    y : 0
-                }
-            }
+        this.camera = {
+            scale : 1,
+            origin : {
+                x : 0,
+                y : 0
+            },
+            width : 0,
+            height : 0
         }
     }
   
@@ -73,13 +73,19 @@ class StorageAdministrator {
         localStorage.clear();
     }
 
-    loadProgram ( newProgram = {} ) {
-        this.program.new = true;
-        this.program.ast = newProgram;
+    loadProgram ( newProgram ) {
+        if (!newProgram) {
+            this.program.new = false;
+            this.program.ast = null;
+        }
+        else {
+            this.program.new = true;
+            this.program.ast = newProgram;
+        }
     }
 
     getProgram () {
-        return this.program;
+        return this.program.ast;
     }
 }
 

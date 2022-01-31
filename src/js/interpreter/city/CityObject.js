@@ -30,8 +30,8 @@ class Sprite {
         }
     }
     draw(ctx, cameraObject) {
-        const x = -16 + this.storage.interpreter.zoom.origin.x + this.cityObject.x + utils.withGrid(22.5) - cameraObject.x;
-        const y = 16 + this.storage.interpreter.zoom.origin.y - this.cityObject.y + utils.withGrid(44.75) - (utils.withGrid(22.5) - cameraObject.y);
+        const x = -16 + this.storage.camera.origin.x + this.cityObject.x + (this.storage.camera.width / 2) - cameraObject.x;
+        const y = 12 + this.storage.camera.origin.y - this.cityObject.y + (this.storage.camera.height / 2) + cameraObject.y;
 
         const [frameX, frameY] = this.frame;
 
@@ -439,7 +439,6 @@ class Robot extends CityObject {
             // console.log(rX.value, rY.value);
             //validar si esta en sus areas
 
-            console.log(rX, rY);
             const x = utils.withGrid(rX.value);
             const y = utils.withGrid(rY.value);
 

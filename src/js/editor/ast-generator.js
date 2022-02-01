@@ -1036,7 +1036,7 @@ class RSToAstVisitor extends BaseRSVisitor {
                 body.push(statement);
             })
         }
-
+        
         return {
             identifier: identifier,
             parameters: parameters,

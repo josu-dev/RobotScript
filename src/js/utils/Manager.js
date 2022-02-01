@@ -15,7 +15,15 @@ class Manager {
         }
     }
 
-    consoleLog(estate = "", message = "") {
+    consoleAdd(estate = "", message = []) {
+        if (estate === "") estate = "default";
+        this.stateBar.name.setAttribute("data-estate", estate);
+        let text = "";
+        message.forEach(m => text = `${text}${m}\n`)
+        text = `${text}${this.stateBar.logs.innerText}`
+        this.stateBar.logs.innerText = text;
+    }
+    consoleSet(estate = "", message = "") {
         if (estate === "") estate = "default";
         
         this.stateBar.name.setAttribute("data-estate", estate);

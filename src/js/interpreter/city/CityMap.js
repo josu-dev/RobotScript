@@ -94,11 +94,12 @@ class CityMap {
         this.logs = [];
 
         this.addLog = (type, message, id) => {
-            const log = {
-                type : type,
-                text : `${message}`,
-                id : id
-            }
+            // const log = {
+            //     type : type,
+            //     text : `${message}`,
+            //     id : id
+            // }
+            const log =  `${id}: ${type}: ${message}`;
             this.logs.push(log);
         }
     }

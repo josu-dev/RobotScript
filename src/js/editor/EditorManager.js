@@ -218,7 +218,7 @@ class EditorManager extends Manager {
                     document.body.appendChild(element);
                 
                     element.click();
-                    this.consoleLog("default", "Programa descargado con exito");
+                    this.consoleSet("default", "Programa descargado con exito");
                 
                     document.body.removeChild(element);
                 };
@@ -231,7 +231,7 @@ class EditorManager extends Manager {
                 if ( j == -1 ) j = textToDownload.length;
                 const fileName = textToDownload.substring(i,j).replace('programa','').trimStart();
                 if (fileName === "") {
-                    this.consoleLog("error", "Se necesita nombre del programa");
+                    this.consoleSet("error", "Se necesita nombre del programa");
                     return;
                 }
                 
@@ -242,14 +242,14 @@ class EditorManager extends Manager {
                 if ( this.aceEditor && navigator.clipboard ) {
                     const textToCopy = this.aceEditor.getValue();
                     navigator.clipboard.writeText( textToCopy );
-                    this.consoleLog("default", "Codigo copiado al portapapeles");
+                    this.consoleSet("default", "Codigo copiado al portapapeles");
                 }
             });
 
             this.toolBar.clear.addEventListener("click", () => {
                 if ( this.aceEditor ) {
                     this.aceEditor.setValue("");
-                    this.consoleLog("default", "Codigo borrado");
+                    this.consoleSet("default", "Codigo borrado");
                 };
             });
 
@@ -263,7 +263,7 @@ class EditorManager extends Manager {
                     } else {
                         astResult.errors.forEach( e => errorLog += `${e.message}\n`);
                     }
-                    this.consoleLog("error", errorLog);
+                    this.consoleSet("error", errorLog);
                     this.storage.loadProgram(null);
                     return;
                 }
@@ -273,13 +273,13 @@ class EditorManager extends Manager {
 
                 if (validation.error) {
                     const errorLog = validation.context;
-                    this.consoleLog("error", errorLog);
+                    this.consoleSet("error", errorLog);
                     this.storage.loadProgram(null);
                     return;
                 }
 
                 this.storage.loadProgram(ast.value);
-                this.consoleLog("valid", "Compilado con exito, listo para ejecucion");
+                this.consoleSet("valid", "Compilado con exito, listo para ejecucion");
             });
         }
 

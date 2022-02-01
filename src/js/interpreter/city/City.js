@@ -11,6 +11,7 @@ class City {
         this.isPaused = false;
         this.isRunning = false;
         this.program = null;
+        this.console = config.console;
     }
 
     setUpProgram() {
@@ -165,7 +166,13 @@ class City {
             const cameraObject = this.map.robots.camera;
 
             if (this.isPaused) this.map.robots.camera.update();
-            else Object.values(this.map.robots).forEach(robot => robot.update())
+            else {
+                Object.values(this.map.robots).forEach(robot => robot.update())
+                if (this.map.logs.length > 0) {
+                    this.console.add("", this.map.logs);
+                    this.map.logs = [];
+                }
+            }
 
             //Drawing
             //  Map

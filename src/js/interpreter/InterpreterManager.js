@@ -18,7 +18,11 @@ class InterpreterManager extends Manager {
 
         this.city = new City({
             element : this.window.querySelector(".city-container"),
-            storage : this.storage
+            storage : this.storage,
+            console : {
+                add : (s, m) => this.consoleAdd(s, m),
+                set : (s, m) => this.consoleSet(s, m)
+            }
         })
 
         this.program = {};
@@ -28,22 +32,22 @@ class InterpreterManager extends Manager {
                 this.program = this.storage.getProgram();
     
                 if (this.program) {
-                    this.consoleLog("valid", "Ejecutando programa");
+                    this.consoleSet("valid", "Ejecutando programa");
                     this.city.init();
                 }
                 else {
-                    this.consoleLog("error", "No se compilo ningun programa para ejecutar")
+                    this.consoleSet("error", "No se compilo ningun programa para ejecutar")
                 }
             });
 
             this.toolBar.pause.addEventListener("click", () => {
                 this.city.pause();
-                this.consoleLog("default", "Ejecucion pausada");
+                this.consoleSet("default", "Ejecucion pausada");
             });
 
             this.toolBar.reset.addEventListener("click", () => {
                 this.city.resetCity();
-                this.consoleLog("default", "Ciudad reseteada, es necesario ejecutar para manipular la vista");
+                this.consoleSet("default", "Ciudad reseteada, es necesario ejecutar para manipular la vista");
             });
 
             this.toolBar.city.addEventListener("click", () => {

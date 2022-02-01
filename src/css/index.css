@@ -169,6 +169,7 @@ body {
 
 .tool--button:hover {
     background: var(--clr-bg-800);
+    cursor: pointer;
 }
 
 .tool--button span {

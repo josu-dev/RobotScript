@@ -60,7 +60,7 @@ const getIdentifiers = ( baseArray ) => {
 }
 const getValidProcedures = ( baseProcedures ) => {
     let procedures = [];
-
+    
     if ( baseProcedures && (baseProcedures.length > 0)) {
         baseProcedures.forEach( e => {
             const identifier = e.identifier;
@@ -630,7 +630,7 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         if (formalParameters.length === 0) return r;
 
         for (let i = 0; i < formalParameters.length; i++) {
-            if (formalParameters[i].type_parameter = "ES") {
+            if (formalParameters[i].type_parameter === "ES") {
                 if (actualParameters[i].type !== "VARIABLE"){
                     r.setError(
                         `Invalido llamado de proceso`,
@@ -647,7 +647,7 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
                 }
             }
             else {
-                const resultExp = validateExpression(actualParameters[i].value, varIds);
+                const resultExp = validateExpression(actualParameters[i], varIds);
                 if (resultExp.error) {
                     r.setError(
                         `Invalido llamado de proceso`,

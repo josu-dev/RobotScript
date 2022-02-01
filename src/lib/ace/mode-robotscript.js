@@ -71,7 +71,7 @@ var RobotScriptHighlightRules = function() {
                 ]
             }, {
                 token : "constant.numeric", // float
-                regex : "[+-]?\\d+\\b"
+                regex : "\\d+\\b"
             }, {
                 token : keywordMapper,
                 regex : "[a-zA-Z_][a-zA-Z0-9_]*"

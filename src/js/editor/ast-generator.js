@@ -220,7 +220,6 @@ const RSParserErrorProvider = {
 
     buildNoViableAltMessage: function (options) {
         let posiblePaths = "";
-        console.log(options.expectedPathsPerAlt);
         options.expectedPathsPerAlt.forEach(path => posiblePaths = posiblePaths.concat(`${path[0][0].name}\n`));
         return (
             `Se esperaba: ${posiblePaths}En la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].image}', en la declaracion de ${options.ruleName}`

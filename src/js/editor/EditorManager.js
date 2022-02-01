@@ -49,6 +49,46 @@ comenzar
   Iniciar(robot1, 1, 1)
 fin
 `;
+const CUSTOM_COMPLETES = [
+    { word : "programa", meta : "define nombre del programa",},
+    { word : "procesos", meta : "seccion",},
+    { word : "areas", meta : "seccion",},
+    { word : "robots", meta : "seccion",},
+    { word : "proceso", meta : "declaracion proceso",},
+    { word : "robot", meta : "declaracion robot",},
+    { word : "variables", meta : "seccion",},
+    { word : "comenzar", meta : "inicio bloque de codigo",},
+    { word : "fin", meta : "final bloque de codigo",},
+    { word : "si", meta : "sentencia control",},
+    { word : "sino", meta : "sentencia control",},
+    { word : "mientras", meta : "sentencia control",},
+    { word : "repetir", meta : "sentencia control",},
+    { word : "HayFlorEnLaEsquina", meta : "consulta estado",},
+    { word : "HayPapelEnLaEsquina", meta : "consulta estado",},
+    { word : "HayFlorEnLaBolsa", meta : "consulta estado",},
+    { word : "HayPapelEnLaBolsa", meta : "consulta estado",},
+    { word : "PosCa", meta : "consulta estado",},
+    { word : "PosAv", meta : "consulta estado",},
+    { word : "boolean", meta : "tipo de variable",},
+    { word : "numero", meta : "tipo de variable",},
+    { word : "AreaC", meta : "tipo de area",},
+    { word : "AreaP", meta : "tipo de area",},
+    { word : "AreaPC", meta : "tipo de area",},
+    { word : "Pos", meta : "accion",},
+    { word : "mover", meta : "accion",},
+    { word : "tomarFlor", meta : "accion",},
+    { word : "tomarPapel", meta : "accion",},
+    { word : "depositarFlor", meta : "accion",},
+    { word : "depositarPapel", meta : "accion",},
+    { word : "Informar", meta : "accion",},
+    { word : "Random", meta : "asignacion",},
+    { word : "AsignarArea", meta : "asignacion",},
+    { word : "Iniciar", meta : "asignacion",},
+    { word : "EnviarMensaje", meta : "comunicacion",},
+    { word : "RecibirMensaje", meta : "comunicacion",},
+    { word : "BloquearEsquina", meta : "comunicacion",},
+    { word : "LiberarEsquina", meta : "comunicacion",},
+]
 
 class EditorManager extends Manager {
     constructor(config) {
@@ -102,6 +142,20 @@ class EditorManager extends Manager {
                 enableBasicAutocompletion : true,
                 enableLiveAutocompletion : true,
             });
+            //Set custom autocomplete
+            const RSWordCompleter = {
+                getCompletions: function(editor, session, pos, prefix, callback) {
+                    callback(null, CUSTOM_COMPLETES.map(function(c) {
+                        if (!c.word.match(new RegExp(prefix, "i"))) return {};
+                        return {
+                            caption: c.word,
+                            value: c.value? c.value : c.word,
+                            meta: c.meta
+                        };
+                    }));
+                }
+            }
+            this.aceEditor.completers = [RSWordCompleter];
     
             //Set initial text
             if (this.programCode === "") {
@@ -205,9 +259,9 @@ class EditorManager extends Manager {
                 if (astResult.error) {
                     let errorLog = "";
                     if (astResult.error === "lexer") {
-                        astResult.errors.forEach( e => errorLog = errorLog.concat(e.message));
+                        astResult.errors.forEach( e => errorLog += `${e.message}\n`);
                     } else {
-                        astResult.errors.forEach( e => errorLog = errorLog.concat(e.message));
+                        astResult.errors.forEach( e => errorLog += `${e.message}\n`);
                     }
                     this.consoleLog("error", errorLog);
                     this.storage.loadProgram(null);

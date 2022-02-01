@@ -1,7 +1,7 @@
 class Manager {
     constructor(config) {
         this.container = config.container;
-        this.type = config.type;
+        this.defaultName = config.defaultName;
         this.storage = config.storage;
 
         this.toolBar = {}
@@ -10,24 +10,27 @@ class Manager {
 
         this.stateBar = {
             container : this.container.querySelector(".state-bar"),
-            name : this.container.querySelector(".console-name"),
             logs : this.container.querySelector(".console-logs")
         }
-    }
-
-    consoleAdd(estate = "", message = []) {
-        if (estate === "") estate = "default";
-        this.stateBar.name.setAttribute("data-estate", estate);
-        let text = "";
-        message.forEach(m => text = `${text}${m}\n`)
-        text = `${text}${this.stateBar.logs.innerText}`
-        this.stateBar.logs.innerText = text;
-    }
-    consoleSet(estate = "", message = "") {
-        if (estate === "") estate = "default";
-        
-        this.stateBar.name.setAttribute("data-estate", estate);
-        this.stateBar.logs.innerText = message;
+        this.console = {
+            set : (config) => {
+                const actualTime = new Date().toTimeString().slice(0,5);
+                let newLog = "";
+                config.forEach(log => newLog = `${actualTime} <span data-state="${log.state || "default"}">${log.emitter || this.defaultName}</span>: ${log.message}\n${newLog}`)
+                this.stateBar.logs.innerHTML = `<p>${newLog}</p>`;
+            },
+            add : (config) => {
+                const actualTime = new Date().toTimeString().slice(0,5);
+                const oldLog = this.stateBar.logs.innerHTML;
+                let newLog = ""
+                if (oldLog.length > 3) newLog = oldLog.slice(3, (oldLog.length - 4));
+                config.forEach(log => newLog = `${actualTime} <span data-state="${log.state || "default"}">${log.emitter || this.defaultName}</span>: ${log.message}\n${newLog}`)
+                this.stateBar.logs.innerHTML = `<p>${newLog}</p>`;
+            },
+            clear : () => {
+                this.stateBar.logs.innerHTML = "";
+            }
+        }
     }
 }
 

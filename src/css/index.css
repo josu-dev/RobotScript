@@ -198,14 +198,14 @@ body {
 .window {
     position: relative;
     width: 100%;
-    height: calc(100% - 7rem);
+    height: calc(100% - 8rem);
 }
 
 
 .state-bar {
     position: relative;
     background: var(--clr-bg-600);
-    height: 4rem;
+    height: 5rem;
 }
 
 .container-console {
@@ -218,7 +218,7 @@ body {
     background: inherit;
 }
 
-.console {
+.console-logs {
     position: absolute;
     padding-left: 1rem;
     padding-top: 1rem;
@@ -229,23 +229,33 @@ body {
     letter-spacing: 1.2px;
 }
 
-.console p{
+.console-logs p{
     margin: 0;
+    white-space: pre-wrap;
 }
 
-.console-name[data-estate="default"]{
+.console-logs span[data-state="default"]{
     color: var(--clr-pr-200);
 }
-.console-name[data-estate="error"]{
+.console-logs span[data-state="error"]{
     color: #ff3e00;
 }
-.console-name[data-estate="valid"]{
+.console-logs span[data-state="valid"]{
     color: #1fff00;
 }
-
-.console-logs {
-    width: 100%;
+.console-logs span[data-state="info"]{
+    color: #4288e4;
 }
+/* .console[data-estate="default"]{
+    color: var(--clr-pr-200);
+}
+.console[data-estate="error"]{
+    color: #ff3e00;
+}
+.console[data-estate="valid"]{
+    color: #1fff00;
+} */
+
 
 
 /*------------*/

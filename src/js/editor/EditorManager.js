@@ -88,13 +88,13 @@ const CUSTOM_COMPLETES = [
     { word : "RecibirMensaje", meta : "comunicacion",},
     { word : "BloquearEsquina", meta : "comunicacion",},
     { word : "LiberarEsquina", meta : "comunicacion",},
-]
+];
 
 class EditorManager extends Manager {
     constructor(config) {
         super({
             ...config,
-            type : "editor"
+            defaultName : "Editor"
         });
 
         this.toolBar = {
@@ -218,7 +218,9 @@ class EditorManager extends Manager {
                     document.body.appendChild(element);
                 
                     element.click();
-                    this.consoleSet("default", "Programa descargado con exito");
+                    this.console.set([
+                        {  message : "Programa descargado con exito" }
+                    ]);
                 
                     document.body.removeChild(element);
                 };
@@ -242,18 +244,40 @@ class EditorManager extends Manager {
                 if ( this.aceEditor && navigator.clipboard ) {
                     const textToCopy = this.aceEditor.getValue();
                     navigator.clipboard.writeText( textToCopy );
-                    this.consoleSet("default", "Codigo copiado al portapapeles");
+                    this.console.set([
+                        {  message : "Codigo copiado al portapapeles" }
+                    ]);
                 }
             });
 
             this.toolBar.clear.addEventListener("click", () => {
                 if ( this.aceEditor ) {
                     this.aceEditor.setValue("");
-                    this.consoleSet("default", "Codigo borrado");
+                    this.console.set([
+                        {  message : "Codigo borrado" }
+                    ]);
+                };
+            });
+
+            this.toolBar.fontSize.addEventListener("click", () => {
+                if ( this.aceEditor ) {
+                    this.console.add([{
+                        state : "info",
+                        emitter : "Sin implementar",
+                        message : "No esta añadida la funcionalidad de cambiar el tamaño de fuente"
+                    }])
                 };
             });
 
             this.toolBar.compile.addEventListener("click", () => {
+                if (this.programCode.length === 0) {
+                    this.console.set([
+                        { state : "error", message : "No hay programa el cual compilar" }
+                    ]);
+                    this.storage.loadProgram(null);
+                    return;
+                }
+
                 const astResult = toAst(this.programCode);
 
                 if (astResult.error) {
@@ -263,7 +287,9 @@ class EditorManager extends Manager {
                     } else {
                         astResult.errors.forEach( e => errorLog += `${e.message}\n`);
                     }
-                    this.consoleSet("error", errorLog);
+                    this.console.set([
+                        { emitter : "Compilador", state : "error", message : errorLog }
+                    ]);
                     this.storage.loadProgram(null);
                     return;
                 }
@@ -273,14 +299,19 @@ class EditorManager extends Manager {
 
                 if (validation.error) {
                     const errorLog = validation.context;
-                    this.consoleSet("error", errorLog);
+                    this.console.set([
+                        { emitter : "Compilador", state : "error", message : errorLog }
+                    ]);
                     this.storage.loadProgram(null);
                     return;
                 }
 
                 this.storage.loadProgram(ast.value);
-                this.consoleSet("valid", "Compilado con exito, listo para ejecucion");
+                this.console.set([
+                    { state : "valid", message : "Compilado con exito, listo para ejecucion" }
+                ]);
             });
+
         }
 
         this.initAce();

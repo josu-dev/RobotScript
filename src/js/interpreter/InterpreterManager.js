@@ -5,7 +5,7 @@ class InterpreterManager extends Manager {
     constructor(config) {
         super({
             ...config,
-            type : "interpreter"
+            defaultName : "Interpreter"
         });
 
         this.toolBar = {
@@ -19,10 +19,7 @@ class InterpreterManager extends Manager {
         this.city = new City({
             element : this.window.querySelector(".city-container"),
             storage : this.storage,
-            console : {
-                add : (s, m) => this.consoleAdd(s, m),
-                set : (s, m) => this.consoleSet(s, m)
-            }
+            console : this.console
         })
 
         this.program = {};
@@ -32,35 +29,42 @@ class InterpreterManager extends Manager {
                 this.program = this.storage.getProgram();
     
                 if (this.program) {
-                    this.consoleSet("valid", "Ejecutando programa");
                     this.city.init();
                 }
                 else {
-                    this.consoleSet("error", "No se compilo ningun programa para ejecutar")
+                    this.console.set([{ state : "error", message : "No se compilo ningun programa para ejecutar" }]);
                 }
             });
 
             this.toolBar.pause.addEventListener("click", () => {
                 this.city.pause();
-                this.consoleSet("default", "Ejecucion pausada");
+                this.console.add([{ message : "Ejecucion pausada" }]);
             });
 
             this.toolBar.reset.addEventListener("click", () => {
                 this.city.resetCity();
-                this.consoleSet("default", "Ciudad reseteada, es necesario ejecutar para manipular la vista");
+                this.console.set([{ message : "Ciudad reseteada, es necesario ejecutar para manipular la vista"}]);
             });
 
             this.toolBar.city.addEventListener("click", () => {
+                this.console.add([{
+                    state : "info",
+                    emitter : "Sin implementar",
+                    message : "No esta añadida la funcionalidad de agregar flores y papeles"
+                }])
             });
 
             this.toolBar.view.addEventListener("click", () => {
+                this.console.add([{
+                    state : "info",
+                    emitter : "Sin implementar",
+                    message : "No esta añadida la funcionalidad de cambiar camaras"
+                }])
             });
         }
 
         this.initToolBar();
     }
-
-
 }
 
 export default InterpreterManager;

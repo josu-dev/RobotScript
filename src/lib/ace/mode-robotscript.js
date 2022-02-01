@@ -58,7 +58,7 @@ var RobotScriptHighlightRules = function() {
                 next : "comment"
             }, {
                 token : "string", // character
-                regex : "'(?:" + escapeRe + "|.)?'"
+                regex : `["](.+)?["]|['](.+)?[']`
             }, {
                 token : "string.start",
                 regex : '"', 

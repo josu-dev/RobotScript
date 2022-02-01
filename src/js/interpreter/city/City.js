@@ -169,7 +169,7 @@ class City {
             else {
                 Object.values(this.map.robots).forEach(robot => robot.update())
                 if (this.map.logs.length > 0) {
-                    this.console.add("", this.map.logs);
+                    this.console.add(this.map.logs);
                     this.map.logs = [];
                 }
             }
@@ -200,14 +200,15 @@ class City {
             this.program = this.storage.getProgram();
             this.setUpProgram();
             this.isRunning = true;
+            this.console.set([{ state : "valid", message : "Comenzando ejecucion" }]);
             this.startProgram();
         }
         else {
-            if (!this.isPaused) {
-                console.log("Ciudad esta corriendo, no esta en pausa, no se maneja este caso");
+            if (!this.isPaused) {this.console.set([{ state : "info", message : "El programa ya esta corriendo ( puede estar mal el mensaje )" }]);
             }
             else {
                 this.isPaused = false;
+                this.console.add([{ state : "valid", message : "Reanudando la ejecucion" }]);
                 this.startProgram();
             }
         }

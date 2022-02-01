@@ -99,7 +99,10 @@ class CityMap {
             //     text : `${message}`,
             //     id : id
             // }
-            const log =  `${id}: ${type}: ${message}`;
+            const log =  {
+                emitter : id,
+                message : message
+            };
             this.logs.push(log);
         }
     }

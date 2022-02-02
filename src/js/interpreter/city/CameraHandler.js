@@ -10,7 +10,7 @@ class CameraHandler {
         this.canvas.height = this.height;
         this.zoom = 1;
         this.change = 0.2;
-        this.element.addEventListener("wheel", e => this.update(e));
+        this.element.addEventListener("wheel", e => this.update(e), { passive: true });
         this.element.addEventListener("mousedown", e => this.startDrag(e), true);
         this.diferential = {
             x : 0,

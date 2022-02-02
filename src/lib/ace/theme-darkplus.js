@@ -60,7 +60,7 @@ define("ace/theme/darkplus",["require","exports","module","ace/lib/dom"], functi
     color: #dddddd\
     }\
     .ace-darkplus .ace_keyword.ace_others {\
-    color: #d25252\
+    color: #D35151\
     }\
     .ace-darkplus .ace_constant.ace_language {\
     color: #7fb347\
@@ -90,10 +90,10 @@ define("ace/theme/darkplus",["require","exports","module","ace/lib/dom"], functi
     color: #66d9ef\
     }\
     .ace-darkplus .ace_storage {\
-    color: #79abff\
+    color: #4892F5\
     }\
     .ace-darkplus .ace_storage.ace_type {\
-    color: #79abff\
+    color: #5EB0F5\
     }\
     .ace-darkplus .ace_invalid {\
     color: #F8F8F0;\

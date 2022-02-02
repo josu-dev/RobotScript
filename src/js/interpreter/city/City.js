@@ -52,9 +52,17 @@ class City {
             ast.AREAS.forEach(area => {
                 const idIndex = areasIds.indexOf(area.identifier);
                 if (idIndex !== -1) {
+                    const a = {
+                        x : area.a.x * 16,
+                        y : area.a.y * 16,
+                    }
+                    const b = {
+                        x : area.b.x * 16,
+                        y : area.b.y * 16,
+                    }
                     areas.push({
-                        a : area.a,
-                        b : area.b
+                        a : a,
+                        b : b
                     })
                 }
             })
@@ -165,12 +173,20 @@ class City {
             //Establish camera
             const cameraObject = this.map.robots.camera;
 
-            if (this.isPaused) this.map.robots.camera.update();
+            if (this.isPaused || this.map.activeInstances === 0) this.map.robots.camera.update();
             else {
                 Object.values(this.map.robots).forEach(robot => robot.update())
                 if (this.map.logs.length > 0) {
                     this.console.add(this.map.logs);
                     this.map.logs = [];
+                }
+                if (this.map.activeInstances === 0) {
+                    this.console.add([
+                        {
+                            state : "valid",
+                            message : "Finalizo la ejecucion del programa"
+                        }
+                    ])
                 }
             }
 

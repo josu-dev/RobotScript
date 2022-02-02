@@ -1,3 +1,5 @@
+"use strict";
+
 class Sprite {
     constructor(config) {
         //Set up image
@@ -118,6 +120,13 @@ class StmtResult {
     }
 }
 
+class Mensaje {
+    constructor(identifier = "", value = true || 1){
+        this.identifier = identifier;
+        this.value = value;
+    }
+}
+
 class Robot extends CityObject {
     constructor(config) {
         super(config);
@@ -162,27 +171,22 @@ class Robot extends CityObject {
             },
             message : (identifier, varId) => {
                 if (this.messages.length === 0) return false;
-
                 if (identifier === "*") {
-                    const newValue = this.messages[0].value;
-                    this.set.varValue(varId, newValue);
-                    this.messages.shift;
+                    const finded = this.messages.shift();
+                    this.set.varValue(varId, finded.value);
                     return true;
                 }
 
-                let finded = {};
-
                 for (let i=0; i< this.messages.length; i++) {
                     if (this.messages[i].identifier === identifier) {
-                        finded = this.messages[i];
+                        const value = this.messages[i].value;
                         this.messages.splice(i,1);
-                        break;
+                        this.set.varValue(varId, value);
+                        return true;
                     }
                 }
 
-                if (!finded.identifier) return false;
-
-                this.set.varValue(varId, finded.value);
+                return false;
             },
             procedure : (id) => {
                 let proc = {};
@@ -198,7 +202,6 @@ class Robot extends CityObject {
 
         this.set = {
             varValue : (id, newValue) => {
-                let value = null;
                 this.variables[this.varIndex].forEach(variable => {
                     if (variable.identifier === id) {
                         variable.value = newValue
@@ -213,10 +216,9 @@ class Robot extends CityObject {
                 });
             },
             message : (identifier, value) => {
-                this.otherRobots[identifier].messages.push({
-                    identifier : identifier,
-                    value : value
-                })
+                this.otherRobots[identifier].messages.push(
+                    new Mensaje(this.identifier, value)
+                )
                 // Object.values(this.otherRobots).forEach( robot => {
                 //     if (robot.identifier === identifier) {
                 //         robot.messages.push({
@@ -298,11 +300,11 @@ class Robot extends CityObject {
                     return r;
                 }
                 if (op === "=") {
-                    r.value = rLeft.value == rRight.value;
+                    r.value = rLeft.value === rRight.value;
                     return r;
                 }
                 if (op === "!=") {
-                    r.value = rLeft.value != rRight.value;
+                    r.value = rLeft.value !== rRight.value;
                     return r;
                 }
                 if (op === ">") {
@@ -325,7 +327,7 @@ class Robot extends CityObject {
 
             if ( type === "UNARY_OPERATION" ) {
                 const op = exp.operator;
-                const rRight = validateExpression(exp.rhs);
+                const rRight = resolveExpression(exp.rhs);
                 if (rRight.error) return rRight;
 
                 if (op === "-") {
@@ -353,11 +355,13 @@ class Robot extends CityObject {
         if ( type === "ACTION_METHOD" ) {
             const id = s.identifier;
             if (id === "mover") {
-                //mejorar resolucion de error
-                const success = this.updatePosition();
-                if (success) return r;
+                const movementResult = this.updatePosition();
+                if (movementResult.error) {
+                    r.setError(
+                        `${movementResult.message}, al ejecutar la instruccion mover`
+                    );
+                }
 
-                r.setError("No se pudo mover");
                 return r;
             }
 
@@ -436,14 +440,24 @@ class Robot extends CityObject {
                 );
                 return r;
             }
-            // console.log(rX.value, rY.value);
-            //validar si esta en sus areas
+            const newX = utils.withGrid(rX.value);
+            const newY = utils.withGrid(rY.value);
 
-            const x = utils.withGrid(rX.value);
-            const y = utils.withGrid(rY.value);
+            if (newX === this.x && newY === this.y) return r;
 
-            this.x = x;
-            this.y = y;
+            const isPositionValid = this.validatePositioning(newX, newY);
+
+            if (isPositionValid.error) {
+                r.setError(
+                    `${isPositionValid.message}, al ejecutar la instruccion Pos`
+                )
+                return r;
+            }
+
+            this.map.moveWall(this.x, this.y, newX, newY);
+
+            this.x = newX;
+            this.y = newY;
             return r;
         }
 
@@ -505,7 +519,6 @@ class Robot extends CityObject {
 
         if ( type === "MESSAGE" ) {
             const mode = s.mode;
-
             if (mode === "SEND") {
                 const rValue = resolveExpression(s.value);
                 if (rValue.error) {
@@ -543,6 +556,9 @@ class Robot extends CityObject {
                 return r;
             }
 
+            const x = rX.value;
+            const y = rY.value;
+
             if (mode === "BLOCK") {
                 const success = this.map.action.block(x,y);
                 r.success = success;
@@ -572,9 +588,10 @@ class Robot extends CityObject {
             };
 
             if (rCond.value === true) {
+
                 if (s.body.type === "STATEMENT_BLOCK") {
-                    const newStatements = s.body;
-                    ifControl.length = newStatements.length;
+                    const newStatements = s.body.body;
+                    ifControl.length = newStatements.length + 1;
                     addStatements(newStatements.concat(ifControl));
                 }
                 else {
@@ -599,9 +616,9 @@ class Robot extends CityObject {
             return r;
         }
         if ( type === "REMOVE_STATEMENTS" ) {
+            this.instIndex = s.index;
             const indexStart = s.index + 1;
             this.statements.splice(indexStart, s.length);
-            this.instIndex = s.index;
             return r;
         }
 
@@ -629,6 +646,7 @@ class Robot extends CityObject {
             if (s.body.type === "STATEMENT_BLOCK") {
                 const newStatements = s.body.body;
                 forControl.length = newStatements.length + 1;
+
                 addStatements(newStatements.concat(forControl));
             }
             else {
@@ -641,7 +659,6 @@ class Robot extends CityObject {
         if ( type === "JUMP_NUMBER" ) {
             s.value = s.value - 1;
             this.instIndex = s.index;
-
             if (s.value > 0) return r;
 
             const indexStart = s.index + 1;
@@ -737,7 +754,7 @@ class Robot extends CityObject {
             };
 
             configP.local_variables.forEach(variable => {
-                console.log(variable);
+                
                 const newVar = {
                     identifier : variable.identifier,
                     value : variable.type_value === "numero"? 0 : false,
@@ -786,35 +803,75 @@ class Robot extends CityObject {
     }
 
     update() {
-        if (!this.isRunning) {
-            // console.log(this.identifier, (this.x / 16), (this.y / 16))
-            return
-        };
+        if (!this.isRunning) return;
 
         const statement = this.statements[this.instIndex];
 
         const rStmt = this.resolveStatement(statement);
         
-        // setUp this.map.newError on class
-        // if (!rStmt.error) {
-        //     this.map.newError({
-        //         emitter : this.identifier,
-        //         context : rStmt.context
-        //     });
-        //     this.isRunning = false;
-        //     return;
-        // }
+        if (rStmt.error) {
+            this.map.setNewError({
+                emitter : this.identifier,
+                message : rStmt.context
+            });
+            this.isRunning = false;
+            return;
+        }
 
         if (!rStmt.success) return;
 
         this.instIndex = this.instIndex + 1;
-        if (this.instIndex === this.statements.length) this.isRunning = false;
+        if (this.instIndex === this.statements.length) {
+            this.isRunning = false;
+            this.map.activeInstances--;
+        }
+    }
+
+    validatePositioning(newX, newY) {
+        const pointInArea = ( point, a, b ) => {
+            const xInRange = (point.x >= a.x) && (point.x <= b.x);
+            const yInRange = (point.y >= a.y) && (point.y <= b.y);
+        
+            return (xInRange && yInRange);
+        }
+
+        let isAreaValid = false;
+        for (const area of this.areas) {
+            isAreaValid = pointInArea({ x: newX, y: newY}, area.a, area.b);
+            if (isAreaValid) break;
+        }
+        if (!isAreaValid) return {
+            error : true,
+            message : `El punto x ${newX / 16}, y ${newY / 16} no pertenece a ninguna de las areas designadas`
+        }
+
+        const isCornerOcuped = this.map.isSpaceTaken(newX, newY);
+        if (isCornerOcuped) return {
+            error : true,
+            message : `El punto x ${newX / 16}, y ${newY / 16} ya esta siendo ocupado`
+        }
+
+        return {
+            error : false,
+            message : ""
+        }
     }
 
     updatePosition() {
-        const [axie, value] = this.directionUpdate[this.direction];
-        this[axie] += value;
-        return true;
+        const { x, y } = utils.nextPosition(this.x, this.y, this.direction);
+
+        const newPositionValid = this.validatePositioning(x,y);
+
+        if (newPositionValid.error) return newPositionValid;
+        
+        this.map.moveWall(this.x, this.y, x, y);
+
+        this.x = x;
+        this.y = y;
+        return {
+            error : false,
+            message : ""
+        };
     }
 
     updateSprite() {

@@ -13,6 +13,7 @@ class CityMap {
             y: 1,
             identifier: "Free Cam",
         });
+        this.activeInstances = 0;
 
         this.walls = config.walls || {};
 
@@ -93,13 +94,11 @@ class CityMap {
 
         this.logs = [];
 
+        this.executionError = false;
+
         this.addLog = (type, message, id) => {
-            // const log = {
-            //     type : type,
-            //     text : `${message}`,
-            //     id : id
-            // }
             const log =  {
+                state : type,
                 emitter : id,
                 message : message
             };
@@ -115,9 +114,13 @@ class CityMap {
         );
     }
 
-    isSpaceTaken(currentX, currentY, direction) {
-        const {x, y} = utils.nextPosition(currentX, currentY, direction);
-        return this.walls[`${x},${y}`] || false;
+    // isSpaceTaken(currentX, currentY, direction) {
+    //     const {x, y} = utils.nextPosition(currentX, currentY, direction);
+    //     return this.walls[`${x},${y}`] || false;
+    // }
+
+    isSpaceTaken(newX, newY) {
+        return this.walls[`${newX},${newY}`] || false;
     }
 
     mountObjects() {
@@ -135,10 +138,9 @@ class CityMap {
     removeWall(x, y) {
         delete this.walls[`${x},${y}`];
     }
-    moveWall(oldX, oldY, direction) {
+    moveWall(oldX, oldY, newX, newY) {
         this.removeWall(oldX, oldY);
-        const {x, y} = utils.nextPosition(oldX, oldY, direction);
-        this.addWall(x, y);
+        this.addWall(newX, newY);
     }
 
     setAreas(config) {
@@ -153,6 +155,7 @@ class CityMap {
                 map : this,
             });
         });
+        this.activeInstances = config.length;
     }
     setItems(config) {
         const { flowers, papers } = config;
@@ -179,5 +182,10 @@ class CityMap {
                 city : this.city
             });
         });
+    }
+
+    setNewError({message = "", emitter = ""}) {
+        this.executionError = true;
+        this.addLog("error", message, emitter );
     }
 }

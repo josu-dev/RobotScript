@@ -69,6 +69,8 @@ const CUSTOM_COMPLETES = [
     { word : "HayPapelEnLaBolsa", meta : "consulta estado",},
     { word : "PosCa", meta : "consulta estado",},
     { word : "PosAv", meta : "consulta estado",},
+    { word : "verdad", meta : "valor de veracidad",},
+    { word : "falso", meta : "valor de falsedad",},
     { word : "boolean", meta : "tipo de variable",},
     { word : "numero", meta : "tipo de variable",},
     { word : "AreaC", meta : "tipo de area",},

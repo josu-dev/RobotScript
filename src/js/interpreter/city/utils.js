@@ -16,7 +16,7 @@ const utils = {
             case "down": y -= size; break;
             case "left": x -= size; break;
             case "right": x += size; break;
-            default : console.log("Error: no valid direction at nextPosition call");
+            default : console.log("Error: no valid direction at nextPosition call utils.js file");
         };
         return {x, y};
     },

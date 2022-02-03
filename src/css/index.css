@@ -58,11 +58,17 @@ body {
 }
 
 .container--logo p {
+    display: none;
     margin: 0 0 0 0.5rem;
     font-size: 1.5rem;
     font-family: monospace;
 }
 
+@media (min-width:720px) {
+    .container--logo p {
+        display: block;
+    }
+}
 
 .primary-nav-toggle {
     display: block;

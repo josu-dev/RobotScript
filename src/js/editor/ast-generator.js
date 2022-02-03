@@ -246,7 +246,11 @@ class RobotScriptParser extends CstParser {
             })
         });
         $.RULE("declaration_Variable", () => {
-            $.CONSUME(Identifier)
+            $.CONSUME1(Identifier)
+            $.MANY(() => {
+                $.CONSUME(Comma)
+                $.CONSUME2(Identifier)
+            })
             $.CONSUME(DDot)
             $.CONSUME(TypeValue)
         });
@@ -620,23 +624,26 @@ class RSToAstVisitor extends BaseRSVisitor {
     };
 
     section_Variables(ctx) {
-        const variables = [];
+        let variables = [];
 
         ctx.declaration_Variable.forEach( dec => {
-            const variable = this.visit(dec);
-            variables.push(variable);
+            const newVariables = this.visit(dec);
+            variables = variables.concat(newVariables);
         })
-
+        
         return variables;
     };
     declaration_Variable(ctx) {
-        const identifier = ctx.Identifier[0].image;
+        const newVariables = [];
         const type_value = ctx.TypeValue[0].image;
+        ctx.Identifier.forEach( i => {
+            newVariables.push({
+                type_value: type_value,
+                identifier: i.image
+            })
+        })
 
-        return {
-            type_value: type_value,
-            identifier: identifier
-        }
+        return newVariables;
     };
 
     // possible change to this

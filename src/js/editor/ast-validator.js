@@ -156,7 +156,7 @@ const validateAreas = (areas) => {
         if (!pointsInOrder(aBase, bBase)) {
             r.setError(
                 `Invalida declaracion de area`,
-                `Coordinates of second point in area '${nameBase}' must be greater or equal to coordinates of the first point`
+                `Coordenadas del segundo punto del area '${nameBase}' deben ser mayores o igual a las del primer punto`
             );
             break; 
         }
@@ -380,6 +380,16 @@ const validateInits = (inits, instances, areas) => {
             );
             break;
         }
+        
+        const originIndex = validInstances.findIndex( e => e.initial_position.x === origin.x && e.initial_position.y === origin.y );
+
+        if (originIndex !== -1) {
+            r.setError(
+                `Invalida inicializacion`,
+                `La instancia '${validInstances[originIndex].identifier}' y '${identifier}' tienen el mismo punto inicial`
+            );
+            break;
+        }
 
         validInstances[instanceIndex].initial_position = origin;
     }
@@ -505,6 +515,7 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
         return r;
     }
 
+    // Improve the handling of arguments at inform sentence
     if ( type === "INFORM" ) {
         const { arg1, arg2 } = statement;
         let resultExp = new ValidationError();

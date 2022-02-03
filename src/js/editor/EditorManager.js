@@ -104,9 +104,10 @@ class EditorManager extends Manager {
             download : this.container.querySelector(".btnDownload"),
             copy : this.container.querySelector(".btnCopy"),
             clear : this.container.querySelector(".btnClear"),
-            fontSize : this.container.querySelector(".btnFontSize"),
+            fontSize : this.container.querySelector(".tool-fontSize"),
             compile : this.container.querySelector(".btnCompile"),
         }
+        this.toolBar.fontSize.value = this.storage.getValue("editor-fontsize",16);
 
         this.aceEditor = ace.edit(this.window);
 
@@ -127,7 +128,7 @@ class EditorManager extends Manager {
                 showPrintMargin: false,
                 displayIndentGuides : true,
                 fontFamily : "monospace",
-                fontSize : "1rem",
+                fontSize : `${this.storage.getValue("editor-fontsize",16)}px`,
                 scrollPastEnd : 1,
                 theme : "ace/theme/darkplus",
             });
@@ -168,7 +169,6 @@ class EditorManager extends Manager {
                 this.aceEditor.setValue(this.programCode);
             }
     
-    
             //Handling some ace events
             this.aceEditor.selection.on("changeCursor", () => {
                 const { row, column } = this.aceEditor.session.selection.getCursor();
@@ -177,7 +177,6 @@ class EditorManager extends Manager {
                     this.cursorPosition.innerText= `Ln ${row + 1}, Col ${column + 1}`;
                 };
             });
-    
             
             this.aceEditor.on("change", () => {
                 this.programCode = this.aceEditor.getValue();
@@ -246,7 +245,7 @@ class EditorManager extends Manager {
                 if ( this.aceEditor && navigator.clipboard ) {
                     const textToCopy = this.aceEditor.getValue();
                     navigator.clipboard.writeText( textToCopy );
-                    this.console.set([
+                    this.console.add([
                         {  message : "Codigo copiado al portapapeles" }
                     ]);
                 }
@@ -260,20 +259,21 @@ class EditorManager extends Manager {
                     ]);
                 };
             });
-
-            this.toolBar.fontSize.addEventListener("click", () => {
+            
+            this.toolBar.fontSize.addEventListener("change", () => {
                 if ( this.aceEditor ) {
-                    this.console.add([{
-                        state : "info",
-                        emitter : "Sin implementar",
-                        message : "No esta añadida la funcionalidad de cambiar el tamaño de fuente"
-                    }])
+                    const newFontSize = this.toolBar.fontSize.value;
+                    this.aceEditor.setOption('fontSize', `${newFontSize}px`);
+                    this.storage.setValue("editor-fontsize", newFontSize);
+                    this.console.add([
+                        { message : `Tamaño de fuente cambiado a ${newFontSize}px` }
+                    ]);
                 };
             });
 
             this.toolBar.compile.addEventListener("click", () => {
                 if (this.programCode.length === 0) {
-                    this.console.set([
+                    this.console.add([
                         { state : "error", message : "No hay programa el cual compilar" }
                     ]);
                     this.storage.loadProgram(null);
@@ -289,7 +289,7 @@ class EditorManager extends Manager {
                     } else {
                         astResult.errors.forEach( e => errorLog += `${e.message}\n`);
                     }
-                    this.console.set([
+                    this.console.add([
                         { emitter : "Compilador", state : "error", message : errorLog }
                     ]);
                     this.storage.loadProgram(null);
@@ -301,7 +301,7 @@ class EditorManager extends Manager {
 
                 if (validation.error) {
                     const errorLog = validation.context;
-                    this.console.set([
+                    this.console.add([
                         { emitter : "Compilador", state : "error", message : errorLog }
                     ]);
                     this.storage.loadProgram(null);

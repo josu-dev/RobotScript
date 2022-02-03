@@ -180,6 +180,27 @@ body {
     padding-inline: 1rem;
 }
 
+.tool-fontSize {
+    margin: 0;
+    padding: 0;
+    width: 4rem;
+    height: 3rem;
+    border: none;
+    outline: none;
+    text-align: center;
+    background: none;
+    color: var(--clr-pr-000);
+    font-size: 1rem;
+    cursor: pointer;
+}
+.tool-fontSize:hover {
+    background-color: var(--clr-bg-800);
+}
+.tool-fontSize option {
+    background: var(--clr-bg-800);
+}
+
+
 @media (min-width:720px) {
     .tool--button {
         max-width: 100%;

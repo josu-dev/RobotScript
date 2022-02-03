@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>IDE</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./src/assets/RobotScript-Icon.ico" >
 
     <!-- Styles -->
-    <!-- Icon -->
-    <link rel="shortcut icon" type="image/x-icon" href="./src/assets/RobotScript-Icon.ico" >
-    
     <!-- Page -->
     <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
     <link rel="stylesheet" type= "text/css" href="./src/css/index.css">
@@ -21,7 +19,6 @@
     <link rel="stylesheet" type= "text/css" href="./src/css/interpeter/TextMessage.css">
 </head>
 <body>
-
     <header class="primary-bar flex">
         <div class="container--logo">
             <img src="./src/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
@@ -68,10 +65,17 @@
                     <img src="./src/assets/svg/Clean.svg" alt="limpiar">
                     <span>Limpiar</span>
                 </button>
-                <button class="tool--button btnFontSize">
-                    <img src="./src/assets/svg/FontSize.svg" alt="font size">
-                    <span>Font Size</span>
-                </button>
+                <select class="tool-fontSize" name="" id="">
+                    <option value="24">24</option>
+                    <option value="22">22</option>
+                    <option value="20">20</option>
+                    <option value="18">18</option>
+                    <option value="16" selected>16</option>
+                    <option value="14">14</option>
+                    <option value="12">12</option>
+                    <option value="10">10</option>
+                    <option value="8">8</option>
+                </select>
                 <button class="tool--button btnCompile">
                     <img src="./src/assets/svg/Compile.svg" alt="compilar">
                     <span>Compilar</span>

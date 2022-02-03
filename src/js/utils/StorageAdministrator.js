@@ -41,17 +41,18 @@ class StorageAdministrator {
         }
     }
   
-    addItem (key = "", defaultValue = "") {
+    addItem (key = "", defaultValue ) {
+        if (key === "") return;
         this.keys.push(key);
         const newItem = new LocalItem(key, defaultValue);
         this.items.push(newItem);
     }
 
-    getValue (key = "", defaultValue = "") {
+    getValue (key = "", defaultValue ) {
         const keyIndex = this.keys.indexOf(key);
         if (keyIndex === -1) {
             this.addItem(key, defaultValue);
-            return "";
+            return defaultValue;
         };
 
         const value = this.items[keyIndex].getValue();
@@ -59,7 +60,7 @@ class StorageAdministrator {
         return value;
     }
 
-    setValue (key = "", value = "") {
+    setValue (key = "", value ) {
         const keyIndex = this.keys.indexOf(key);
         if (keyIndex === -1) {
             this.addItem(key, value);

@@ -18,7 +18,7 @@ class CityMap {
         this.walls = config.walls || {};
 
         this.image = new Image();
-        this.image.src = config.src || "./src/assets/city/map/city-default.png";
+        this.image.src = config.src || "./src/assets/city/map/city-bordered-1624x1624.png";
 
         this.imgAreas = new Image();
 
@@ -104,13 +104,13 @@ class CityMap {
     draw(ctx, cameraObject) {
         ctx.drawImage(
             this.image,
-            this.storage.camera.origin.x + (this.storage.camera.width / 2) - cameraObject.x,
-            this.storage.camera.origin.y - 1588  + (this.storage.camera.height / 2) + cameraObject.y,
+            this.storage.camera.origin.x - 16 + (this.storage.camera.width / 2) - cameraObject.x,
+            this.storage.camera.origin.y - 1604  + (this.storage.camera.height / 2) + cameraObject.y,
         );
         ctx.drawImage(
             this.imgAreas,
-            this.storage.camera.origin.x + (this.storage.camera.width / 2) - cameraObject.x,
-            this.storage.camera.origin.y - 1588  + (this.storage.camera.height / 2) + cameraObject.y,
+            this.storage.camera.origin.x - 16 + (this.storage.camera.width / 2) - cameraObject.x,
+            this.storage.camera.origin.y - 1604  + (this.storage.camera.height / 2) + cameraObject.y,
         );
     }
 
@@ -141,11 +141,12 @@ class CityMap {
     setAreas(config) {
         const generateAreasImage = (areas) => {
             const SCALE = 16;
-            const LENGTH = 1592;
+            const LENGTH = 1616;
+            const BORDER = 16;
             const COLOR = {
                 SHARED : "#005AFF",
-                SEMI_PRIVATE : "#466DB2",
-                PRIVATE : "#6D6D6D"
+                SEMI_PRIVATE : "#2757AA",
+                PRIVATE : "#555555"
             };
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
@@ -160,8 +161,8 @@ class CityMap {
                 const nY = area.b.y - area.a.y;
             
                 const aFixed = {
-                    x : area.a.x*SCALE - SCALE/2,
-                    y : LENGTH - area.a.y*SCALE,
+                    x : area.a.x*SCALE + 8,
+                    y : LENGTH - area.a.y*SCALE - 8,
                 };
             
                 for (let y=0; y< nY; y++) {
@@ -187,17 +188,17 @@ class CityMap {
                 ctx.lineWidth = 1;
             
                 ctx.beginPath();
-                ctx.moveTo(aScaled.x, LENGTH - 5 - aScaled.y);
-                ctx.lineTo(aScaled.x, LENGTH - 5 - bScaled.y);
+                ctx.moveTo(aScaled.x + BORDER, LENGTH - (aScaled.y + BORDER*0.75));
+                ctx.lineTo(aScaled.x + BORDER, LENGTH - (bScaled.y + BORDER*0.75));
 
-                ctx.moveTo(aScaled.x +1, LENGTH - 4 - bScaled.y);
-                ctx.lineTo(bScaled.x +1, LENGTH - 4 - bScaled.y);
+                ctx.moveTo(aScaled.x + BORDER, LENGTH - (bScaled.y + BORDER*0.75));
+                ctx.lineTo(bScaled.x + BORDER, LENGTH - (bScaled.y + BORDER*0.75));
 
-                ctx.moveTo(bScaled.x, LENGTH - 3 - bScaled.y);
-                ctx.lineTo(bScaled.x, LENGTH - 3 - aScaled.y);
+                ctx.moveTo(bScaled.x + BORDER, LENGTH - (bScaled.y + BORDER*0.75));
+                ctx.lineTo(bScaled.x + BORDER, LENGTH - (aScaled.y + BORDER*0.75));
 
-                ctx.moveTo(bScaled.x -1, LENGTH - 4 - aScaled.y);
-                ctx.lineTo(aScaled.x -1, LENGTH - 4 - aScaled.y);
+                ctx.moveTo(bScaled.x + BORDER, LENGTH - (aScaled.y + BORDER*0.75));
+                ctx.lineTo(aScaled.x + BORDER, LENGTH - (aScaled.y + BORDER*0.75));
                 ctx.stroke();
                 ctx.closePath();
             };
@@ -231,7 +232,7 @@ class CityMap {
 
         flowers.forEach( f => {
             const x = utils.withGrid(f.x);
-            const y = utils.withGrid(f.x);
+            const y = utils.withGrid(f.y);
             this.items.flower[`${x},${y}`] = new CityItem({
                 type : "flower",
                 x : f.x,
@@ -242,7 +243,7 @@ class CityMap {
         });
         papers.forEach( p => {
             const x = utils.withGrid(p.x);
-            const y = utils.withGrid(p.x);
+            const y = utils.withGrid(p.y);
             this.items.paper[`${x},${y}`] = new CityItem({
                 type : "paper",
                 x : p.x,

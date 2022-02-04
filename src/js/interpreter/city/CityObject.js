@@ -131,7 +131,7 @@ class Robot extends CityObject {
     constructor(config) {
         super(config);
         this.map = config.map;
-        this.isMountable = config.isMountable || true;
+        this.isMountable = config.isMountable === false? false : true;
         this.direction = config.direction || "up";
         this.moveSpeed = config.moveSpeed || 16;
         this.directionUpdate = {

@@ -31,7 +31,6 @@ Se destaca que esta en desarrollo permanente
 
 - Implementar:
     - Hud de estado de instancias
-    - Crear de las areas para visualizarlas sobre la ciudad
     - Creacion de los trazados de las instancias
     - Colocacion de flores y papeles por el usuario
     - Seleccion de camara, libre o seguir una instancia

@@ -17,13 +17,11 @@ procesos
       noFlor:= noFlor +1
   fin
 areas
-  ciudad : AreaC(1,1,5,5)
+  ciudad : AreaC(1,1,25,25)
 robots 
   robot tipo1
   variables
-    flor: numero
-    noFlor: numero
-    av: numero
+    flor, noFlor, av: numero
   comenzar
     av:= 1
     repetir (3) comenzar

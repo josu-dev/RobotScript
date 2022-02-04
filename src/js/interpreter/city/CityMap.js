@@ -17,17 +17,12 @@ class CityMap {
 
         this.walls = config.walls || {};
 
-        this.imageBg = new Image();
-        this.imageBg.src = "./src/assets/city/map/background-grass-1920x1920.png";
-
         this.image = new Image();
         this.image.src = config.src || "./src/assets/city/map/city-default.png";
 
-        this.imageAreas = new Image();
+        this.imgAreas = new Image();
 
         this.areas = config.areas || [];
-
-        this.blockedCorners = {};
 
 
         this.items = {
@@ -112,12 +107,12 @@ class CityMap {
             this.storage.camera.origin.x + (this.storage.camera.width / 2) - cameraObject.x,
             this.storage.camera.origin.y - 1588  + (this.storage.camera.height / 2) + cameraObject.y,
         );
+        ctx.drawImage(
+            this.imgAreas,
+            this.storage.camera.origin.x + (this.storage.camera.width / 2) - cameraObject.x,
+            this.storage.camera.origin.y - 1588  + (this.storage.camera.height / 2) + cameraObject.y,
+        );
     }
-
-    // isSpaceTaken(currentX, currentY, direction) {
-    //     const {x, y} = utils.nextPosition(currentX, currentY, direction);
-    //     return this.walls[`${x},${y}`] || false;
-    // }
 
     isSpaceTaken(newX, newY) {
         return this.walls[`${newX},${newY}`] || false;
@@ -144,7 +139,81 @@ class CityMap {
     }
 
     setAreas(config) {
-        //crear la imagen de las areas para printear en el mapa
+        const generateAreasImage = (areas) => {
+            const SCALE = 16;
+            const LENGTH = 1592;
+            const COLOR = {
+                SHARED : "#005AFF",
+                SEMI_PRIVATE : "#466DB2",
+                PRIVATE : "#6D6D6D"
+            };
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+        
+            canvas.width = LENGTH;
+            canvas.height = LENGTH;
+        
+            const drawAreaApples = (area) => {
+                ctx.fillStyle = COLOR[area.type];
+            
+                const nX = area.b.x - area.a.x;
+                const nY = area.b.y - area.a.y;
+            
+                const aFixed = {
+                    x : area.a.x*SCALE - SCALE/2,
+                    y : LENGTH - area.a.y*SCALE,
+                };
+            
+                for (let y=0; y< nY; y++) {
+                    for (let x=0; x< nX; x++) {
+                        ctx.fillRect(
+                            aFixed.x + x*SCALE, aFixed.y - (y*SCALE),
+                            8, 8
+                        )
+                    }
+                }
+            };
+            const drawAreaBorder = (area) => {
+                const aScaled = {
+                    x : (area.a.x -1) * SCALE -4,
+                    y : (area.a.y -1) * SCALE -8,
+                };
+                const bScaled = {
+                    x : (area.b.x) * SCALE -4,
+                    y : (area.b.y - 1) * SCALE +8,
+                };
+            
+                ctx.strokeStyle = COLOR[area.type];
+                ctx.lineWidth = 1;
+            
+                ctx.beginPath();
+                ctx.moveTo(aScaled.x, LENGTH - 5 - aScaled.y);
+                ctx.lineTo(aScaled.x, LENGTH - 5 - bScaled.y);
+
+                ctx.moveTo(aScaled.x +1, LENGTH - 4 - bScaled.y);
+                ctx.lineTo(bScaled.x +1, LENGTH - 4 - bScaled.y);
+
+                ctx.moveTo(bScaled.x, LENGTH - 3 - bScaled.y);
+                ctx.lineTo(bScaled.x, LENGTH - 3 - aScaled.y);
+
+                ctx.moveTo(bScaled.x -1, LENGTH - 4 - aScaled.y);
+                ctx.lineTo(aScaled.x -1, LENGTH - 4 - aScaled.y);
+                ctx.stroke();
+                ctx.closePath();
+            };
+        
+            for (let i=0; i< areas.length; i++) {
+                drawAreaBorder(areas[i]);
+                drawAreaApples(areas[i]);
+            };
+        
+            const areaURL = canvas.toDataURL();
+            canvas.remove();
+        
+            return areaURL;
+        }
+
+        this.imgAreas.src = generateAreasImage(config);
         this.areas = config.areas;
     }
     setRobots(config) {

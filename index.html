@@ -109,10 +109,34 @@
                     <img src="./src/assets/svg/Reload.svg" alt="abrir">
                     <span>Reiniciar</span>
                 </button>
-                <button class="tool--button btnCity">
-                    <img src="./src/assets/svg/City.svg" alt="abrir">
-                    <span>Ciudad</span>
-                </button>
+                <div class="container-menu city">
+                    <button class="tool--button btnCity">
+                        <img src="./src/assets/svg/City.svg" alt="abrir">
+                        <span>Ciudad</span>
+                    </button>
+
+                    <ul data-visible="false" class="menu-int items">
+                        <li class="menu-field text">
+                            <span>Cantidad</span>
+                            <input type="text" class="itemQuantity" placeholder="1-99">
+                        </li>
+                        <li class="menu-field text">
+                            <span>X</span>
+                            <input type="text" placeholder="1-100">
+                        </li>
+                        <li class="menu-field text">
+                            <span>Y</span>
+                            <input type="text" placeholder="1-100">
+                        </li>
+                        <li class="menu-field button">
+                            <button class="item-button btnFlowers">Flores</button>
+                            <button class="item-button btnPapers">Papeles</button>
+                        </li>
+                        <li class="menu-field button">
+                            <button class="item-button btnClear">Limpiar</button>
+                        </li>
+                    </ul>
+                </div>
                 <button class="tool--button btnView">
                     <img src="./src/assets/svg/Camera.svg" alt="abrir">
                     <span>Vista</span>

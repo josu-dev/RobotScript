@@ -15,6 +15,7 @@
 * {
     padding: 0;
     border: 0;
+    margin: 0;
 }
 button {
     all: unset;
@@ -362,6 +363,73 @@ body {
 /*-------------*/
 /* Interpreter */
 /*-------------*/
+
+.container-menu {
+    position: relative;
+    min-width: 3rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.menu-int {
+    display: none;
+    position: absolute;
+    top: 3rem;
+    left: 0;
+    z-index: 1;
+    background: var(--clr-bg-800);
+    flex-direction: column;
+    cursor: default;
+    padding-block: 0.5rem;
+    gap: 0.5rem;
+}
+.menu-int[data-visible="true"]{
+    display: flex;
+}
+
+.btnCity {
+    position: relative;
+}
+.menu-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 1rem;
+    height: 2rem;
+}
+
+.menu-field span {
+    display: block;
+}
+.menu-field.text:hover {
+    background: var(--clr-bg-600);
+}
+
+.menu-field input[type="text"]{
+    width: 5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+}
+.menu-field input[type="text"].itemQuantity {
+    width: 4rem;
+}
+
+.menu-field button{
+    height: 100%;
+    margin-inline: 0.5rem;
+    padding-inline: 0.5rem;
+    cursor: pointer;
+}
+.menu-field button:hover{
+    background: var(--clr-bg-600);
+}
+
 
 .city-camera {
     overflow: hidden;

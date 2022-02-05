@@ -12,7 +12,11 @@ class InterpreterManager extends Manager {
             run : this.container.querySelector(".btnRun"),
             pause : this.container.querySelector(".btnPause"),
             reset : this.container.querySelector(".btnReset"),
-            city : this.container.querySelector(".btnCity"),
+            city : {
+                container : this.container.querySelector(".container-menu.city"),
+                btnCity : this.container.querySelector(".btnCity"),
+                menu : this.container.querySelector(".menu-int.items"),
+            },
             view : this.container.querySelector(".btnView"),
         }
 
@@ -46,12 +50,14 @@ class InterpreterManager extends Manager {
                 this.console.set([{ message : "Ciudad reseteada, es necesario ejecutar para manipular la vista"}]);
             });
 
-            this.toolBar.city.addEventListener("click", () => {
-                this.console.add([{
-                    state : "info",
-                    emitter : "Sin implementar",
-                    message : "No esta añadida la funcionalidad de agregar flores y papeles"
-                }])
+            this.toolBar.city.btnCity.addEventListener("click", () => {
+                const visivility =  this.toolBar.city.menu.getAttribute("data-visible");
+                if (visivility === "false") {
+                    this.toolBar.city.menu.setAttribute("data-visible", true);
+                }
+                else {
+                    this.toolBar.city.menu.setAttribute("data-visible", false);
+                }
             });
 
             this.toolBar.view.addEventListener("click", () => {

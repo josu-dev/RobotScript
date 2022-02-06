@@ -1,3 +1,5 @@
+"use strict";
+
 class CityMap {
     constructor(config) {
         this.city = config.city;
@@ -9,8 +11,8 @@ class CityMap {
             map : this,
             src: "./src/assets/city/object/camera/camera-32x8-invisible.png",
             isMountable: false,
-            x: 1,
-            y: 1,
+            x: 0,
+            y: 0,
             identifier: "Free Cam",
         });
         this.activeInstances = 0;
@@ -19,11 +21,11 @@ class CityMap {
 
         this.image = new Image();
         this.image.src = config.src || "./src/assets/city/map/city-bordered-1624x1624.png";
-
-        this.imgAreas = new Image();
-
-        this.areas = config.areas || [];
-
+        this.image.onload = () => {
+            this.draw(this.city.ctx);
+        }
+        
+        this.imgAreas = null;
 
         this.items = {
             flower : {},
@@ -35,9 +37,9 @@ class CityMap {
                 const isItem = this.items[type][`${x},${y}`];
                 if (!isItem) return false;
 
-                this.items[type][`${x},${y}`].cuantity -= 1;
+                this.items[type][`${x},${y}`].quantity -= 1;
 
-                if (this.items[type][`${x},${y}`].cuantity === 0) {
+                if (this.items[type][`${x},${y}`].quantity === 0) {
                     delete this.items[type][`${x},${y}`];
                 }
 
@@ -50,13 +52,13 @@ class CityMap {
                         type : type,
                         x : (x/16),
                         y : (y/16),
-                        cuantity : 1,
+                        quantity : 1,
                         city : this.city
                     });
                     return;
                 }
 
-                this.items[type][`${x},${y}`].cuantity += 1;
+                this.items[type][`${x},${y}`].quantity += 1;
             },
             block : (x, y) => {
                 const xFixed = utils.withGrid(x);
@@ -101,17 +103,19 @@ class CityMap {
         }
     }
 
-    draw(ctx, cameraObject) {
+    draw(ctx) {
         ctx.drawImage(
             this.image,
-            this.storage.camera.origin.x - 16 + (this.storage.camera.width / 2) - cameraObject.x,
-            this.storage.camera.origin.y - 1604  + (this.storage.camera.height / 2) + cameraObject.y,
+            0,
+            0,
         );
-        ctx.drawImage(
-            this.imgAreas,
-            this.storage.camera.origin.x - 16 + (this.storage.camera.width / 2) - cameraObject.x,
-            this.storage.camera.origin.y - 1604  + (this.storage.camera.height / 2) + cameraObject.y,
-        );
+        if (this.imgAreas) {
+            ctx.drawImage(
+                this.imgAreas,
+                0,
+                0,
+            );
+        }
     }
 
     isSpaceTaken(newX, newY) {
@@ -214,8 +218,11 @@ class CityMap {
             return areaURL;
         }
 
+        this.imgAreas = new Image();
         this.imgAreas.src = generateAreasImage(config);
-        this.areas = config.areas;
+        this.imgAreas.onload = () => {
+            this.draw(this.city.ctx);
+        }
     }
     setRobots(config) {
         config.forEach(c => {
@@ -231,13 +238,14 @@ class CityMap {
         const { flowers, papers } = config;
 
         flowers.forEach( f => {
+            console.log(f);
             const x = utils.withGrid(f.x);
             const y = utils.withGrid(f.y);
             this.items.flower[`${x},${y}`] = new CityItem({
                 type : "flower",
                 x : f.x,
                 y : f.y,
-                cuantity : f.cuantity,
+                quantity : f.quantity,
                 city : this.city
             });
         });
@@ -248,7 +256,7 @@ class CityMap {
                 type : "paper",
                 x : p.x,
                 y : p.y,
-                cuantity : p.cuantity,
+                quantity : p.quantity,
                 city : this.city
             });
         });

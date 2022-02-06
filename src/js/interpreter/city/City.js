@@ -1,9 +1,11 @@
+"use strict";
+
 class City {
     constructor(config) {
         this.element = config.element;
         this.storage = config.storage;
-        this.storage.camera.width = this.element.clientWidth;
-        this.storage.camera.height = this.element.clientHeight;
+        // this.storage.camera.width = this.element.clientWidth;
+        // this.storage.camera.height = this.element.clientHeight;
         this.canvas = this.element.querySelector(".city-canvas");
         this.ctx = this.canvas.getContext("2d");
         this.map = new CityMap({city : this});
@@ -12,6 +14,8 @@ class City {
         this.isRunning = false;
         this.program = null;
         this.console = config.console;
+
+        this.map.draw(this.ctx);
     }
 
     setUpProgram() {
@@ -103,52 +107,7 @@ class City {
 
         this.map.setAreas(ast.AREAS);
         this.map.setRobots(robotsConfig);
-        this.map.setItems({
-            flowers : [
-                {
-                x : 1,
-                y : 1,
-                cuantity : 9,
-                },
-                {
-                x : 3,
-                y : 1,
-                cuantity : 3,
-                },
-                {
-                x : 10,
-                y : 10,
-                cuantity : 1,
-                },
-                {
-                x : 1,
-                y : 4,
-                cuantity : 18,
-                },
-            ],
-            papers : [
-                {
-                x : 1,
-                y : 1,
-                cuantity : 3,
-                },
-                {
-                x : 4,
-                y : 4,
-                cuantity : 3,
-                },
-                {
-                x : 3,
-                y : 15,
-                cuantity : 5,
-                },
-                {
-                x : 10,
-                y : 30,
-                cuantity : 10,
-                },
-            ]
-        });
+        this.map.setItems(this.storage.items);
         this.map.mountObjects();
     }
 
@@ -173,26 +132,25 @@ class City {
             //Establish camera
             const cameraObject = this.map.robots.camera;
 
-            if (this.isPaused || this.map.activeInstances === 0) this.map.robots.camera.update();
-            else {
-                Object.values(this.map.robots).forEach(robot => robot.update())
-                if (this.map.logs.length > 0) {
-                    this.console.add(this.map.logs);
-                    this.map.logs = [];
-                }
-                if (this.map.activeInstances === 0) {
-                    this.console.add([
-                        {
-                            state : "valid",
-                            message : "Finalizo la ejecucion del programa"
-                        }
-                    ])
-                }
+            Object.values(this.map.robots).forEach(robot => robot.update());
+
+            if (this.map.logs.length > 0) {
+                this.console.add(this.map.logs);
+                this.map.logs = [];
+            }
+            if (this.map.activeInstances === 0) {
+                this.console.add([
+                    {
+                        state : "valid",
+                        message : "Finalizo la ejecucion del programa"
+                    }
+                ])
+                this.isRunning = false;
             }
 
             //Drawing
             //  Map
-            this.map.draw(this.ctx, cameraObject);
+            this.map.draw(this.ctx);
             //  Items
             Object.values(this.map.items).forEach(type => {
                 Object.values(type).forEach(item => {
@@ -204,9 +162,11 @@ class City {
                 robot.sprite.draw(this.ctx, cameraObject);
             });
 
-            requestAnimationFrame(() => {
-                step();
-            });
+            if (!this.isPaused) {
+                requestAnimationFrame(() => {
+                    step();
+                });
+            }
         }
         step();
     }
@@ -231,4 +191,4 @@ class City {
     }
 }
 
-export { City };
+export default City;

@@ -1,6 +1,6 @@
 "use strict";
 
-import Manager from "../utils/Manager.js";
+import Manager from "../general/Manager.js";
 import { toAst } from "./ast-generator.js";
 import { validateAst } from "./ast-validator.js";
 
@@ -105,13 +105,13 @@ class EditorManager extends Manager {
             fontSize : this.container.querySelector(".tool-fontSize"),
             compile : this.container.querySelector(".btnCompile"),
         }
-        this.toolBar.fontSize.value = this.storage.getValue("editor-fontsize",16);
+        this.toolBar.fontSize.value = this.storage.getLocalValue("editor-fontsize",16);
 
         this.aceEditor = ace.edit(this.window);
 
         this.cursorPosition = this.stateBar.container.querySelector(".cursor-position");
         
-        this.programCode = this.storage.getValue("programCode", "");
+        this.programCode = this.storage.getLocalValue("programCode", "");
 
         this.initAce = () => {
             //Configure editor
@@ -126,7 +126,7 @@ class EditorManager extends Manager {
                 showPrintMargin: false,
                 displayIndentGuides : true,
                 fontFamily : "monospace",
-                fontSize : `${this.storage.getValue("editor-fontsize",16)}px`,
+                fontSize : `${this.storage.getLocalValue("editor-fontsize",16)}px`,
                 scrollPastEnd : 1,
                 theme : "ace/theme/darkplus",
             });
@@ -262,7 +262,7 @@ class EditorManager extends Manager {
                 if ( this.aceEditor ) {
                     const newFontSize = this.toolBar.fontSize.value;
                     this.aceEditor.setOption('fontSize', `${newFontSize}px`);
-                    this.storage.setValue("editor-fontsize", newFontSize);
+                    this.storage.setLocalValue("editor-fontsize", newFontSize);
                     this.console.add([
                         { message : `Tamaño de fuente cambiado a ${newFontSize}px` }
                     ]);

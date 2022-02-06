@@ -19,35 +19,49 @@
     <link rel="stylesheet" type= "text/css" href="./src/css/interpeter/TextMessage.css">
 </head>
 <body>
-    <header class="primary-bar flex">
-        <div class="container--logo">
+    <header class="primary-bar">
+        <div class="container-logo">
             <img src="./src/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
-            <p>RobotScript</p>
+            <span>RobotScript</span>
         </div>
 
-        <button class="primary-nav-toggle" aria-expanded="false">
-        </button>
+        <div class="container-content-mode">
+            <button data-selected="true" class="mode-btn btnEditor">
+                <img src="./src/assets/svg/Editor.svg" alt="editor">
+                <span>Editor</span>
+            </button>
+            <span></span>
+            <button data-selected="false" class="mode-btn btnInterpreter">
+                <img src="./src/assets/svg/Execute.svg" alt="interpreter">
+                <span>Interpreter</span>
+            </button>
+        </div>
 
-        <nav>
-            <ul data-visible="false" class="primary-navigation flex">
-                <li>
-                    <a href="https://www.info.unlp.edu.ar/"
-                    target="_blank">Universidad</a>
-                </li>
-                <li>
-                    <a href="https://github.com/J-Josu/RobotScript"
-                    target="_blank">Repositorio</a>
-                </li>
-                <li>
-                    <a href="https://discord.gg/Y28Sv4HnKr"
-                    target="_blank">Discord</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="container-nav">
+            <button class="primary-nav-toggle" aria-expanded="false">
+            </button>
+            <nav>
+                <ul data-visible="false" class="primary-navigation flex">
+                    <li>
+                        <a href="https://www.info.unlp.edu.ar/"
+                        target="_blank">Universidad</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/J-Josu/RobotScript"
+                        target="_blank">Repositorio</a>
+                    </li>
+                    <li>
+                        <a href="https://discord.gg/Y28Sv4HnKr"
+                        target="_blank">Discord</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
     </header>
 
     <main class="main">
-        <article class="content editor">
+        <article class="content editor" data-visible="true">
             <section class="tool-bar">
                 <button class="tool--button btnUpload">
                     <img src="./src/assets/svg/Upload.svg" alt="abrir">
@@ -95,38 +109,42 @@
             </section>
         </article>
 
-        <article class="content interpreter">
+        <article class="content interpreter" data-visible="false">
             <section class="tool-bar">
+                <button class="tool--button btnLoad">
+                    <img src="./src/assets/svg/Compile.svg" alt="cargar">
+                    <span>Cargar</span>
+                </button>
                 <button class="tool--button btnRun">
-                    <img src="./src/assets/svg/Play.svg" alt="abrir">
+                    <img src="./src/assets/svg/Play.svg" alt="ejecutar">
                     <span>Ejecutar</span>
                 </button>
                 <button class="tool--button btnPause">
-                    <img src="./src/assets/svg/Pause.svg" alt="abrir">
+                    <img src="./src/assets/svg/Pause.svg" alt="pausar">
                     <span>Pausar</span>
                 </button>
                 <button class="tool--button btnReset">
-                    <img src="./src/assets/svg/Reload.svg" alt="abrir">
+                    <img src="./src/assets/svg/Reload.svg" alt="reiniciar">
                     <span>Reiniciar</span>
                 </button>
                 <div class="container-menu city">
                     <button class="tool--button btnCity">
-                        <img src="./src/assets/svg/City.svg" alt="abrir">
+                        <img src="./src/assets/svg/City.svg" alt="ciudad">
                         <span>Ciudad</span>
                     </button>
 
                     <ul data-visible="false" class="menu-int items">
                         <li class="menu-field text">
                             <span>Cantidad</span>
-                            <input type="text" class="itemQuantity" placeholder="1-99">
+                            <input type="text" class="itemQuantity" placeholder="1...99">
                         </li>
                         <li class="menu-field text">
                             <span>X</span>
-                            <input type="text" placeholder="1-100">
+                            <input type="text" class="itemX" placeholder="1-100">
                         </li>
                         <li class="menu-field text">
                             <span>Y</span>
-                            <input type="text" placeholder="1-100">
+                            <input type="text" class="itemY" placeholder="1-100">
                         </li>
                         <li class="menu-field button">
                             <button class="item-button btnFlowers">Flores</button>
@@ -138,12 +156,12 @@
                     </ul>
                 </div>
                 <button class="tool--button btnView">
-                    <img src="./src/assets/svg/Camera.svg" alt="abrir">
+                    <img src="./src/assets/svg/Camera.svg" alt="vista">
                     <span>Vista</span>
                 </button>
             </section>
 
-            <section class="window window--interpreter city-camera">
+            <section class="window window-interpreter city-camera">
                 <div class="city-container">
                     <canvas class="city-canvas"></canvas>
                 </div>
@@ -159,9 +177,10 @@
 
     <!-- Scripts -->
     <!-- Page -->
-    <script src="./src/js/index.js" type="module"></script>
-    <script src="./src/js/utils/StorageAdministrator.js" type="module"></script>
-    <script src="./src/js/utils/Manager.js" type="module"></script>
+    <script type="module" src="./src/js/index.js"></script>
+    <script type="module" src="./src/js/general/PageManager.js"></script>
+    <script type="module" src="./src/js/general/Manager.js"></script>
+    <script type="module" src="./src/js/general/StorageAdministrator.js"></script>
 
     <!-- Library Ace - Chevrotain, Editor -->
     <script src="./src/lib/ace/ace.js"></script>
@@ -169,16 +188,16 @@
     <script src="./src/lib/ace/ext-language_tools.js"></script>
     <script src="./src/lib/chevrotain/chevrotain.js"></script>
 
-    <script src="./src/js/editor/ast-generator.js" type="module"></script>
-    <script src="./src/js/editor/ast-validator.js" type="module"></script>
-    <script src="./src/js/editor/EditorManager.js" type="module"></script>
+    <script type="module" src="./src/js/editor/ast-generator.js"></script>
+    <script type="module" src="./src/js/editor/ast-validator.js"></script>
+    <script type="module" src="./src/js/editor/EditorManager.js"></script>
 
     <!-- Interpreter -->
     <script src="./src/js/interpreter/city/utils.js"> </script>
     <script src="./src/js/interpreter/city/CameraHandler.js"> </script>
-    <script src="./src/js/interpreter/city/City.js" type="module"> </script>
+    <script type="module" src="./src/js/interpreter/city/City.js"> </script>
     <script src="./src/js/interpreter/city/CityObject.js"> </script>
     <script src="./src/js/interpreter/city/CityMap.js"> </script>
-    <script src="./src/js/interpreter/InterpreterManager.js" type="module"> </script>
+    <script type="module" src="./src/js/interpreter/InterpreterManager.js"> </script>
 </body>
 </html>

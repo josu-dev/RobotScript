@@ -26,13 +26,11 @@ Se destaca que esta en desarrollo permanente
 ### Temas por desarrollar-implementar
 
 - Enbellecer errores de parseo
-- En movil que se seleccione el editor o interpretador para evitar el scrolling de pagina
 - Validar la resolucion de las expresiones en interpretacion
 
 - Implementar:
     - Hud de estado de instancias
     - Creacion de los trazados de las instancias
-    - Colocacion de flores y papeles por el usuario
     - Seleccion de camara, libre o seguir una instancia
     - Sistema de control estable para el tiempo entre actualizaciones de la ciudad
 

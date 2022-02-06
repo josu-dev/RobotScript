@@ -1,62 +1,80 @@
+"use strict";
+
 class CameraHandler {
     constructor(city) {
         this.city = city;
-        this.element = city.element;
+        this.container = city.element;
         this.canvas = city.canvas;
         this.storage = city.storage;
-        this.width = this.storage.camera.width;
-        this.height = this.storage.camera.height;
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
-        this.zoom = 1;
+        this.size = {
+            width : this.storage.camera.width,
+            height : this.storage.camera.height
+        }
+        this.scale = 1;
         this.change = 0.2;
-        this.element.addEventListener("wheel", e => this.update(e), { passive: true });
-        this.element.addEventListener("mousedown", e => this.startDrag(e), true);
-        this.diferential = {
+        this.scaleDif = {
             x : 0,
             y : 0,
         }
+        this.offset = {
+            x : this.size.width / 2 - 16,
+            y :  this.size.height / 2 - 1624 + 24
+        }
+        this.canvas.width = 1624;
+        this.canvas.height = 1624;
         
+        this.container.addEventListener("wheel", e => this.update(e), { passive: true });
+        this.container.addEventListener("mousedown", e => this.startDrag(e), true);
 
-        this.onMouseUp = (event) => {
+        this.onMouseUp = () => {
             this.isMouseDown = false;
-            this.element.removeEventListener("mousemove", this.onMouseMove);
-            this.element.removeEventListener("mouseup", this.onMouseUp);
+            this.container.removeEventListener("mousemove", this.onMouseMove);
+            this.container.removeEventListener("mouseup", this.onMouseUp);
         }
     
         this.onMouseMove = ({ movementX, movementY }) => {
             if (this.isMouseDown) { 
-                this.city.map.robots.camera.x -= (movementX/this.zoom)*1.2;
-                this.city.map.robots.camera.y += (movementY/this.zoom)*1.2;
+                this.offset.x += (movementX/this.scale);
+                this.offset.y += (movementY/this.scale);
+                
+                this.canvas.style.transform = `translate(${ - this.scaleDif.x + this.offset.x }px,${ - this.scaleDif.y + this.offset.y }px)`;
             }
         }
+
+        this.updateCanvasTranslate();
     }
 
     update(event) {
-        if (this.zoom > 0.5 && event.deltaY < 0 || this.zoom < 4 && event.deltaY > 0 ) {
-            event.deltaY > 0 ? this.zoom += this.change : this.zoom -= this.change;
-            const newWidth = this.width / this.zoom;
-            const newHeight = this.height / this.zoom;
-            this.diferential.x = -(newWidth - this.width)/2;
-            this.diferential.y = -(newHeight - this.height)/2;
-            this.storage.camera.scale = this.zoom;
+        if (this.scale < 0.5 && event.deltaY < 0) return;
+        if (this.scale > 4 && event.deltaY > 0) return;
 
-            this.canvas.width = newWidth;
-            this.canvas.height = newHeight;
+        if (event.deltaY > 0)
+            this.scale += this.change;
+        else
+            this.scale -= this.change;
+        
+        const newWidth = this.size.width / this.scale;
+        const newHeight = this.size.height / this.scale;
 
-            this.element.style.width = `${newWidth}px`;
-            this.element.style.height = `${newHeight}px`;
-            this.element.style.transform = `translate(${this.diferential.x}px,${this.diferential.y}px) scale(${this.zoom})`;
+        this.scaleDif.x = -(newWidth - this.size.width)/2;
+        this.scaleDif.y = -(newHeight - this.size.height)/2;
 
+        this.storage.camera.scale = this.scale;
 
-            this.storage.camera.origin.x = -this.diferential.x;
-            this.storage.camera.origin.y = -this.diferential.y;
-        }
+        this.container.style.width = `${newWidth}px`;
+        this.container.style.height = `${newHeight}px`;
+        this.container.style.transform = `translate(${ this.scaleDif.x}px,${this.scaleDif.y}px) scale(${this.scale})`;
+
+        this.updateCanvasTranslate();
     }
 
-    startDrag(event) {
+    startDrag() {
         this.isMouseDown = true;
-        this.element.addEventListener("mousemove", this.onMouseMove);
-        this.element.addEventListener("mouseup", this.onMouseUp);
+        this.container.addEventListener("mousemove", this.onMouseMove);
+        this.container.addEventListener("mouseup", this.onMouseUp);
+    }
+
+    updateCanvasTranslate() {
+        this.canvas.style.transform = `translate(${ - this.scaleDif.x + this.offset.x }px,${ - this.scaleDif.y + this.offset.y }px)`;
     }
 }

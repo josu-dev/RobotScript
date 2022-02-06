@@ -31,9 +31,9 @@ class Sprite {
             this.currentAnimation = key;
         }
     }
-    draw(ctx, cameraObject) {
-        const x = -16 + this.storage.camera.origin.x + this.cityObject.x + (this.storage.camera.width / 2) - cameraObject.x;
-        const y = 12 + this.storage.camera.origin.y - this.cityObject.y + (this.storage.camera.height / 2) + cameraObject.y;
+    draw(ctx) {
+        const x = this.cityObject.x ;
+        const y = 1616 - this.cityObject.y ;
 
         const [frameX, frameY] = this.frame;
 
@@ -81,7 +81,7 @@ class CityItem extends CityObject {
         });
         this.isMountable = false;
         this.type = config.type;
-        this.cuantity = config.cuantity || 0;
+        this.quantity = config.quantity || 0;
     }
 }
 

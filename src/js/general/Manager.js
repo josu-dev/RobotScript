@@ -1,3 +1,5 @@
+"use strict";
+
 class Manager {
     constructor(config) {
         this.container = config.container;

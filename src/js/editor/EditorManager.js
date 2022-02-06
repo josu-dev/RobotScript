@@ -178,7 +178,7 @@ class EditorManager extends Manager {
             
             this.aceEditor.on("change", () => {
                 this.programCode = this.aceEditor.getValue();
-                this.storage.setValue("programCode", this.programCode);
+                this.storage.setLocalValue("programCode", this.programCode);
             });
         }
 

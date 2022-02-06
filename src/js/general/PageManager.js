@@ -19,14 +19,14 @@ class PageManager {
         };
     
         this.mainBar.navToggle.addEventListener("click", () => {
-            const visivility = primaryNav.getAttribute("data-visible");
+            const visivility = this.mainBar.primaryNav.getAttribute("data-visible");
             if (visivility === "false") {
-                primaryNav.setAttribute("data-visible", true);
-                navToggle.setAttribute("aria-expanded", true);
+                this.mainBar.primaryNav.setAttribute("data-visible", true);
+                this.mainBar.navToggle.setAttribute("aria-expanded", true);
             }
             else {
-                primaryNav.setAttribute("data-visible", false);
-                navToggle.setAttribute("aria-expanded", false);
+                this.mainBar.primaryNav.setAttribute("data-visible", false);
+                this.mainBar.navToggle.setAttribute("aria-expanded", false);
             }
         });
 

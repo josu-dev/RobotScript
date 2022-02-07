@@ -51,7 +51,7 @@ class CameraHandler {
         this.container.addEventListener("touchstart", e => this.startTouch(e), { passive: true });
         this.container.addEventListener("touchend", e => this.onTouchEnd(e));
         this.container.addEventListener("touchcancel", e => this.onTouchCancel(e));
-        this.container.addEventListener("touchmove", e => this.onTouchMove(e), { passive: true });
+        this.container.addEventListener("touchmove", e => this.onTouchMove(e), { passive: false });
 
         this.onTouchEnd = (e) => {
             this.isTouchDown = false;
@@ -60,9 +60,11 @@ class CameraHandler {
             this.isTouchDown = false;
         }
 
-        this.onTouchMove = ({ changedTouches }) => {
+        this.onTouchMove = (e) => {
             if (this.isTouchDown) {
-                const t = changedTouches[0];
+                e.preventDefault();
+
+                const t = e.changedTouches[0];
                 const x = t.pageX;
                 const y = t.pageY;
 

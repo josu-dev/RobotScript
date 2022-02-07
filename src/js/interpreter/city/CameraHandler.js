@@ -30,6 +30,7 @@ class CameraHandler {
             this.isMouseDown = false;
             this.container.removeEventListener("mousemove", this.onMouseMove);
             this.container.removeEventListener("mouseup", this.onMouseUp);
+            this.container.removeEventListener("mouseleave", this.onMouseUp);
         }
     
         this.onMouseMove = ({ movementX, movementY }) => {
@@ -38,6 +39,42 @@ class CameraHandler {
                 this.offset.y += (movementY/this.scale);
                 
                 this.canvas.style.transform = `translate(${ - this.scaleDif.x + this.offset.x }px,${ - this.scaleDif.y + this.offset.y }px)`;
+            }
+        }
+
+        //touch events
+        this.touchPos = {
+            x : 0,
+            y : 0
+        };
+
+        this.container.addEventListener("touchstart", e => this.startTouch(e), { passive: true });
+        this.container.addEventListener("touchend", e => this.onTouchEnd(e));
+        this.container.addEventListener("touchcancel", e => this.onTouchCancel(e));
+        this.container.addEventListener("touchmove", e => this.onTouchMove(e), { passive: true });
+
+        this.onTouchEnd = (e) => {
+            this.isTouchDown = false;
+        }
+        this.onTouchCancel = (e) => {
+            this.isTouchDown = false;
+        }
+
+        this.onTouchMove = ({ changedTouches }) => {
+            if (this.isTouchDown) {
+                const t = changedTouches[0];
+                const x = t.pageX;
+                const y = t.pageY;
+
+                const moveX = this.touchPos.x - x;
+                const moveY = this.touchPos.y - y;
+                this.offset.x -= (moveX/this.scale);
+                this.offset.y -= (moveY/this.scale);
+                
+                this.canvas.style.transform = `translate(${ - this.scaleDif.x + this.offset.x }px,${ - this.scaleDif.y + this.offset.y }px)`;
+
+                this.touchPos.x = x;
+                this.touchPos.y = y;
             }
         }
 
@@ -72,9 +109,18 @@ class CameraHandler {
         this.isMouseDown = true;
         this.container.addEventListener("mousemove", this.onMouseMove);
         this.container.addEventListener("mouseup", this.onMouseUp);
+        this.container.addEventListener("mouseleave", this.onMouseUp);
     }
 
     updateCanvasTranslate() {
         this.canvas.style.transform = `translate(${ - this.scaleDif.x + this.offset.x }px,${ - this.scaleDif.y + this.offset.y }px)`;
+    }
+
+    startTouch(e) {
+        this.isTouchDown = true;
+        const t = e.changedTouches[0];
+
+        this.touchPos.x = t.pageX;
+        this.touchPos.y = t.pageY;
     }
 }

@@ -48,21 +48,24 @@ class CameraHandler {
             y : 0
         };
 
-        this.container.addEventListener("touchstart", e => this.startTouch(e), { passive: true });
-        this.container.addEventListener("touchend", e => this.onTouchEnd(e));
-        this.container.addEventListener("touchcancel", e => this.onTouchCancel(e));
+        this.container.addEventListener("touchstart", e => this.startTouch(e), { passive: false });
+        this.container.addEventListener("touchend", e => this.onTouchEnd(e), { passive: false });
+        this.container.addEventListener("touchcancel", e => this.onTouchCancel(e), { passive: false });
         this.container.addEventListener("touchmove", e => this.onTouchMove(e), { passive: false });
 
         this.onTouchEnd = (e) => {
+            e.preventDefault();
             this.isTouchDown = false;
         }
         this.onTouchCancel = (e) => {
+            e.preventDefault();
             this.isTouchDown = false;
         }
 
         this.onTouchMove = (e) => {
+            e.preventDefault();
+            
             if (this.isTouchDown) {
-                e.preventDefault();
 
                 const t = e.changedTouches[0];
                 const x = t.pageX;
@@ -119,6 +122,7 @@ class CameraHandler {
     }
 
     startTouch(e) {
+        e.preventDefault();
         this.isTouchDown = true;
         const t = e.changedTouches[0];
 

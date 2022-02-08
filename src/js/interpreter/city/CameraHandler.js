@@ -99,19 +99,15 @@ class CameraHandler {
                 }
                 else if (ev.touches.length === 2) {
                     const deltaDistance = this.distance(ev);
-                    // const difference = deltaDistance - this.touch.distance;
+                    const difference = deltaDistance - this.touch.distance;
 
-                    // if (this.scale < 0.5 && difference < 0) return;
-                    // if (this.scale > 4 && difference > 0) return;
+                    if (this.scale < 0.5 && difference < 0) return;
+                    if (this.scale > 4 && difference > 0) return;
 
-                    // if (difference > 0)
-                    //     this.scale += 0.05;
-                    // else
-                    //     this.scale -= 0.05;
-
-                    
-                    newScale = deltaDistance / this.touch.distance;
-                    this.scale = Math.min(Math.max(0.5, newScale), 4);
+                    if (difference > 0)
+                        this.scale += 0.05;
+                    else
+                        this.scale -= 0.05;
                     
                     const newWidth = this.size.width / this.scale;
                     const newHeight = this.size.height / this.scale;
@@ -123,7 +119,7 @@ class CameraHandler {
             
                     this.updateContainerTransform(newWidth, newHeight);
 
-                    // this.touch.distance = deltaDistance;
+                    this.touch.distance = deltaDistance;
                     // Calculate how much the fingers have moved on the X and Y axis
                     //   const deltaX = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - start.x) * 2; // x2 for accelarated movement
                     //   const deltaY = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - start.y) * 2; // x2 for accelarated movement

@@ -105,9 +105,9 @@ class CameraHandler {
                     if (this.scale > 4 && difference > 0) return;
 
                     if (difference > 0)
-                        this.scale += this.change;
+                        this.scale += 0.1;
                     else
-                        this.scale -= this.change;
+                        this.scale -= 0.1;
                     
                     const newWidth = this.size.width / this.scale;
                     const newHeight = this.size.height / this.scale;

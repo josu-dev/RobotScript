@@ -71,11 +71,11 @@ class CameraHandler {
 
         this.onTouchEnd = (e) => {
             e.preventDefault();
-            this.isTouchDown = false;
+            if (e.touches.length === 0) this.isTouchDown = false;
         }
         this.onTouchCancel = (e) => {
             e.preventDefault();
-            this.isTouchDown = false;
+            if (e.touches.length === 0) this.isTouchDown = false;
         }
 
         this.onTouchMove = (ev) => {
@@ -99,15 +99,19 @@ class CameraHandler {
                 }
                 else if (ev.touches.length === 2) {
                     const deltaDistance = this.distance(ev);
-                    const difference = deltaDistance - this.touch.distance;
+                    // const difference = deltaDistance - this.touch.distance;
 
-                    if (this.scale < 0.5 && difference < 0) return;
-                    if (this.scale > 4 && difference > 0) return;
+                    // if (this.scale < 0.5 && difference < 0) return;
+                    // if (this.scale > 4 && difference > 0) return;
 
-                    if (difference > 0)
-                        this.scale += 0.1;
-                    else
-                        this.scale -= 0.1;
+                    // if (difference > 0)
+                    //     this.scale += 0.1;
+                    // else
+                    //     this.scale -= 0.1;
+
+                    
+                    newScale = deltaDistance / start.distance;
+                    this.scale = Math.min(Math.max(0.5, newScale), 4);
                     
                     const newWidth = this.size.width / this.scale;
                     const newHeight = this.size.height / this.scale;

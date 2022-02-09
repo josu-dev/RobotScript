@@ -1,6 +1,5 @@
 "use strict";
 
-
 import StorageAdministrator from "./general/StorageAdministrator.js";
 import PageManager from "./general/PageManager.js";
 import EditorManager from "./editor/EditorManager.js";

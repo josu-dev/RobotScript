@@ -1,5 +1,8 @@
 "use strict";
 
+import CityMap from './CityMap.js';
+import CameraHandler from './CameraHandler.js';
+
 class City {
     constructor(config) {
         this.element = config.element;
@@ -16,6 +19,115 @@ class City {
         this.console = config.console;
 
         this.map.draw(this.ctx);
+    }
+
+
+    loadProgram() {
+        if (this.isRunning && (!this.isPaused)) {
+            this.console.add([
+                {
+                    state : "error",
+                    message : "No se puede cargar un programa cuando se esta ejecutando uno, debes esperar que termine, reiniciar o pausar la ejecucion" }
+            ]);
+            return;
+        }
+
+        const newProgram = this.storage.getProgram();
+    
+        if (!newProgram) {
+            this.console.set([
+                {
+                    state : "error",
+                    message : "No hay ningun programa compilado para cargar"
+                }
+            ]);
+            return;
+        }
+
+        this.program = this.storage.getProgram();
+
+        this.setUpProgram();
+    }
+
+    init() {
+        if (!this.isRunning) {
+            if (!this.program) {
+                this.console.add([{
+                    state : "error",
+                    message : "Debe cargar un programa para poder ejecutar"
+                }]);
+                return;
+            }
+
+            if (this.map.activeInstances === 0) {
+                this.setUpProgram();
+            }
+
+            this.isRunning = true;
+
+            this.console.add([{
+                state : "valid",
+                message : "Comenzando ejecucion"
+            }]);
+            this.startProgram();
+        }
+        else {
+            if (!this.isPaused) {
+                this.console.set([{
+                    state : "info",
+                    message : "El programa ya esta corriendo"
+                }]);
+            }
+            else {
+                this.isPaused = false;
+                this.console.add([{ 
+                    state : "valid",
+                    message : "Reanudando la ejecucion"
+                }]);
+                this.startProgram();
+            }
+        }
+    }
+    
+    pause() {
+        if (!this.isRunning) {
+            this.console.set([
+                {
+                    state : "error",
+                    message : "Se debe estar ejecutando un programa para poder pausar"
+                }
+            ])
+            return;
+        }
+
+        if (this.isPaused) {
+            this.console.add([{ 
+                state : "warning", message : "La ejecucion ya esta pausada" }]);
+        }
+        else {
+            this.isPaused = true;
+            this.console.add([{ 
+                state : "info",
+                message : "Ejecucion pausada" }]);
+        }
+    }
+
+    resetCity() {
+        this.isRunning = false;
+        this.isPaused = false;
+        requestAnimationFrame(() => {});
+
+        this.map.reset();
+        if (this.program) {this.setUpProgram()
+            this.console.add([{ state : "valid", message : "Ciudad reseteada exitosamente"}]);}
+        else {
+            this.console.set([
+                {
+                    state : "warning",
+                    message : "Se reseteo pero no hay programa el cual cargar, antes de ejecutar debe cargar uno"
+                }
+            ])
+        }
     }
 
     setUpProgram() {
@@ -96,30 +208,23 @@ class City {
             }
         }
 
-        const ast = this.storage.getProgram();
+        const { INSTANCES, AREAS } = this.program;
 
-        const quantity = ast.INSTANCES.length;
         const robotsConfig = [];
-        for (let i=0; i< quantity; i++) {
-            const config = extractConfig(ast, i);
+        for (let i=0; i< INSTANCES.length; i++) {
+            const config = extractConfig(this.program, i);
             robotsConfig.push(config);
         }
 
-        this.map.setAreas(ast.AREAS);
-        this.map.setRobots(robotsConfig);
-        this.map.setItems(this.storage.items);
+        this.map.setAreas(AREAS);
+        this.map.setRobots(robotsConfig, this.ctx);
+        this.map.setItems(this.storage.items, this.ctx);
         this.map.mountObjects();
-    }
 
-    resetCity() {
-        this.isRunning = false;
-        this.isPaused = false;
-        requestAnimationFrame(() => {});
-        this.map = new CityMap({city : this});
-    }
-    
-    pause() {
-        this.isPaused = true;
+        this.console.add([{
+            state : "info",
+            message : `Se cargo el programa '${this.program.NAME.identifier}'`
+        }])
     }
 
     startProgram() {
@@ -137,8 +242,18 @@ class City {
             if (this.map.logs.length > 0) {
                 this.console.add(this.map.logs);
                 this.map.logs = [];
+                if (this.map.executionError) {
+                    this.isRunning = false;
+                    this.console.add([
+                        {
+                            state : "error",
+                            message : "Se aborto la ejecucion del programa debido a un error"
+                        }
+                    ]);
+                    this.map.activeInstances = 0;
+                }
             }
-            if (this.map.activeInstances === 0) {
+            if (this.map.activeInstances === 0 && !this.map.executionError) {
                 this.console.add([
                     {
                         state : "valid",
@@ -171,23 +286,18 @@ class City {
         step();
     }
 
-    init() {
-        if (!this.isRunning) {
-            this.program = this.storage.getProgram();
-            this.setUpProgram();
-            this.isRunning = true;
-            this.console.set([{ state : "valid", message : "Comenzando ejecucion" }]);
-            this.startProgram();
-        }
-        else {
-            if (!this.isPaused) {this.console.set([{ state : "info", message : "El programa ya esta corriendo ( puede estar mal el mensaje )" }]);
-            }
-            else {
-                this.isPaused = false;
-                this.console.add([{ state : "valid", message : "Reanudando la ejecucion" }]);
-                this.startProgram();
-            }
-        }
+    drawAll() {
+        this.map.draw(this.ctx);
+
+        Object.values(this.map.items).forEach(type => {
+            Object.values(type).forEach(item => {
+                item.sprite.draw(this.ctx);
+            });
+        });
+
+        Object.values(this.map.robots).forEach(robot => {
+            robot.sprite.draw(this.ctx);
+        });
     }
 }
 

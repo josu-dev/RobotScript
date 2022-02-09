@@ -25,14 +25,13 @@ Se destaca que esta en desarrollo permanente
 
 ### Temas por desarrollar-implementar
 
-- Enbellecer errores de parseo
-- Validar la resolucion de las expresiones en interpretacion
-
+- Embellecer errores de parseo
+- Validar la resolucion de las expresiones en compilacion(?)
 - Implementar:
     - Hud de estado de instancias
     - Creacion de los trazados de las instancias
     - Seleccion de camara, libre o seguir una instancia
-    - Sistema de control estable para el tiempo entre actualizaciones de la ciudad
+    - Interfaz y funcionavilidad para modificar el tiempo entre actualizaciones
 
 <br>
 
@@ -43,5 +42,10 @@ Se destaca que esta en desarrollo permanente
 
 
 <br>
+<br>
+
+### Extras
+
+Esto no tiene ningun fin de lucro, solo aportar a la educacion y ayudar al otro
 
 Si te queres comunicar me encontras en discord: Josu#0987

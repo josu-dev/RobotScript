@@ -29,7 +29,7 @@ robots
       noFlor:= 0
       Pos(av,1)
       juntarFlor(flor, noFlor)
-      repetir (99) comenzar
+      repetir (24) comenzar
         mover
         juntarFlor(flor, noFlor)
       fin
@@ -218,7 +218,10 @@ class EditorManager extends Manager {
                 
                     element.click();
                     this.console.set([
-                        {  message : "Programa descargado con exito" }
+                        {  
+                            state: "info",
+                            message : "Programa descargado con exito"
+                        }
                     ]);
                 
                     document.body.removeChild(element);
@@ -226,13 +229,26 @@ class EditorManager extends Manager {
                 const textToDownload = this.aceEditor?.getValue()
                 const i = textToDownload?.indexOf('programa');
             
-                if (!textToDownload || i === -1) return;
+                if (!textToDownload || i === -1) {
+                    this.console.set([
+                        {  
+                            state: "error",
+                            message : "No se encuentra la seccion programa"
+                        }
+                    ]);
+                    return;
+                };
             
                 let j = textToDownload.indexOf('\n',i);
                 if ( j == -1 ) j = textToDownload.length;
                 const fileName = textToDownload.substring(i,j).replace('programa','').trimStart();
                 if (fileName === "") {
-                    this.consoleSet("error", "Se necesita nombre del programa");
+                    this.console.set([
+                        {  
+                            state: "error",
+                            message : "No existe nombre de programa"
+                        }
+                    ]);
                     return;
                 }
                 
@@ -244,7 +260,7 @@ class EditorManager extends Manager {
                     const textToCopy = this.aceEditor.getValue();
                     navigator.clipboard.writeText( textToCopy );
                     this.console.add([
-                        {  message : "Codigo copiado al portapapeles" }
+                        {  state : "info", message : "Codigo copiado al portapapeles" }
                     ]);
                 }
             });
@@ -253,7 +269,7 @@ class EditorManager extends Manager {
                 if ( this.aceEditor ) {
                     this.aceEditor.setValue("");
                     this.console.set([
-                        {  message : "Codigo borrado" }
+                        {  state : "info", message : "Codigo borrado" }
                     ]);
                 };
             });
@@ -264,7 +280,7 @@ class EditorManager extends Manager {
                     this.aceEditor.setOption('fontSize', `${newFontSize}px`);
                     this.storage.setLocalValue("editor-fontsize", newFontSize);
                     this.console.add([
-                        { message : `Tamaño de fuente cambiado a ${newFontSize}px` }
+                        { state : "info", message : `Tamaño de fuente cambiado a ${newFontSize}px` }
                     ]);
                 };
             });

@@ -9,6 +9,17 @@
     --clr-bg-600: #282828;
     --clr-bg-700: #202020;
     --clr-bg-800: #181818;
+
+    --clr-info: #4288e4;
+    --clr-valid: #1fff00;
+    --clr-warning: #F8E92C;
+    --clr-error: #ff3e00;
+
+    --gdt-tb-rs: to bottom, #ff0000 , #ff7f00;
+    --gdt-tb-rs-a0: to bottom, #ff0000a0 , #ff7f00a0;
+    --gdt-tr-rs: to right, #ff0000 , #ff7f00;
+    --gdt-tl-rs: to left, #ff0000 , #ff7f00;
+    --gdt-tl-rs-a0: to left, #ff0000a0 , #ff7f00a0;
 }
 
 /* Resets */
@@ -152,10 +163,10 @@ body {
     background: var(--clr-bg-400);
 }
 .mode-btn.btnEditor:hover {
-    background: linear-gradient(to left, #ff0000 , #ff7f00);
+    background: linear-gradient(var(--gdt-tl-rs));
 }
 .mode-btn.btnInterpreter:hover {
-    background: linear-gradient(to right, #ff0000 , #ff7f00);
+    background: linear-gradient(var(--gdt-tr-rs));
 }
 
 
@@ -194,7 +205,7 @@ body {
     transform: translateX(100%);
     transition: transform 350ms ease-out;
 
-    background: linear-gradient(to right, #ff0000 , #ff7f00);
+    background: linear-gradient(var(--gdt-tr-rs));
 }
 
 .primary-navigation a {
@@ -364,14 +375,17 @@ body {
 .console-logs span[data-state="default"]{
     color: var(--clr-pr-200);
 }
-.console-logs span[data-state="error"]{
-    color: #ff3e00;
+.console-logs span[data-state="info"]{
+    color: var(--clr-info);
 }
 .console-logs span[data-state="valid"]{
-    color: #1fff00;
+    color: var(--clr-valid);
 }
-.console-logs span[data-state="info"]{
-    color: #4288e4;
+.console-logs span[data-state="warning"]{
+    color: var(--clr-warning);
+}
+.console-logs span[data-state="error"]{
+    color: var(--clr-error);
 }
 
 
@@ -389,16 +403,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:vertical {
-    background: linear-gradient(to bottom, #ff0000a0 , #ff8000a0);
+    background: linear-gradient(var(--gdt-tb-rs-a0));
 }
 ::-webkit-scrollbar-thumb:vertical:hover {
-    background: linear-gradient(to bottom, #ff0000 , #ff8000);
+    background: linear-gradient(var(--gdt-tb-rs));
 }
 ::-webkit-scrollbar-thumb:horizontal {
-    background: linear-gradient(to left, #ff0000a0 , #ff7f00a0);
+    background: linear-gradient(var(--gdt-tl-rs-a0));
 }
 ::-webkit-scrollbar-thumb:horizontal:hover {
-    background: linear-gradient(to left, #ff0000 , #ff8000);
+    background: linear-gradient(var(--gdt-tl-rs));
 }
 
 

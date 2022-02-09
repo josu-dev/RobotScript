@@ -109,7 +109,7 @@ class StorageAdministrator {
 
     addItems (config) {
         config.items.forEach(newI => {
-            console.log(newI);
+            
             const addedIndex = this.items[config.type].findIndex(oldI => (oldI.x === newI.x && oldI.y === newI.y));
 
             if (addedIndex === -1) this.items[config.type].push(newI);

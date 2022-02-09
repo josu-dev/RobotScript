@@ -71,11 +71,11 @@ class CameraHandler {
 
         this.onTouchEnd = (e) => {
             e.preventDefault();
-            if (e.touches.length === 0) this.isTouchDown = false;
+            this.isTouchDown = false;
         }
         this.onTouchCancel = (e) => {
             e.preventDefault();
-            if (e.touches.length === 0) this.isTouchDown = false;
+             this.isTouchDown = false;
         }
 
         this.onTouchMove = (ev) => {
@@ -101,6 +101,7 @@ class CameraHandler {
                     const deltaDistance = this.distance(ev);
                     const difference = deltaDistance - this.touch.distance;
 
+                    if (difference === 0) return;
                     if (this.scale < 0.5 && difference < 0) return;
                     if (this.scale > 4 && difference > 0) return;
 
@@ -120,9 +121,6 @@ class CameraHandler {
                     this.updateContainerTransform(newWidth, newHeight);
 
                     this.touch.distance = deltaDistance;
-                    // Calculate how much the fingers have moved on the X and Y axis
-                    //   const deltaX = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - start.x) * 2; // x2 for accelarated movement
-                    //   const deltaY = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - start.y) * 2; // x2 for accelarated movement
                 }
             }
         }
@@ -131,13 +129,13 @@ class CameraHandler {
     }
 
     update(event) {
-        if (this.scale < 0.5 && event.deltaY < 0) return;
-        if (this.scale > 4 && event.deltaY > 0) return;
+        if (this.scale < 0.5 && event.deltaY > 0) return;
+        if (this.scale > 4 && event.deltaY < 0) return;
 
         if (event.deltaY > 0)
-            this.scale += this.change;
-        else
             this.scale -= this.change;
+        else
+            this.scale += this.change;
         
         const newWidth = this.size.width / this.scale;
         const newHeight = this.size.height / this.scale;
@@ -173,3 +171,5 @@ class CameraHandler {
         return Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
     };
 }
+
+export default CameraHandler;

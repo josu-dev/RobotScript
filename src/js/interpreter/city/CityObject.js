@@ -7,6 +7,7 @@ class Sprite {
         this.image.src = config.src;
         this.image.onload = () => {
             this.isLoaded = true;
+            if (config.ctx) this.draw(config.ctx);
         }
 
         //Configure Animation & Initial State
@@ -60,6 +61,7 @@ class CityObject {
             storage: this.city.storage,
             cityObject: this,
             src: config.src || "./src/assets/city/sprite-default.png",
+            ctx : config.ctx
         });
     }
 
@@ -878,3 +880,5 @@ class Robot extends CityObject {
         this.sprite.setAnimation(`${this.direction}`);
     }
 }
+
+export { Sprite, CityObject, CityItem, Robot };

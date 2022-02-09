@@ -11,6 +11,7 @@ class InterpreterManager extends Manager {
         });
 
         this.toolBar = {
+            load : this.container.querySelector(".btnLoad"),
             run : this.container.querySelector(".btnRun"),
             pause : this.container.querySelector(".btnPause"),
             reset : this.container.querySelector(".btnReset"),
@@ -39,28 +40,21 @@ class InterpreterManager extends Manager {
             console : this.console
         })
 
-        this.program = {};
-
         this.initToolBar = () => {
+            this.toolBar.load.addEventListener("click", () => {
+                this.city.loadProgram();
+            });
+
             this.toolBar.run.addEventListener("click", () => {
-                this.program = this.storage.getProgram();
-    
-                if (this.program) {
-                    this.city.init();
-                }
-                else {
-                    this.console.set([{ state : "error", message : "No se compilo ningun programa para ejecutar" }]);
-                }
+                this.city.init();
             });
 
             this.toolBar.pause.addEventListener("click", () => {
                 this.city.pause();
-                this.console.add([{ message : "Ejecucion pausada" }]);
             });
 
             this.toolBar.reset.addEventListener("click", () => {
                 this.city.resetCity();
-                this.console.set([{ message : "Ciudad reseteada, es necesario ejecutar para manipular la vista"}]);
             });
 
             this.toolBar.city.btnCity.addEventListener("click", () => {

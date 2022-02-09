@@ -1,5 +1,7 @@
 "use strict";
 
+import { Robot, CityItem } from './CityObject.js'
+
 class CityMap {
     constructor(config) {
         this.city = config.city;
@@ -118,6 +120,21 @@ class CityMap {
         }
     }
 
+    reset() {
+        this.items = {
+            flower : {},
+            paper : {}
+        };
+        this.walls = {};
+        this.executionError = false;
+        this.imgAreas = null;
+        Object.keys(this.robots).forEach(key => {
+            if (key !== "camera") {
+                delete this.robots[key];
+            }
+        });
+    }
+
     isSpaceTaken(newX, newY) {
         return this.walls[`${newX},${newY}`] || false;
     }
@@ -224,17 +241,18 @@ class CityMap {
             this.draw(this.city.ctx);
         }
     }
-    setRobots(config) {
+    setRobots(config, ctx) {
         config.forEach(c => {
             this.robots[c.identifier] = new Robot({
                 ...c,
                 city : this.city,
                 map : this,
+                ctx : ctx
             });
         });
         this.activeInstances = config.length;
     }
-    setItems(config) {
+    setItems(config, ctx) {
         const { flowers, papers } = config;
 
         flowers.forEach( f => {
@@ -246,7 +264,8 @@ class CityMap {
                 x : f.x,
                 y : f.y,
                 quantity : f.quantity,
-                city : this.city
+                city : this.city,
+                ctx : ctx
             });
         });
         papers.forEach( p => {
@@ -257,7 +276,8 @@ class CityMap {
                 x : p.x,
                 y : p.y,
                 quantity : p.quantity,
-                city : this.city
+                city : this.city,
+                ctx : ctx
             });
         });
     }
@@ -267,3 +287,5 @@ class CityMap {
         this.addLog("error", message, emitter );
     }
 }
+
+export default CityMap;

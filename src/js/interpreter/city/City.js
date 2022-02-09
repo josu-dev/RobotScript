@@ -11,6 +11,11 @@ class City {
         // this.storage.camera.height = this.element.clientHeight;
         this.canvas = this.element.querySelector(".city-canvas");
         this.ctx = this.canvas.getContext("2d");
+        // improve canvas performance
+            this.ctx.mozImageSmoothingEnabled = false;
+            this.ctx.webkitImageSmoothingEnabled = false;
+            this.ctx.msImageSmoothingEnabled = false;
+            this.ctx.imageSmoothingEnabled = false;
         this.map = new CityMap({city : this});
         this.view = new CameraHandler(this);
         this.isPaused = false;
@@ -186,6 +191,7 @@ class City {
             while (index > 7) {
                 index -= 8;
             }
+            const colorTable = ["#0000ff","#e51c23", "#259b24","#03a9f4", "#ffeb3b", "#ff5722", "#9c27b0", "#eeeeee"];
 
             const strBody = JSON.stringify(type.body);
             const newBody = JSON.parse(strBody);
@@ -204,7 +210,8 @@ class City {
                     flower : 0,
                     paper : 0
                 },
-                src : `./src/assets/city/object/robot/robot-32x8-${index}.png`
+                src : `./src/assets/city/object/robot/robot-32x8-${index}.png`,
+                color : colorTable[index]
             }
         }
 

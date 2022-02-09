@@ -154,6 +154,7 @@ class Robot extends CityObject {
         this.instIndex = 0;
         this.messages = [];
         this.otherRobots = this.map.robots;
+        this.color = config.color;
 
         this.get = {
             varValue : (id) => {
@@ -457,6 +458,15 @@ class Robot extends CityObject {
             }
 
             this.map.moveWall(this.x, this.y, newX, newY);
+
+            this.map.updateTraces({
+                mode : "pos",
+                color : this.color,
+                a : {
+                    x : newX,
+                    y : newY
+                }
+            });
 
             this.x = newX;
             this.y = newY;
@@ -867,6 +877,19 @@ class Robot extends CityObject {
         if (newPositionValid.error) return newPositionValid;
         
         this.map.moveWall(this.x, this.y, x, y);
+
+        this.map.updateTraces({
+            mode : "move",
+            color : this.color,
+            a : {
+                x : this.x,
+                y : this.y
+            },
+            b : {
+                x : x,
+                y : y
+            }
+        });
 
         this.x = x;
         this.y = y;

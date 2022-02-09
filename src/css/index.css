@@ -536,7 +536,8 @@ body {
 
 .city-camera {
     overflow: hidden;
-    background: url("../assets/city/map/background-grass-1920x1920.png") repeat;
+    background: url("../assets/city/map/background-city-sunshine-1920x1920.jpg");
+    background-size: cover;
 }
 
 .city-container {

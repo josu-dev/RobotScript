@@ -29,7 +29,6 @@ Se destaca que esta en desarrollo permanente
 - Validar la resolucion de las expresiones en compilacion(?)
 - Implementar:
     - Hud de estado de instancias
-    - Creacion de los trazados de las instancias
     - Seleccion de camara, libre o seguir una instancia
     - Interfaz y funcionavilidad para modificar el tiempo entre actualizaciones
 

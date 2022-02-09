@@ -102,7 +102,7 @@ class CameraHandler {
                     const difference = deltaDistance - this.touch.distance;
 
                     if (difference === 0) return;
-                    if (this.scale < 0.5 && difference < 0) return;
+                    if (this.scale < 0.3 && difference < 0) return;
                     if (this.scale > 4 && difference > 0) return;
 
                     if (difference > 0)
@@ -129,7 +129,7 @@ class CameraHandler {
     }
 
     update(event) {
-        if (this.scale < 0.5 && event.deltaY > 0) return;
+        if (this.scale < 0.3 && event.deltaY > 0) return;
         if (this.scale > 4 && event.deltaY < 0) return;
 
         if (event.deltaY > 0)

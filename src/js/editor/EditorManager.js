@@ -18,12 +18,16 @@ procesos
   fin
 areas
   ciudad : AreaC(1,1,25,25)
+  ciudad2 : AreaC(26,1,50,25)
+  ciudad3 : AreaC(51,1,76,25)
 robots 
   robot tipo1
   variables
     flor, noFlor, av: numero
   comenzar
-    av:= 1
+  
+    av:= PosAv + 1
+      Pos(av,1)
     repetir (3) comenzar
       flor:= 0
       noFlor:= 0
@@ -42,9 +46,15 @@ robots
   fin
 variables 
   robot1: tipo1
+  robot2: tipo1
+  robot3: tipo1
 comenzar 
   AsignarArea(robot1,ciudad)
   Iniciar(robot1, 1, 1)
+  AsignarArea(robot2,ciudad2)
+  Iniciar(robot2, 26, 1)
+  AsignarArea(robot3,ciudad3)
+  Iniciar(robot3, 51, 1)
 fin
 `;
 const CUSTOM_COMPLETES = [
@@ -76,6 +86,7 @@ const CUSTOM_COMPLETES = [
     { word : "AreaPC", meta : "tipo de area",},
     { word : "Pos", meta : "accion",},
     { word : "mover", meta : "accion",},
+    { word : "derecha", meta : "accion",},
     { word : "tomarFlor", meta : "accion",},
     { word : "tomarPapel", meta : "accion",},
     { word : "depositarFlor", meta : "accion",},

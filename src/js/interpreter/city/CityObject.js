@@ -23,6 +23,7 @@ class Sprite {
         this.cityObject = config.cityObject;
     }
 
+    
     get frame() {
         return this.animations[this.currentAnimation][0]
     }
@@ -64,6 +65,7 @@ class CityObject {
             ctx : config.ctx
         });
     }
+
 
     mount(map) {
         this.isMounted = true;
@@ -231,6 +233,7 @@ class Robot extends CityObject {
             }
         }
     }
+
 
     resolveStatement(s) {
         const resolveExpression = (exp) => {
@@ -459,8 +462,7 @@ class Robot extends CityObject {
 
             this.map.moveWall(this.x, this.y, newX, newY);
 
-            this.map.updateTraces({
-                mode : "pos",
+            this.map.updateTrace({
                 color : this.color,
                 a : {
                     x : newX,
@@ -878,8 +880,7 @@ class Robot extends CityObject {
         
         this.map.moveWall(this.x, this.y, x, y);
 
-        this.map.updateTraces({
-            mode : "move",
+        this.map.updateTrace({
             color : this.color,
             a : {
                 x : this.x,

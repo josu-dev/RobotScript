@@ -30,7 +30,7 @@ Se destaca que esta en desarrollo permanente
 - Implementar:
     - Hud de estado de instancias
     - Seleccion de camara, libre o seguir una instancia
-    - Interfaz y funcionavilidad para modificar el tiempo entre actualizaciones
+    - Interfaz y funcionalidad para modificar el tiempo entre actualizaciones
 
 <br>
 

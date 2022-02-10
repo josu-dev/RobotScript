@@ -23,6 +23,7 @@ class City {
         this.program = null;
         this.console = config.console;
 
+        //hacer que se imprima despues de que se cargue la imagen del fondo de la ciudad
         this.map.draw(this.ctx);
     }
 
@@ -51,6 +52,7 @@ class City {
 
         this.program = this.storage.getProgram();
 
+        this.resetCity();
         this.setUpProgram();
     }
 
@@ -65,7 +67,7 @@ class City {
             }
 
             if (this.map.activeInstances === 0) {
-                this.setUpProgram();
+                this.resetCity();
             }
 
             this.isRunning = true;
@@ -123,7 +125,8 @@ class City {
         requestAnimationFrame(() => {});
 
         this.map.reset();
-        if (this.program) {this.setUpProgram()
+        if (this.program) {
+            this.setUpProgram();
             this.console.add([{ state : "valid", message : "Ciudad reseteada exitosamente"}]);}
         else {
             this.console.set([
@@ -224,6 +227,7 @@ class City {
         }
 
         this.map.setAreas(AREAS);
+        this.map.draw(this.ctx);
         this.map.setRobots(robotsConfig, this.ctx);
         this.map.setItems(this.storage.items, this.ctx);
         this.map.mountObjects();
@@ -232,6 +236,7 @@ class City {
             state : "info",
             message : `Se cargo el programa '${this.program.NAME.identifier}'`
         }])
+
     }
 
     startProgram() {

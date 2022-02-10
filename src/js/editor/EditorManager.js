@@ -25,9 +25,8 @@ robots
   variables
     flor, noFlor, av: numero
   comenzar
-  
     av:= PosAv + 1
-      Pos(av,1)
+    Pos(av,1)
     repetir (3) comenzar
       flor:= 0
       noFlor:= 0

@@ -54,6 +54,11 @@ class City {
 
         this.resetCity();
         this.setUpProgram();
+
+        this.console.set([{
+            state : "info",
+            message : `Se cargo el programa '${this.program.NAME.identifier}'`
+        }])
     }
 
     init() {
@@ -127,7 +132,7 @@ class City {
         this.map.reset();
         if (this.program) {
             this.setUpProgram();
-            this.console.add([{ state : "valid", message : "Ciudad reseteada exitosamente"}]);}
+            this.console.set([{ state : "valid", message : "Ciudad reseteada exitosamente"}]);}
         else {
             this.console.set([
                 {
@@ -231,12 +236,6 @@ class City {
         this.map.setRobots(robotsConfig, this.ctx);
         this.map.setItems(this.storage.items, this.ctx);
         this.map.mountObjects();
-
-        this.console.add([{
-            state : "info",
-            message : `Se cargo el programa '${this.program.NAME.identifier}'`
-        }])
-
     }
 
     startProgram() {

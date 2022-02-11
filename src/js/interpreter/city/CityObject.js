@@ -532,6 +532,8 @@ class Robot extends CityObject {
         }
 
         if ( type === "MESSAGE" ) {
+            // validate if the message type its the same of the variable reciver
+
             const mode = s.mode;
             if (mode === "SEND") {
                 const rValue = resolveExpression(s.value);

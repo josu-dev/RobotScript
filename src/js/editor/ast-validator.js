@@ -58,6 +58,19 @@ const getIdentifiers = ( baseArray ) => {
     }
     return identifiers;
 }
+const getVariables = ( baseArray ) => {
+    let variables = [];
+
+    if ( baseArray && (baseArray.length > 0)) {
+        baseArray.forEach( e => {
+            variables.push({
+                identifier : e.identifier,
+                type_value : e.type_value
+            });
+        })
+    }
+    return variables;
+}
 const getValidProcedures = ( baseProcedures ) => {
     let procedures = [];
     
@@ -408,71 +421,199 @@ const validateInits = (inits, instances, areas) => {
     return r;
 }
 
-const validateExpression = (exp, varIds) => {
-    const r = new ValidationError();
-    if (!exp.type) return r;
+class ExpressionResult {
+    constructor() {
+        this.error = false;
+        this.context = "";
+        this.type = null;
+    }
+
+    setError( context = "" ) {
+        this.error = true;
+        this.context = context;
+    }
+
+    addContext( additionalContext = "" ) {
+        this.context = this.context.concat(additionalContext);
+    }
+
+    setType( newType ) {
+        this.type = newType;
+    }
+
+    update( newResult = ExpressionResult ) {
+        this.error = newResult.error;
+        this.context = newResult.context;
+        this.type = newResult.type;
+    }
+}
+const validateExpression = (exp, vars) => {
+    const r = new ExpressionResult();
+    if (!exp.type) {
+        console.log(exp);
+        return r;
+    }
 
     const type = exp.type;
 
     if ( type === "BINARY_OPERATION" ) {
-        const resultLeft = validateExpression(exp.lhs, varIds);
-        if (resultLeft.error) return resultLeft;
+        const rLeft = validateExpression(exp.lhs, vars);
+        if (rLeft.error) return rLeft;
 
-        const resultRight = validateExpression(exp.rhs, varIds);
-        if (resultRight.error) return resultRight;
+        const rRight = validateExpression(exp.rhs, vars);
+        if (rRight.error) return rRight;
 
-        return r;
+        const op = exp.operator;
+        if ( op === "+" || op === "-" || op === "*" || op === "/" || op === ">" || op === ">=" || op === "<" || op === "<=" ) {
+            if (rLeft.type !== "numero") {
+                r.setError(`Para utilizar el operador ${op} el termino izquierdo debe ser del tipo numero`);
+                return r;
+            }
+            if (rRight.type !== "numero") {
+                r.setError(`Para utilizar el operador ${op} el termino derecho debe ser del tipo numero`);
+                return r;
+            }
+
+            if ( op === "+" || op === "-" || op === "*" || op === "/" ) {
+                r.setType("numero");
+            }
+            else {
+                r.setType("boolean");
+            }
+
+            return r;
+        }
+        if ( op === "&" || op === "|" ) {
+            if (rLeft.type !== "boolean") {
+                r.setError(`Para utilizar el operador ${op} el termino izquierdo debe ser del tipo boolean`);
+                return r;
+            }
+            if (rRight.type !== "boolean") {
+                r.setError(`Para utilizar el operador ${op} el termino derecho debe ser del tipo boolean`);
+                return r;
+            }
+
+            r.setType("boolean");
+            return r;
+        }
+
+        if (op === "=" || op === "!=") {
+            if (rLeft.type !== rRight.type) {
+                r.setError(`Para utilizar el operador ${op} el termino izquierdo debe ser del mismo tipo que el de la derecha`);
+                return r;
+            }
+
+            r.setType("boolean");
+            return r;
+        }
+    }
+    
+    if ( type === "UNARY_OPERATION" ) {
+        const op = exp.operator;
+        const rRight = validateExpression(exp.rhs, vars);
+        if (rRight.error) return rRight;
+
+        if (op === "-") {
+            if (rRight.type !== "numero") {
+                r.setError("No se puede hacer negativo un valor booleano, mal uso del operador '-'");
+            }
+            return r;
+        }
+        if (op === "!") {
+            if (rRight.type !== "boolean") {
+                r.setError("No se puede negar un valor numero, mal uso del operador '!'");
+            }
+            return r;
+        }
     }
 
-    if ( type === "UNARY_OPERATION" ) {
-        const resultRight = validateExpression(exp.rhs, varIds);
-        if (resultRight.error) return resultRight;
-
+    if ( type === "LITERAL_INTEGER") {
+        r.setType("numero");
+        return r;
+    }
+    if ( type === "LITERAL_BOOLEAN") {
+        r.setType("boolean");
         return r;
     }
 
     if ( type === "VARIABLE" ) {
-        if (!identifierExist(exp.identifier, varIds)) {
+        const varIndex = vars.findIndex(v => v.identifier === exp.identifier);
+        if (varIndex === -1) {
             r.setError(
-                "Invalida variable",
-                `Variable '${exp.identifier}' no fue declarada`
+                `Variable invalida, '${exp.identifier}' no fue declarada`
             );
-        }
+            return r;
+        };
 
+        r.setType(vars[varIndex].type_value);
         return r;
     }
 
-    return r;
+    if ( type === "STATE_METHOD" ) {
+        const id = exp.identifier;
+
+        if ( id === "HayFlorEnLaEsquina" ||
+             id === "HayPapelEnLaEsquina" ||
+             id === "HayFlorEnLaBolsa" ||
+             id === "HayPapelEnLaBolsa") {
+            r.setType("boolean");
+            return r;
+        }
+
+        if ( id === "PosCa" || id === "PosAv" ) {
+            r.setType("numero");
+            return r;
+        }
+
+        console.log("no resolviste esto pa", exp);
+    }
+
+    console.log(exp, "no resolviste este caso pa");
 }
 
-const validateStatement = (statement, varIds, instancesIds, validProcedures) => {
+const validateStatement = (statement, vars, instancesIds, validProcedures) => {
     const r = new ValidationError();
-    if (!statement.type) return r;
+    if (!statement.type) {
+        console.log(statement);
+        return r;
+    }
 
     const type = statement.type;
 
     if ( type === "STATEMENT_ASSIGN" ) {
         const identifier = statement.identifier;
-        if (!identifierExist(identifier, varIds)) {
+        const varIndex = vars.findIndex(v => v.identifier === identifier);
+        if (varIndex === -1) {
             r.setError(
-                "Invalida asignacion",
-                `Variable '${identifier}' no fue declarada`
-            )
+                `Variable invalida, '${identifier}' no fue declarada`
+            );
+            return r;
+        };
+
+        const varType = vars[varIndex].type_value;
+        
+        const value = statement.value;
+        const rExp = validateExpression(value, vars);
+        if (rExp.error) {
+            r.setError(
+                "Invalida asignacion de valor",
+                `${rExp.context}, en la asignacion de la variable ${identifier}`,
+            );
             return r;
         }
-        const value = statement.value;
-        const resultExp = validateExpression(value, varIds);
-        if (resultExp.error) {
+
+        if (varType !== rExp.type) {
             r.setError(
-                resultExp.type,
-                `${resultExp.context}, en la asignacion de la variable ${identifier}`,
+                "Invalida asignacion de valor",
+                `No se puede asignar un valor de tipo ${rExp.type} a una variable de tipo ${varType}, en la asignacion de la variable ${identifier}`,
             )
         }
+
         return r;
     }
 
     if ( type === "STATEMENT_BLOCK" ) {
-        const resultBody = validateBody(statement.body, varIds, instancesIds, validProcedures);
+        const resultBody = validateBody(statement.body, vars, instancesIds, validProcedures);
         if (resultBody.error) {
             r.setError(
                 resultBody.type,
@@ -484,30 +625,49 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
 
     if ( type === "IF" || type === "FOR" || type === "WHILE" ) {
         const condition = statement.condition;
-        const resultCond = validateExpression(condition, varIds);
-        if (resultCond.error) {
+        const rCond = validateExpression(condition, vars);
+        if (rCond.error) {
             r.setError(
-                resultCond.type,
-                `${resultCond.context}, en declaracion de condicion`,
+                "Condicion invalida",
+                `${rCond.context}, en declaracion de condicion`,
             )
             return r;
         }
 
-        const resultBody = validateStatement(statement.body, varIds, instancesIds, validProcedures)
-        if (resultBody.error) {
+        if ( type === "IF" || type === "WHILE" ) {
+            if (rCond.type !== "boolean") {
+                r.setError(
+                    "Invalido resultado de condicion",
+                    `Resultado de expresion invalido, una condicion en una sentencia de tipo ${type === "IF"? "si":"mientras"} debe ser de tipo booleana una vez evaluada`,
+                )
+                return r;
+            }
+        }
+        else if ( type === "FOR" ) {
+            if (rCond.type !== "numero") {
+                r.setError(
+                    "Invalido resultado de condicion",
+                    `Resultado de expresion invalido, una condicion en una sentencia de tipo repetir debe ser de tipo numero una vez evaluada`,
+                )
+                return r;
+            }
+        }
+
+        const rBody = validateStatement(statement.body, vars, instancesIds, validProcedures);
+        if (rBody.error) {
             r.setError(
-                resultBody.type,
-                resultBody.context,
+                rBody.type,
+                rBody.context,
             )
             return r;
         }
 
         if (type === "IF") {
-            const resultElse = validateStatement(statement.body, varIds, instancesIds, validProcedures)
-            if (resultElse.error) {
+            const rElse = validateStatement(statement.body, vars, instancesIds, validProcedures)
+            if (rElse.error) {
                 r.setError(
-                    resultElse.type,
-                    `${resultElse.context}, en la declaracion del sino`,
+                    rElse.type,
+                    `${rElse.context}, en la declaracion del sino`,
                 )
             }
         }
@@ -518,18 +678,18 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
     // Improve the handling of arguments at inform sentence
     if ( type === "INFORM" ) {
         const { arg1, arg2 } = statement;
-        let resultExp = new ValidationError();
+        let rExp = new ValidationError();
 
         if (arg1.type === "STRING_LITERAL" && arg2.type) {
-            resultExp = validateExpression(arg2, varIds);
+            rExp = validateExpression(arg2, vars);
         }
         else if (arg1.type !== "STRING_LITERAL") {
-            resultExp = validateExpression(arg1, varIds);
+            rExp = validateExpression(arg1, vars);
         }
-        if (resultExp.error) {
+        if (rExp.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
-                `${resultExp.context}, en la declaracion del parametro para el Informar`
+                `${rExp.context}, en la declaracion del parametro para el Informar`
             )
         }
 
@@ -539,21 +699,36 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
     if ( type === "CHANGE_POSITION" ) {
         const { x, y } = statement;
 
-        let resultExp = validateExpression(x, varIds);
-        if (resultExp.error) {
+        const rExpX = validateExpression(x, vars);
+        if (rExpX.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
-                `${resultExp.context}, en la coordenada x del Pos`
+                `${rExpX.context}, en la coordenada x del Pos`
+            )
+            return r;
+        }
+        if (rExpX.type !== "numero") {
+            r.setError(
+                "Invalida declaracion de parametro",
+                `Resultado de expresion invalido, la expresion para el parametro x del Pos debe dar como resultado un valor de tipo numero`,
             )
             return r;
         }
 
-        resultExp = validateExpression(y, varIds);
-        if (resultExp.error) {
+        const rExpY = validateExpression(y, vars);
+        if (rExpY.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
-                `${resultExp.context}, en la coordenada y del Pos`
+                `${rExpY.context}, en la coordenada y del Pos`
             )
+            return r;
+        }
+        if (rExpY.type !== "numero") {
+            r.setError(
+                "Invalida declaracion de parametro",
+                `Resultado de expresion invalido, la expresion para el parametro y del Pos debe dar como resultado un valor de tipo numero`,
+            )
+            return r;
         }
 
         return r;
@@ -562,11 +737,11 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
     if ( type === "MESSAGE" ) {
         const { value, who, mode } = statement;
 
-        const resultExp = validateExpression(value, varIds);
-        if (resultExp.error) {
+        const rValue = validateExpression(value, vars);
+        if (rValue.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
-                `${resultExp.context}, en el parametro de valor del ${mode === "SEND"? "Enviar" : "Recibir"}Mensaje`
+                `${rValue.context}, en el parametro de valor del ${mode === "SEND"? "Enviar" : "Recibir"}Mensaje`
             )
             return r;
         }
@@ -586,21 +761,36 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
     if ( type === "CONTROL_CORNER" ) {
         const { x, y, mode } = statement;
 
-        let resultExp = validateExpression(x, varIds);
-        if (resultExp.error) {
+        const rExpX = validateExpression(x, vars);
+        if (rExpX.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
-                `${resultExp.context}, en la coordenada x del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina`
+                `${rExpX.context}, en la coordenada x del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina`
+            )
+            return r;
+        }
+        if (rExpX.type !== "numero") {
+            r.setError(
+                "Invalida declaracion de parametro",
+                `Resultado de expresion invalido, la expresion para el parametro x del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina debe dar como resultado un valor de tipo numero`,
             )
             return r;
         }
 
-        resultExp = validateExpression(y, varIds);
-        if (resultExp.error) {
+        const rExpY = validateExpression(y, vars);
+        if (rExpY.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
-                `${resultExp.context}, en la coordenada x del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina`
+                `${rExpX.context}, en la coordenada y del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina`
             )
+            return r;
+        }
+        if (rExpY.type !== "numero") {
+            r.setError(
+                "Invalida declaracion de parametro",
+                `Resultado de expresion invalido, la expresion para el parametro y del ${mode === "BLOCK"? "Bloquear" : "Liberar"}Esquina debe dar como resultado un valor de tipo numero`,
+            )
+            return r;
         }
 
         return r;
@@ -649,22 +839,37 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
                     )
                     break;
                 }
-                if (!identifierExist(actualParameters[i].identifier, varIds)) {
+                const varIndex = vars.findIndex(v => v.identifier === actualParameters[i].identifier);
+                if (varIndex === -1) {
                     r.setError(
                         `Invalido llamado de proceso`,
                         `Variable '${actualParameters[i].identifier}' no fue declarada y se usa en el llamado del proceso '${identifier}'`
-                    )
-                    break;
+                    );
+                    return r;
+                };
+                if (vars[varIndex].type_value !== formalParameters[i].type_value) {
+                    r.setError(
+                        `Invalido llamado de proceso`,
+                        `Parametro ${i + 1} en la llamada del proceso '${identifier}' no es del mismo tipo que el parametro ${i + 1} en la declaracion del proceso`,
+                    );
+                    return r;
                 }
             }
             else {
-                const resultExp = validateExpression(actualParameters[i], varIds);
-                if (resultExp.error) {
+                const rExp = validateExpression(actualParameters[i], vars);
+                if (rExp.error) {
                     r.setError(
                         `Invalido llamado de proceso`,
-                        `${resultExp.context}, en la declaracion del paramtro ${i + 1} en el llamado del proceso '${identifier}'`
-                    )
-                    break;
+                        `${rExp.context}, en la declaracion del paramtro ${i + 1} en el llamado del proceso '${identifier}'`
+                    );
+                    return r;
+                }
+                if (rExp.type !== formalParameters[i].type_value) {
+                    r.setError(
+                        `Invalido llamado de proceso`,
+                        `Parametro ${i + 1} en la llamada del proceso '${identifier}' no es del mismo tipo que el parametro ${i + 1} en la declaracion del proceso`,
+                    );
+                    return r;
                 }
             }
         }
@@ -675,14 +880,14 @@ const validateStatement = (statement, varIds, instancesIds, validProcedures) => 
     return r;
 }
 
-const validateBody = (body, varIds, instancesIds, validProcedures) => {
+const validateBody = (body, vars, instancesIds, validProcedures) => {
     const r = new ValidationError();
 
     if (body.length === 0) return r;
 
     for(let i = 0; i < body.length; i++) {
         const statement = body[i];
-        const statementResult = validateStatement(statement, varIds, instancesIds, validProcedures);
+        const statementResult = validateStatement(statement, vars, instancesIds, validProcedures);
         
         if (statementResult.error) {
             r.setError(
@@ -734,10 +939,10 @@ const validateProcedures = (procedures, instancesIds) => {
             break;
         }
 
-        const allVarIds = getIdentifiers(procedures[i].local_variables).concat(getIdentifiers(procedures[i].parameters));
+        const allVars = getVariables(procedures[i].local_variables).concat(getVariables(procedures[i].parameters));
         
         const body = procedures[i].body;
-        const resultBody = validateBody(body, allVarIds, instancesIds, validProcedures);
+        const resultBody = validateBody(body, allVars, instancesIds, validProcedures);
 
         if (resultBody.error) {
             r.setError(
@@ -783,10 +988,10 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
             break;
         }
 
-        const allVarIds = getIdentifiers(robot_types[i].local_variables);
+        const allVars = getVariables(robot_types[i].local_variables);
         
         const body = robot_types[i].body;
-        const resultBody = validateBody(body, allVarIds, instancesIds, validProcedures);
+        const resultBody = validateBody(body, allVars, instancesIds, validProcedures);
 
         if (resultBody.error) {
             r.setError(

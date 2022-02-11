@@ -338,7 +338,6 @@ class CityMap {
         const { flowers, papers } = config;
 
         flowers.forEach( f => {
-            console.log(f);
             const x = utils.withGrid(f.x);
             const y = utils.withGrid(f.y);
             this.items.flower[`${x},${y}`] = new CityItem({

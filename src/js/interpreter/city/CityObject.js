@@ -207,11 +207,12 @@ class Robot extends CityObject {
 
         this.set = {
             varValue : (id, newValue) => {
-                this.variables[this.varIndex].forEach(variable => {
+                for (const variable of this.variables[this.varIndex]) {
                     if (variable.identifier === id) {
-                        variable.value = newValue
+                        variable.value = newValue;
+                        break;
                     }
-                });
+                }
             },
             varValueIndexed : (id, newValue, index) => {
                 this.variables[index].forEach(variable => {

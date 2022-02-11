@@ -29,7 +29,7 @@ var RobotScriptHighlightRules = function() {
 
     var supportFunction = (
         "HayFlorEnLaEsquina|HayPapelEnLaEsquina|HayFlorEnLaBolsa|HayPapelEnLaBolsa|PosAv|PosCa|" +
-        "Pos|mover|derecha|tomarFlor|tomarPapel|depositarFlor|depositarPapel|AsignarArea|Iniciar|Informar|Random|" +
+        "Pos|mover|derecha|tomarFlor|tomarPapel|depositarFlor|depositarPapel|AsignarArea|AsignarItem|Iniciar|Informar|Random|" +
         "EnviarMensaje|RecibirMensaje|BloquearEsquina|LiberarEsquina"
     );
 
@@ -58,7 +58,7 @@ var RobotScriptHighlightRules = function() {
                 next : "comment"
             }, {
                 token : "string", // character
-                regex : `["](.+)?["]|['](.+)?[']`
+                regex : `["][^"\n]*["]|['][^'\n]*[']`
             }, {
                 token : "string.start",
                 regex : '"', 

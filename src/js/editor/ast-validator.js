@@ -275,11 +275,16 @@ const validateInits = (inits, instances, areas) => {
         const validInstance = {
             identifier : instance.identifier,
             areas : [],
+            inventory : {
+                flower : null,
+                paper : null
+            },
             initial_position : {}
         }
 
         validInstances.push(validInstance);
     })
+
 
     const assigns = inits.assign_areas;
     
@@ -348,7 +353,46 @@ const validateInits = (inits, instances, areas) => {
         }
     }
     if (r.error) return r;
+
     
+    const items = inits.assign_items;
+    
+    for(let i = 0; i < items.length; i++) {
+        const identifier = items[i].identifier;
+        const instanceIndex = validInstances.findIndex( e => e.identifier === identifier);
+        if (instanceIndex === -1) {
+            r.setError(
+                `Invalida asignacion de item`,
+                `La instancia '${identifier}' no fue declarada y se usa en la asignacion de item ${i + 1}`
+            );
+            break;
+        };
+
+        const inventory = validInstances[instanceIndex].inventory;
+
+        const value = items[i].value;
+        for (const type of items[i].type) {
+            if (type !== "flower" && type !== "paper") {
+                r.setError(
+                    `Invalida asignacion de item`,
+                    `El tipo de item '${type}' no es valido y se usa en la asignacion de item ${i + 1}`
+                );
+                break;
+            }
+            if (inventory[type]) {
+                r.setError(
+                    `Invalida asignacion de item`,
+                    `Ya se le asigno la cantidad del item '${type}' a la instancia '${identifier}'`
+                );
+                break;
+            }
+            inventory[type] = value;
+        }
+        if (r.error) break;
+    }
+    if (r.error) return r;
+    
+
     const initials = inits.initial_positions;
 
     for(let i = 0; i < initials.length; i++) {
@@ -585,6 +629,7 @@ const validateStatement = (statement, vars, instancesIds, validProcedures) => {
         const varIndex = vars.findIndex(v => v.identifier === identifier);
         if (varIndex === -1) {
             r.setError(
+                "Invalida asignacion de valor",
                 `Variable invalida, '${identifier}' no fue declarada`
             );
             return r;
@@ -1037,10 +1082,3 @@ function validateAst(inputAst) {
 };
 
 export {validateAst}
-
-// if (astResult.error) {
-//     console.log(astResult.errors[0])
-// }
-// else {
-//     console.log(validateAst(astResult.ast.value))
-// }

@@ -194,6 +194,17 @@ class City {
                         b : b
                     })
                 }
+            });
+            const inventory = {
+                flower : 0,
+                paper : 0
+            }
+            ast.INITS.assign_items.forEach(assign => {
+                if (assign.identifier === id) {
+                    for (const type of assign.type) {
+                        inventory[type] = assign.value;
+                    }
+                }
             })
         
             while (index > 7) {
@@ -214,10 +225,7 @@ class City {
                 variables : type.variables,
                 statements : newBody,
                 procedures : newProcedures,
-                inventory : {
-                    flower : 0,
-                    paper : 0
-                },
+                inventory : inventory,
                 src : `./src/assets/city/object/robot/robot-32x8-${index}.png`,
                 color : colorTable[index]
             }

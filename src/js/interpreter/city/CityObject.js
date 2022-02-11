@@ -498,7 +498,7 @@ class Robot extends CityObject {
                 message = `${arg1.value}`;
             }
             else {
-                message = `${arg1.value}, ${arg2.value}`;
+                message = `${arg1.value}${arg2.value}`;
             }
             
             this.map.addLog(

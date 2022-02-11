@@ -15,7 +15,7 @@ const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-ZñÑ](\w|�
 const Natural = createToken({ name: "Natural", pattern: /0|[1-9]\d*/ });
 const Integer = createToken({ name: "Integer", pattern: /0|[1-9]\d*/ });
 const Boolean = createToken({ name: "Boolean", pattern: /verdad|falso/, longer_alt: Identifier });
-const String = createToken({ name: "String", pattern: /["](.+)?["]|['](.+)?[']/ });
+const String = createToken({ name: "String", pattern: /["][^"\n]*["]|['][^'\n]*[']/ });
 
 const Else = createToken({ name: "Else", pattern: /sino/, longer_alt: Identifier });
 const If = createToken({ name: "If", pattern: /si/, longer_alt: Identifier });
@@ -73,6 +73,7 @@ const Robots = createToken({ name: "Robots", pattern: /robots/, longer_alt: Iden
 const Robot = createToken({ name: "Robot", pattern: /robot/, longer_alt: Identifier });
 
 const AsignArea = createToken({ name: "AsignArea", pattern: /AsignarArea/, longer_alt: Identifier });
+const AsignItem = createToken({ name: "AsignItem", pattern: /AsignarItem/, longer_alt: Identifier });
 const InitRobot = createToken({ name: "InitRobot", pattern: /Iniciar/, longer_alt: Identifier });
 
 const StateMethod = createToken({ name: "StateMethod", pattern: Lexer.NA });
@@ -123,6 +124,7 @@ const allTokens = [
     While,
 
     AsignArea,
+    AsignItem,
     InitRobot,
 
     Boolean,
@@ -579,7 +581,8 @@ class RobotScriptParser extends CstParser {
             $.MANY(() => {
                 $.OR([
                     { ALT: () => {$.SUBRULE($.asignArea)}},
-                    { ALT: () => {$.SUBRULE($.initialPosition)}}
+                    { ALT: () => {$.SUBRULE($.initialPosition)}},
+                    { ALT: () => {$.SUBRULE($.asignItem)}}
                 ])
             })
             $.CONSUME(End)
@@ -593,6 +596,20 @@ class RobotScriptParser extends CstParser {
                     $.CONSUME(Identifier)
                 }
             })
+            $.CONSUME(RParen)
+        });
+        $.RULE("asignItem", () => {
+            $.CONSUME(AsignItem)
+            $.CONSUME(LParen)
+            $.CONSUME(Identifier)
+            $.CONSUME1(Comma)
+            $.CONSUME1(String)
+            $.OPTION(() => {
+                $.CONSUME2(Comma)
+                $.CONSUME2(String)
+            })
+            $.CONSUME3(Comma)
+            $.CONSUME(Integer)
             $.CONSUME(RParen)
         });
         $.RULE("initialPosition", () => {
@@ -807,7 +824,7 @@ class RSToAstVisitor extends BaseRSVisitor {
         if (ctx.String) {
             arg1 = {
                 type : "STRING_LITERAL",
-                value : ctx.String[0].image.replaceAll('"', "")
+                value : ctx.String[0].image.replaceAll(/["']/g, "")
             }
             if (ctx.expression) {
                 arg2 = this.visit(ctx.expression)
@@ -1173,6 +1190,14 @@ class RSToAstVisitor extends BaseRSVisitor {
             })
         }
 
+        let items_asignation = [];
+        if (ctx.asignItem) {
+            ctx.asignItem.forEach( dec => {
+                const item = this.visit(dec);
+                items_asignation.push(item);
+            })
+        }
+
         let positions = [];
         if (ctx.initialPosition) {
             ctx.initialPosition.forEach( dec => {
@@ -1183,6 +1208,7 @@ class RSToAstVisitor extends BaseRSVisitor {
 
         return {
             assign_areas: areas_asignation,
+            assign_items: items_asignation,
             initial_positions: positions
         }
     };
@@ -1198,6 +1224,25 @@ class RSToAstVisitor extends BaseRSVisitor {
         return {
             type : area_type,
             identifier : identifier
+        }
+    };
+    asignItem(ctx) {
+        const identifier = ctx.Identifier[0].image;
+
+        const item_type = [];
+
+        ctx.String.forEach(type => {
+            const id = type.image.replaceAll(/["']/g, "");
+            item_type.push(id === "flores"? "flower":
+                        id === "papeles"? "paper": id);
+        });
+
+        const quantity = Number(ctx.Integer[0].image);
+
+        return {
+            identifier : identifier,
+            type : item_type,
+            value : quantity
         }
     };
     initialPosition(ctx) {

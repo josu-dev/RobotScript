@@ -96,8 +96,144 @@ const GenerateNumber = createToken({ name: "GenerateNumber", pattern: /Random/, 
 const Message = createToken({ name: "Message", pattern: /EnviarMensaje|RecibirMensaje/, longer_alt: Identifier });
 const ControlCorner = createToken({ name: "ControlCorner", pattern: /BloquearEsquina|LiberarEsquina/, longer_alt: Identifier });
 
+const createTokenInstance = chevrotain.createTokenInstance;
+
+// State required for matching the indentations
+let indentStack = [0]
+let error = "";
+let error2 = "";
+
+/**
+ * This custom Token matcher uses Lexer context ("matchedTokens" and "groups" arguments)
+ * combined with state via closure ("indentStack" and "lastTextMatched") to match indentation.
+ *
+ * @param {string} text - the full text to lex, sent by the Chevrotain lexer.
+ * @param {number} offset - the offset to start matching in the text.
+ * @param {IToken[]} matchedTokens - Tokens lexed so far, sent by the Chevrotain Lexer.
+ * @param {object} groups - Token groups already lexed, sent by the Chevrotain Lexer.
+ * @param {string} type - determines if this function matches Indent or Outdent tokens.
+ * @returns {*}
+ */
+function matchIndentBase(text, offset, matchedTokens, groups, type) {
+  const noTokensMatchedYet = _.isEmpty(matchedTokens)
+  const newLines = groups.nl
+  const noNewLinesMatchedYet = _.isEmpty(newLines)
+  const isFirstLine = noTokensMatchedYet && noNewLinesMatchedYet
+  const isStartOfLine =
+    // only newlines matched so far
+    (noTokensMatchedYet && !noNewLinesMatchedYet) ||
+    // Both newlines and other Tokens have been matched AND the offset is just after the last newline
+    (!noTokensMatchedYet &&
+      !noNewLinesMatchedYet &&
+      offset === _.last(newLines).startOffset + 1)
+
+  // indentation can only be matched at the start of a line.
+  if (isFirstLine || isStartOfLine) {
+    let match
+    let currIndentLevel = undefined
+
+    const wsRegExp = / +/y
+    wsRegExp.lastIndex = offset
+    match = wsRegExp.exec(text)
+    // possible non-empty indentation
+    if (match !== null) {
+      currIndentLevel = match[0].length
+    }
+    // "empty" indentation means indentLevel of 0.
+    else {
+      currIndentLevel = 0
+    }
+
+    const prevIndentLevel = _.last(indentStack)
+    // deeper indentation
+    if (currIndentLevel > prevIndentLevel && type === "indent") {
+        console.log(currIndentLevel, prevIndentLevel)
+        if ((currIndentLevel - 2)> prevIndentLevel) error2 = error2.concat("exeso de identacion");
+      indentStack.push(currIndentLevel)
+      return match
+    }
+    // shallower indentation
+    else if (currIndentLevel < prevIndentLevel && type === "outdent") {
+      const matchIndentIndex = _.findLastIndex(
+        indentStack,
+        (stackIndentDepth) => stackIndentDepth === currIndentLevel
+      )
+
+      // any outdent must match some previous indentation level.
+      if (matchIndentIndex === -1) {
+        error = `invalid outdent at offset: ${text.substring(offset, offset + 10)} ${matchedTokens[matchedTokens.length -1].startLine}  `
+        console.log(matchedTokens[matchedTokens.length -1]);
+      }
+
+      const numberOfDedents = indentStack.length - matchIndentIndex - 1
+
+      // This is a little tricky
+      // 1. If there is no match (0 level indent) than this custom token
+      //    matcher would return "null" and so we need to add all the required outdents ourselves.
+      // 2. If there was match (> 0 level indent) than we need to add minus one number of outsents
+      //    because the lexer would create one due to returning a none null result.
+      let iStart = match !== null ? 1 : 0
+      for (let i = iStart; i < numberOfDedents; i++) {
+        indentStack.pop()
+        matchedTokens.push(
+          createTokenInstance(Outdent, "", NaN, NaN, NaN, NaN, NaN, NaN)
+        )
+      }
+
+      // even though we are adding fewer outdents directly we still need to update the indent stack fully.
+      if (iStart === 1) {
+        indentStack.pop()
+      }
+      return match
+    } else {
+      // same indent, this should be lexed as simple whitespace and ignored
+      return null
+    }
+  } else {
+    // indentation cannot be matched under other circumstances
+    return null
+  }
+}
+
+// customize matchIndentBase to create separate functions of Indent and Outdent.
+const matchIndent = _.partialRight(matchIndentBase, "indent")
+const matchOutdent = _.partialRight(matchIndentBase, "outdent")
+
+const Print = createToken({ name: "Print", pattern: /print/ })
+const IntegerLiteral = createToken({ name: "IntegerLiteral", pattern: /\d+/ })
+const Colon = createToken({ name: "Colon", pattern: /:/ })
+const Spaces = createToken({
+  name: "Spaces",
+  pattern: / +/,
+  group: Lexer.SKIPPED
+})
+
+// newlines are not skipped, by setting their group to "nl" they are saved in the lexer result
+// and thus we can check before creating an indentation token that the last token matched was a newline.
+const Newline = createToken({
+  name: "Newline",
+  pattern: /\n|\r\n?/,
+  group: "nl"
+})
+
+// define the indentation tokens using custom token patterns
+const Indent = createToken({
+  name: "Indent",
+  pattern: matchIndent,
+  // custom token patterns should explicitly specify the line_breaks option
+  line_breaks: false
+})
+const Outdent = createToken({
+  name: "Outdent",
+  pattern: matchOutdent,
+  // custom token patterns should explicitly specify the line_breaks option
+  line_breaks: false
+})
 const allTokens = [
-    WhiteSpace,
+    Newline,
+    Outdent,
+    Indent,
+    Spaces,
     LineComment,
     MultiLineComment,
 
@@ -243,9 +379,11 @@ class RobotScriptParser extends CstParser {
 
         $.RULE("section_Variables", () => {
             $.CONSUME(Variables)
+            $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
                 $.SUBRULE($.declaration_Variable)
             })
+            $.CONSUME(Outdent)
         });
         $.RULE("declaration_Variable", () => {
             $.CONSUME1(Identifier)
@@ -289,11 +427,11 @@ class RobotScriptParser extends CstParser {
             $.SUBRULE($.statement)
         })
         $.RULE("blockStatement", () => {
-            $.CONSUME(Begin)
+            $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
               $.SUBRULE($.statement)
             })
-            $.CONSUME(End)
+            $.CONSUME(Outdent)
         })
         $.RULE("assignStatement", () => {
             $.CONSUME(Identifier)
@@ -493,9 +631,11 @@ class RobotScriptParser extends CstParser {
 
         $.RULE("section_Procedures", () => {
             $.CONSUME(Procedures)
+            $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
                 $.SUBRULE($.declaration_Procedure)
             })
+            $.CONSUME(Outdent)
         })
         $.RULE("declaration_Procedure", () => {
             $.CONSUME(Procedure)
@@ -512,9 +652,11 @@ class RobotScriptParser extends CstParser {
                 $.SUBRULE($.section_Variables)
             })
             $.CONSUME(Begin)
+            $.CONSUME(Indent)
             $.MANY(() => {
                 $.SUBRULE($.statement)
             })
+            $.CONSUME(Outdent)
             $.CONSUME(End)
         })
         $.RULE("declaration_Parameter", () => {
@@ -526,9 +668,11 @@ class RobotScriptParser extends CstParser {
 
         $.RULE("section_Areas", () => {
             $.CONSUME(Areas)
+            $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
                 $.SUBRULE($.declaration_Area)
             })
+            $.CONSUME(Outdent)
         })
         $.RULE("declaration_Area", () => {
             $.CONSUME(Identifier)
@@ -547,9 +691,11 @@ class RobotScriptParser extends CstParser {
 
         $.RULE("section_Robots", () => {
             $.CONSUME(Robots)
+            $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
                 $.SUBRULE($.declaration_Robot)
             })
+            $.CONSUME(Outdent)
         });
         $.RULE("declaration_Robot", () => {
             $.CONSUME(Robot)
@@ -558,17 +704,21 @@ class RobotScriptParser extends CstParser {
                 $.SUBRULE($.section_Variables)
             })
             $.CONSUME(Begin)
+            $.CONSUME(Indent)
             $.MANY(() => {
                 $.SUBRULE($.statement)
             })
+            $.CONSUME(Outdent)
             $.CONSUME(End)
         });
 
         $.RULE("section_Instances", () => {
             $.CONSUME(Variables)
+            $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
                 $.SUBRULE($.declaration_Instance)
             })
+            $.CONSUME(Outdent)
         });
         $.RULE("declaration_Instance", () => {
             $.CONSUME(Identifier)
@@ -578,6 +728,7 @@ class RobotScriptParser extends CstParser {
 
         $.RULE("section_Main", () => {
             $.CONSUME(Begin)
+            $.CONSUME(Indent)
             $.MANY(() => {
                 $.OR([
                     { ALT: () => {$.SUBRULE($.asignArea)}},
@@ -585,6 +736,7 @@ class RobotScriptParser extends CstParser {
                     { ALT: () => {$.SUBRULE($.asignItem)}}
                 ])
             })
+            $.CONSUME(Outdent)
             $.CONSUME(End)
         });
         $.RULE("asignArea", () => {
@@ -1270,8 +1422,15 @@ const toAstVisitorInstance = new RSToAstVisitor();
 
 function toAst(inputText) {
     // Lexing
-    const lexResult = RSLexerInstance.tokenize(inputText);
+    indentStack = [0];
+    error = "";
+    error2 = "";
+    const noTabs = inputText.replaceAll(/\t/g, "  ");
+    const lexResult = RSLexerInstance.tokenize(noTabs);
 
+    console.log(lexResult)  
+    console.log(error)
+    console.log(error2)
     if (lexResult.errors.length > 0) {
         return {
             ast : null,

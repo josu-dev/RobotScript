@@ -560,15 +560,18 @@ const validateExpression = (exp, vars) => {
         if (op === "-") {
             if (rRight.type !== "numero") {
                 r.setError("No se puede hacer negativo un valor booleano, mal uso del operador '-'");
+                return r;
             }
-            return r;
+            r.setType("numero");
         }
         if (op === "!") {
             if (rRight.type !== "boolean") {
                 r.setError("No se puede negar un valor numero, mal uso del operador '!'");
+                return r;
             }
-            return r;
+            r.setType("boolean");
         }
+        return r;
     }
 
     if ( type === "LITERAL_INTEGER") {

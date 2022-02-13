@@ -188,6 +188,8 @@ class CityMap {
         this.activeInstances = 0;
 
         this.walls = config.walls || {};
+        
+        this.blockedCorners = {};
 
         this.items = {
             flower : {},
@@ -227,9 +229,9 @@ class CityMap {
                 const yFixed = utils.withGrid(y);
 
                 const coord = `${xFixed},${yFixed}`;
-                if ( this.walls[coord] ) return false;
+                if ( this.blockedCorners[coord] ) return false;
 
-                this.walls[coord] = true;
+                this.blockedCorners[coord] = true;
                 return true;
             },
             unblock : (x, y) => {
@@ -237,9 +239,9 @@ class CityMap {
                 const yFixed = utils.withGrid(y);
 
                 const coord = `${xFixed},${yFixed}`;
-                if ( !this.walls[coord] ) return false;
+                if ( !this.blockedCorners[coord] ) return false;
 
-                delete this.walls[coord];
+                delete this.blockedCorners[coord];
                 return true;
             }
         }
@@ -280,6 +282,7 @@ class CityMap {
             paper : {}
         };
         this.walls = {};
+        this.blockedCorners = {};
         this.executionError = false;
         Object.keys(this.robots).forEach(key => {
             if (key !== "camera") {
@@ -289,7 +292,8 @@ class CityMap {
     }
 
     isSpaceTaken(newX, newY) {
-        return this.walls[`${newX},${newY}`] || false;
+        console.log(JSON.stringify(this.walls, null, " "))
+        return this.walls[`${newX},${newY}`] === true || false;
     }
 
     mountObjects() {

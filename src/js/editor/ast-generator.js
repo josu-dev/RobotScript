@@ -1,371 +1,87 @@
 "use strict";
-const createToken = chevrotain.createToken;
-const Lexer = chevrotain.Lexer;
+
+import RSLexer from "./RSLexer.js";
+
 const CstParser = chevrotain.CstParser;
-const defaultParserErrorProvider = chevrotain.defaultParserErrorProvider;
-// const { CstParser, Lexer, createToken } = require("../../lib/chevrotain/chevrotain.js")
-// import * as c from "../../lib/chevrotain/chevrotain.js"
-
-const WhiteSpace = createToken({ name: "WhiteSpace", pattern: /\s+/, group: Lexer.SKIPPED });
-const LineComment = createToken({ name: "WhiteSpace", pattern: /\/\/.*/, group: Lexer.SKIPPED });
-const MultiLineComment = createToken({ name: "WhiteSpace", pattern: /\/\*[\s\S]*?\*\//, group: Lexer.SKIPPED });
-
-const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-ZñÑ](\w|ñ|Ñ)*/ });
-
-const Natural = createToken({ name: "Natural", pattern: /0|[1-9]\d*/ });
-const Integer = createToken({ name: "Integer", pattern: /0|[1-9]\d*/ });
-const Boolean = createToken({ name: "Boolean", pattern: /verdad|falso/, longer_alt: Identifier });
-const String = createToken({ name: "String", pattern: /["][^"\n]*["]|['][^'\n]*[']/ });
-
-const Else = createToken({ name: "Else", pattern: /sino/, longer_alt: Identifier });
-const If = createToken({ name: "If", pattern: /si/, longer_alt: Identifier });
-const For = createToken({ name: "For", pattern: /repetir/, longer_alt: Identifier });
-const While = createToken({ name: "While", pattern: /mientras/, longer_alt: Identifier });
-
-const Comma = createToken({ name: "Comma", pattern: /,/ });
-const DotComma = createToken({ name: "DotComma", pattern: /;/ });
-const DDot = createToken({ name: "DDot", pattern: /:/ });
-
-const LParen = createToken({ name: "LParen", pattern: /\(/ });
-const RParen = createToken({ name: "RParen", pattern: /\)/ });
-const LCurly = createToken({ name: "LCurly", pattern: /{/ });
-const RCurly = createToken({ name: "RCurly", pattern: /}/ });
-
-const GET = createToken({ name: "GET", pattern: />=/ });
-const LET = createToken({ name: "LET", pattern: /<=/ });
-const GT = createToken({ name: "GT", pattern: />/ });
-const LT = createToken({ name: "LT", pattern: /</ });
-const NotEqual = createToken({ name: "NotEqual", pattern: /\!=/ });
-const Equal = createToken({ name: "Equal", pattern: /=/ });
-
-const Asignation = createToken({ name: "Asignation", pattern: Lexer.NA });
-const SimpleAssign = createToken({ name: "SimpleAssign", pattern: /:=/, categories: Asignation });
 
 
-const AdditionOperator = createToken({ name: "AdditionOperator", pattern: Lexer.NA });
-const Plus = createToken({ name: "Plus", pattern: /\+/, categories: AdditionOperator });
-const Minus = createToken({ name: "Minus", pattern: /\-/, categories: AdditionOperator });
+const allTokens = RSLexer.tokensArray;
+const {
+    Newline, Outdent, Indent, Spaces,
+    LineComment, MultiLineComment,
 
-const MultiplicationOperator = createToken({ name: "MultiplicationOperator", pattern: Lexer.NA });
-const Mult = createToken({ name: "Multi", pattern: /\*/, categories: MultiplicationOperator });
-const Div = createToken({ name: "Div", pattern: /\//, categories: MultiplicationOperator });
-
-const Or = createToken({ name: "Or", pattern: /\|/ });
-const And = createToken({ name: "And", pattern: /\&/ });
-const Not = createToken({ name: "Not", pattern: /\!/ });
-
-const Begin = createToken({ name: "Begin", pattern: /comenzar/, longer_alt: Identifier });
-const End = createToken({ name: "End", pattern: /fin/, longer_alt: Identifier });
-
-const Program = createToken({ name: "Program", pattern: /programa/, longer_alt: Identifier });
-
-const Procedures = createToken({ name: "Procedures", pattern: /procesos/, longer_alt: Identifier });
-const Procedure = createToken({ name: "Procedure", pattern: /proceso/, longer_alt: Identifier });
-const TypeParameter = createToken({ name: "TypeParameter", pattern: /ES|E/, longer_alt: Identifier });
-
-const Variables = createToken({ name: "Variables", pattern: /variables/, longer_alt: Identifier });
-const TypeValue = createToken({ name: "TypeValue", pattern: /boolean|numero/, longer_alt: Identifier });
-
-const Areas = createToken({ name: "Areas", pattern: /areas/, longer_alt: Identifier });
-const AreaType = createToken({ name: "AreaType", pattern: /AreaPC|AreaP|AreaC/, longer_alt: Identifier });
-
-const Robots = createToken({ name: "Robots", pattern: /robots/, longer_alt: Identifier });
-const Robot = createToken({ name: "Robot", pattern: /robot/, longer_alt: Identifier });
-
-const AsignArea = createToken({ name: "AsignArea", pattern: /AsignarArea/, longer_alt: Identifier });
-const AsignItem = createToken({ name: "AsignItem", pattern: /AsignarItem/, longer_alt: Identifier });
-const InitRobot = createToken({ name: "InitRobot", pattern: /Iniciar/, longer_alt: Identifier });
-
-const StateMethod = createToken({ name: "StateMethod", pattern: Lexer.NA });
-const ConsultItem = createToken({ name: "ConsultItem", pattern: /HayFlorEnLaBolsa|HayPapelEnLaBolsa|HayFlorEnLaEsquina|HayPapelEnLaEsquina/, longer_alt: Identifier, categories: StateMethod });
-const ConsultPosition = createToken({ name: "ConsultPosition", pattern: /PosCa|PosAv/, longer_alt: Identifier, categories: StateMethod });
-
-const ActionMethod = createToken({ name: "ActionMethod", pattern: Lexer.NA });
-const TakeItem = createToken({ name: "TakeItem", pattern: /tomarFlor|tomarPapel/, longer_alt: Identifier, categories: StateMethod });
-const DepositItem = createToken({ name: "DepositItem", pattern: /depositarFlor|depositarPapel/, longer_alt: Identifier, categories: StateMethod });
-const Movement = createToken({ name: "Movement", pattern: /mover/, longer_alt: Identifier, categories: StateMethod });
-const ChangeOrientation = createToken({ name: "ChangeOrientation", pattern: /derecha/, longer_alt: Identifier, categories: StateMethod });
-
-
-const ChangePosition = createToken({ name: "ChangePosition", pattern: /Pos/, longer_alt: Identifier });
-
-const Inform = createToken({ name: "Inform", pattern: /Informar/, longer_alt: Identifier });
-
-const GenerateNumber = createToken({ name: "GenerateNumber", pattern: /Random/, longer_alt: Identifier });
-
-const Message = createToken({ name: "Message", pattern: /EnviarMensaje|RecibirMensaje/, longer_alt: Identifier });
-const ControlCorner = createToken({ name: "ControlCorner", pattern: /BloquearEsquina|LiberarEsquina/, longer_alt: Identifier });
-
-const createTokenInstance = chevrotain.createTokenInstance;
-
-// State required for matching the indentations
-let indentStack = [0]
-let error = "";
-let error2 = "";
-
-/**
- * This custom Token matcher uses Lexer context ("matchedTokens" and "groups" arguments)
- * combined with state via closure ("indentStack" and "lastTextMatched") to match indentation.
- *
- * @param {string} text - the full text to lex, sent by the Chevrotain lexer.
- * @param {number} offset - the offset to start matching in the text.
- * @param {IToken[]} matchedTokens - Tokens lexed so far, sent by the Chevrotain Lexer.
- * @param {object} groups - Token groups already lexed, sent by the Chevrotain Lexer.
- * @param {string} type - determines if this function matches Indent or Outdent tokens.
- * @returns {*}
- */
-function matchIndentBase(text, offset, matchedTokens, groups, type) {
-  const noTokensMatchedYet = _.isEmpty(matchedTokens)
-  const newLines = groups.nl
-  const noNewLinesMatchedYet = _.isEmpty(newLines)
-  const isFirstLine = noTokensMatchedYet && noNewLinesMatchedYet
-  const isStartOfLine =
-    // only newlines matched so far
-    (noTokensMatchedYet && !noNewLinesMatchedYet) ||
-    // Both newlines and other Tokens have been matched AND the offset is just after the last newline
-    (!noTokensMatchedYet &&
-      !noNewLinesMatchedYet &&
-      offset === _.last(newLines).startOffset + 1)
-
-  // indentation can only be matched at the start of a line.
-  if (isFirstLine || isStartOfLine) {
-    let match
-    let currIndentLevel = undefined
-
-    const wsRegExp = / +/y
-    wsRegExp.lastIndex = offset
-    match = wsRegExp.exec(text)
-    // possible non-empty indentation
-    if (match !== null) {
-      currIndentLevel = match[0].length
-    }
-    // "empty" indentation means indentLevel of 0.
-    else {
-      currIndentLevel = 0
-    }
-
-    const prevIndentLevel = _.last(indentStack)
-    // deeper indentation
-    if (currIndentLevel > prevIndentLevel && type === "indent") {
-        console.log(currIndentLevel, prevIndentLevel)
-        if ((currIndentLevel - 2)> prevIndentLevel) error2 = error2.concat("exeso de identacion");
-      indentStack.push(currIndentLevel)
-      return match
-    }
-    // shallower indentation
-    else if (currIndentLevel < prevIndentLevel && type === "outdent") {
-      const matchIndentIndex = _.findLastIndex(
-        indentStack,
-        (stackIndentDepth) => stackIndentDepth === currIndentLevel
-      )
-
-      // any outdent must match some previous indentation level.
-      if (matchIndentIndex === -1) {
-        error = `invalid outdent at offset: ${text.substring(offset, offset + 10)} ${matchedTokens[matchedTokens.length -1].startLine}  `
-        console.log(matchedTokens[matchedTokens.length -1]);
-      }
-
-      const numberOfDedents = indentStack.length - matchIndentIndex - 1
-
-      // This is a little tricky
-      // 1. If there is no match (0 level indent) than this custom token
-      //    matcher would return "null" and so we need to add all the required outdents ourselves.
-      // 2. If there was match (> 0 level indent) than we need to add minus one number of outsents
-      //    because the lexer would create one due to returning a none null result.
-      let iStart = match !== null ? 1 : 0
-      for (let i = iStart; i < numberOfDedents; i++) {
-        indentStack.pop()
-        matchedTokens.push(
-          createTokenInstance(Outdent, "", NaN, NaN, NaN, NaN, NaN, NaN)
-        )
-      }
-
-      // even though we are adding fewer outdents directly we still need to update the indent stack fully.
-      if (iStart === 1) {
-        indentStack.pop()
-      }
-      return match
-    } else {
-      // same indent, this should be lexed as simple whitespace and ignored
-      return null
-    }
-  } else {
-    // indentation cannot be matched under other circumstances
-    return null
-  }
-}
-
-// customize matchIndentBase to create separate functions of Indent and Outdent.
-const matchIndent = _.partialRight(matchIndentBase, "indent")
-const matchOutdent = _.partialRight(matchIndentBase, "outdent")
-
-const Print = createToken({ name: "Print", pattern: /print/ })
-const IntegerLiteral = createToken({ name: "IntegerLiteral", pattern: /\d+/ })
-const Colon = createToken({ name: "Colon", pattern: /:/ })
-const Spaces = createToken({
-  name: "Spaces",
-  pattern: / +/,
-  group: Lexer.SKIPPED
-})
-
-// newlines are not skipped, by setting their group to "nl" they are saved in the lexer result
-// and thus we can check before creating an indentation token that the last token matched was a newline.
-const Newline = createToken({
-  name: "Newline",
-  pattern: /\n|\r\n?/,
-  group: "nl"
-})
-
-// define the indentation tokens using custom token patterns
-const Indent = createToken({
-  name: "Indent",
-  pattern: matchIndent,
-  // custom token patterns should explicitly specify the line_breaks option
-  line_breaks: false
-})
-const Outdent = createToken({
-  name: "Outdent",
-  pattern: matchOutdent,
-  // custom token patterns should explicitly specify the line_breaks option
-  line_breaks: false
-})
-const allTokens = [
-    Newline,
-    Outdent,
-    Indent,
-    Spaces,
-    LineComment,
-    MultiLineComment,
-
+    Message, SendMessage, ReciveMessage,
+    Begin, End, Else, If, While, For,
     Program,
+    Procedures, Procedure,
+    TypeParameter, ReferenceParameter, ValueParameter,
+    
+    Variables, TypeValue, TypeBoolean, TypeNumber,
 
-    Procedures,
-    Procedure,
+    Areas, TypeArea, AreaSemiPrivate, AreaPrivate, AreaShared,
 
-    Areas,
-    Variables,
-    TypeValue,
+    Robots, Robot,
 
-    AreaType,
-
-    Robots,
-    Robot,
-
-    Begin,
-    End,
-
-    Else,
-    If,
-    For,
-    While,
-
-    AsignArea,
-    AsignItem,
-    InitRobot,
-
-    Boolean,
-    Integer,
+    AssignArea, AssignItem, AssignOrigin,
 
     StateMethod,
-    ConsultItem,
-    ConsultPosition,
+    ConsultFC, ConsultFI, ConsultPC, ConsultPI, ConsultX, ConsultY,
 
-    
-    Message,
-    
     ActionMethod,
-    TakeItem,
-    DepositItem,
-    ChangePosition,
+    TakeItem, TakeFlower, TakePaper,
+    DepositItem, DepositFlower, DepositPaper,
     Movement,
-    ChangeOrientation,
-    Inform,
-    GenerateNumber,
-    ControlCorner,
+    ChangeDirection,
 
-    String,
+    ChangePosition, Inform, GenerateNumber,
+    ControlCorner, BlockCorner, UnblockCorner,
 
-    TypeParameter,
+    Integer, Boolean, LiteralString,
+
     Identifier,
 
-    Comma,
-    DotComma,
-    Asignation,
-    SimpleAssign,
-    DDot,
-
-    LParen,
-    RParen,
-    // LCurly,
-    // RCurly,
-
-    GET,
-    LET,
-    GT,
-    LT,
-    NotEqual,
-    Equal,
-
-
-    Plus,
-    Minus,
-    AdditionOperator,
-    Mult,
-    Div,
-    MultiplicationOperator,
-
-    Or,
-    And,
-    Not
-];
-
-
-const RSLexerErrorProvider = {
-    buildUnexpectedCharactersMessage(
-        fullText,
-        startOffset,
-        length,
-        line,
-        column
-    ) { 
-        if (length === 1) return (
-            `Error de escritura, el caracter '${fullText.charAt(startOffset)}' en la Ln: ${line}, Col: ${column} no es valido en el lenguaje`
-        )
-        return (
-            `Error de escritura, la palabra '${fullText.slice(startOffset, (startOffset + length))}' en la Ln: ${line}, Col: ${column} no es valido en el lenguaje`
-        )
-    }
-}
-const lexerConfig = {
-    errorMessageProvider : RSLexerErrorProvider,
-    positionTracking : "onlyStart"
-};
-const RSLexerInstance = new Lexer(allTokens, lexerConfig);
-
+    NotEqual, Equal, SimpleAssign,
+    Comma, Colon, SemiColon,
+    GET, LET, GT, LT,
+    Or, And, Not,
+    AdditionOperator, Plus, Minus,
+    MultiplicationOperator, Mult, Div,
+    LParen, RParen
+} = RSLexer.tokensObject;
 
 
 const RSParserErrorProvider = {
     // improve mismatch type handling
     buildMismatchTokenMessage: function (options) {
+        console.log(options);
+        
         return (
-            `Se esperaba ${options.expected.name} en la Ln ${options.actual.startLine}, Col ${options.actual.startColumn} pero se encontro '${options.actual.image}', en la declaracion de ${options.ruleName}`
+            `Se esperaba '${options.expected.LABEL}' en la Ln ${options.actual.startLine}, Col ${options.actual.startColumn} pero se encontro '${options.actual.image}', en la declaracion de ${options.ruleName}`
         );
     },
 
     buildNotAllInputParsedMessage: function (options) {
-        return `Existe codigo extra despues de la inicializacion del programa, en Ln ${options.firstRedundant.startLine}, Col ${options.firstRedundant.startColumn}`
+        return `Existe codigo extra despues de la inicializacion de los robots, en Ln ${options.firstRedundant.startLine}, Col ${options.firstRedundant.startColumn}`
     },
 
     buildNoViableAltMessage: function (options) {
         let posiblePaths = "";
-        options.expectedPathsPerAlt.forEach(path => posiblePaths = posiblePaths.concat(`${path[0][0].name}\n`));
+        options.expectedPathsPerAlt.forEach(path => {
+            path.forEach(path => {
+                if (path[0].LABEL)
+                posiblePaths = posiblePaths.concat(`${path[0].LABEL}, `);
+            })
+        });
+        if (posiblePaths !== "") posiblePaths = posiblePaths.substring(0, posiblePaths.length -2);
         return (
-            `Se esperaba: ${posiblePaths}En la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].image}', en la declaracion de ${options.ruleName}`
+            `Se esperaba: ${posiblePaths}\nEn la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].image}', en la declaracion de ${options.ruleName}`
         );
     },
 
     buildEarlyExitMessage: function (options) {
-        return `Se esperaba por lo menos una declaracion de: ${options.expectedIterationPaths[0][0].name} en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn}`
+        return (
+            `Se esperaba por lo menos una declaracion de: ${options.expectedIterationPaths[0][0].LABEL} en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn}, en la declaracion de ${options.ruleName}`
+        );
     }
 };
 const parserConfig = {
@@ -373,73 +89,76 @@ const parserConfig = {
 }
 class RobotScriptParser extends CstParser {
     constructor() {
-        super(allTokens, parserConfig);
+        super(
+            allTokens,
+            parserConfig
+        );
         
         const $ = this;
 
-        $.RULE("section_Variables", () => {
+        $.RULE("section_variables", () => {
             $.CONSUME(Variables)
             $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
-                $.SUBRULE($.declaration_Variable)
+                $.SUBRULE($.declaration_variable)
             })
             $.CONSUME(Outdent)
-        });
-        $.RULE("declaration_Variable", () => {
+        })
+        $.RULE("declaration_variable", () => {
             $.CONSUME1(Identifier)
             $.MANY(() => {
                 $.CONSUME(Comma)
                 $.CONSUME2(Identifier)
             })
-            $.CONSUME(DDot)
+            $.CONSUME(Colon)
             $.CONSUME(TypeValue)
-        });
+        })
 
         $.RULE("statement", () => {
             $.OR([
-                { ALT: () => $.SUBRULE($.ifStatement) },
-                { ALT: () => $.SUBRULE($.forStatement) },
-                { ALT: () => $.SUBRULE($.whileStatement) },
-                { ALT: () => $.SUBRULE($.blockStatement) },
-                { ALT: () => $.SUBRULE($.assignStatement) },
-                { ALT: () => $.SUBRULE($.complexActionMethod) },
-                { ALT: () => $.SUBRULE($.callProcedure) },
-                { ALT: () => $.SUBRULE($.actionMethod) },
+                { ALT: () => $.SUBRULE($.statement_if) },
+                { ALT: () => $.SUBRULE($.statement_for) },
+                { ALT: () => $.SUBRULE($.statement_while) },
+                { ALT: () => $.SUBRULE($.statement_block) },
+                { ALT: () => $.SUBRULE($.statement_assign) },
+                { ALT: () => $.SUBRULE($.action_method_complex) },
+                { ALT: () => $.SUBRULE($.call_procedure) },
+                { ALT: () => $.SUBRULE($.action_method) },
             ])
         })
-        $.RULE("ifStatement", () => {
+        $.RULE("statement_if", () => {
             $.CONSUME(If)
             $.SUBRULE($.paren_expr)
-            $.SUBRULE($.statement)
+            $.SUBRULE1($.statement)
             $.OPTION(() => {
                 $.CONSUME(Else)
                 $.SUBRULE2($.statement)
             })
         })
-        $.RULE("forStatement", () => {
+        $.RULE("statement_for", () => {
             $.CONSUME(For)
             $.SUBRULE($.paren_expr)
             $.SUBRULE($.statement)
         })
-        $.RULE("whileStatement", () => {
+        $.RULE("statement_while", () => {
             $.CONSUME(While)
             $.SUBRULE($.paren_expr)
             $.SUBRULE($.statement)
         })
-        $.RULE("blockStatement", () => {
+        $.RULE("statement_block", () => {
             $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
               $.SUBRULE($.statement)
             })
             $.CONSUME(Outdent)
         })
-        $.RULE("assignStatement", () => {
+        $.RULE("statement_assign", () => {
             $.CONSUME(Identifier)
-            $.CONSUME(Asignation)
+            $.CONSUME(SimpleAssign)
             $.SUBRULE($.expression)
-        });
+        })
 
-        $.RULE("callProcedure", () => {
+        $.RULE("call_procedure", () => {
             $.CONSUME(Identifier)
             $.CONSUME(LParen)
             $.MANY_SEP({
@@ -449,26 +168,26 @@ class RobotScriptParser extends CstParser {
                 }
             })
             $.CONSUME(RParen)
-        });
+        })
 
-        $.RULE("complexActionMethod", () => {
+        $.RULE("action_method_complex", () => {
             $.OR([
-                { ALT: () => $.SUBRULE($.changePosition) },
-                { ALT: () => $.SUBRULE($.generateNumber) },
+                { ALT: () => $.SUBRULE($.change_position) },
+                { ALT: () => $.SUBRULE($.generate_number) },
                 { ALT: () => $.SUBRULE($.inform) },
                 { ALT: () => $.SUBRULE($.message) },
-                { ALT: () => $.SUBRULE($.controlCorner) },
+                { ALT: () => $.SUBRULE($.control_corner) },
             ])
-        });
-        $.RULE("changePosition", () => {
+        })
+        $.RULE("change_position", () => {
             $.CONSUME(ChangePosition)
             $.CONSUME(LParen)
             $.SUBRULE1($.expression)
             $.CONSUME(Comma)
             $.SUBRULE2($.expression)
             $.CONSUME(RParen)
-        });
-        $.RULE("generateNumber", () => {
+        })
+        $.RULE("generate_number", () => {
             $.CONSUME(GenerateNumber)
             $.CONSUME(LParen)
             $.CONSUME(Identifier)
@@ -477,21 +196,21 @@ class RobotScriptParser extends CstParser {
             $.CONSUME2(Comma)
             $.SUBRULE2($.expression)
             $.CONSUME(RParen)
-        });
+        })
         $.RULE("inform", () => {
             $.CONSUME(Inform)
             $.CONSUME(LParen)
             $.OR([
                 { ALT : () => {
-                    $.CONSUME1(String)
+                    $.CONSUME1(LiteralString)
                     $.CONSUME(Comma)
                     $.SUBRULE1($.expression)
                 }},
                 { ALT : () => $.SUBRULE2($.expression)},
-                { ALT : () => $.CONSUME2(String)}
+                { ALT : () => $.CONSUME2(LiteralString)}
             ])
             $.CONSUME(RParen)
-        });
+        })
         $.RULE("message", () => {
             $.CONSUME(Message)
             $.CONSUME(LParen)
@@ -502,37 +221,34 @@ class RobotScriptParser extends CstParser {
                 { ALT : () => $.CONSUME(Mult, { LABEL : "who"})}
             ])
             $.CONSUME(RParen)
-        });
-        $.RULE("controlCorner", () => {
+        })
+        $.RULE("control_corner", () => {
             $.CONSUME(ControlCorner)
             $.CONSUME(LParen)
             $.SUBRULE1($.expression)
             $.CONSUME(Comma)
             $.SUBRULE2($.expression)
             $.CONSUME(RParen)
-        });
+        })
 
-        $.RULE("actionMethod", () => {
+        $.RULE("action_method", () => {
             $.OR([
-                { ALT: () => $.CONSUME(Movement, { LABEL : "actionMethod"}) },
-                { ALT: () => $.CONSUME(TakeItem, { LABEL : "actionMethod"}) },
-                { ALT: () => $.CONSUME(DepositItem, { LABEL : "actionMethod"}) },
-                { ALT: () => $.CONSUME(ChangeOrientation, { LABEL : "actionMethod"}) },
+                { ALT: () => $.CONSUME(Movement, { LABEL : "action_method"}) },
+                { ALT: () => $.CONSUME(TakeItem, { LABEL : "action_method"}) },
+                { ALT: () => $.CONSUME(DepositItem, { LABEL : "action_method"}) },
+                { ALT: () => $.CONSUME(ChangeDirection, { LABEL : "action_method"}) },
             ])
         })
 
-        $.RULE("stateMethod", () => {
-            $.OR([
-                { ALT: () => $.CONSUME(ConsultItem, { LABEL : "stateMethod"}) },
-                { ALT: () => $.CONSUME(ConsultPosition, { LABEL : "stateMethod"}) }
-            ])
+        $.RULE("state_method", () => {
+            $.CONSUME(StateMethod, { LABEL : "state_method"})
         })
 
 
         //Expressions
         $.RULE("expression", () => {
             $.SUBRULE($.equality)
-        });
+        })
 
         $.RULE("equality", () => {
             $.SUBRULE1($.comparison)
@@ -543,7 +259,7 @@ class RobotScriptParser extends CstParser {
                 ])
                 $.SUBRULE2($.comparison)
             })
-        });
+        })
 
         $.RULE("comparison", () => {
             $.SUBRULE1($.term)
@@ -556,7 +272,7 @@ class RobotScriptParser extends CstParser {
                 ])
                 $.SUBRULE2($.term)
             })
-        });
+        })
 
         $.RULE("term", () => {
             $.SUBRULE1($.factor)
@@ -568,7 +284,7 @@ class RobotScriptParser extends CstParser {
                 ])
                 $.SUBRULE2($.factor)
             })
-        });
+        })
 
         $.RULE("factor", () => {
             $.SUBRULE1($.unary)
@@ -580,7 +296,7 @@ class RobotScriptParser extends CstParser {
                 ])
                 $.SUBRULE2($.unary)
             })
-        });
+        })
 
         $.RULE("unary", () => {
             $.OR1([
@@ -593,63 +309,63 @@ class RobotScriptParser extends CstParser {
                 }},
                 { ALT : () => $.SUBRULE($.primary) }
             ])
-        });
+        })
         
         $.RULE("primary", () => {
             $.OR([
                 { ALT: () => $.CONSUME(Integer)},
                 { ALT: () => $.CONSUME(Boolean)},
                 { ALT: () => $.CONSUME(Identifier)},
-                { ALT: () => $.SUBRULE($.stateMethod)},
+                { ALT: () => $.SUBRULE($.state_method)},
                 { ALT: () => $.SUBRULE($.paren_expr)}
             ])
-        });
+        })
 
         $.RULE("paren_expr", () => {
             $.CONSUME(LParen);
             $.SUBRULE($.expression);
             $.CONSUME(RParen);
-        });
+        })
 
         
         //Program Estructure
         $.RULE("program", () => {
-            $.SUBRULE($.section_Name)
+            $.SUBRULE($.section_name)
             $.OPTION(() => {
-                $.SUBRULE($.section_Procedures)
+                $.SUBRULE($.section_procedures)
             })
-            $.SUBRULE($.section_Areas)
-            $.SUBRULE($.section_Robots)
-            $.SUBRULE($.section_Instances)
-            $.SUBRULE($.section_Main)
-        });
+            $.SUBRULE($.section_areas)
+            $.SUBRULE($.section_robots)
+            $.SUBRULE($.section_instances)
+            $.SUBRULE($.section_main)
+        })
 
-        $.RULE("section_Name", () => {
+        $.RULE("section_name", () => {
             $.CONSUME(Program)
             $.CONSUME(Identifier)
-        });
+        })
 
-        $.RULE("section_Procedures", () => {
+        $.RULE("section_procedures", () => {
             $.CONSUME(Procedures)
             $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
-                $.SUBRULE($.declaration_Procedure)
+                $.SUBRULE($.declaration_procedure)
             })
             $.CONSUME(Outdent)
         })
-        $.RULE("declaration_Procedure", () => {
+        $.RULE("declaration_procedure", () => {
             $.CONSUME(Procedure)
             $.CONSUME(Identifier)
             $.CONSUME(LParen)
             $.MANY_SEP({
-                SEP: DotComma,
+                SEP: SemiColon,
                 DEF: () => {
-                    $.SUBRULE($.declaration_Parameter)
+                    $.SUBRULE($.declaration_parameter)
                 }
             })
             $.CONSUME(RParen)
             $.OPTION(() => {
-                $.SUBRULE($.section_Variables)
+                $.SUBRULE($.section_variables)
             })
             $.CONSUME(Begin)
             $.CONSUME(Indent)
@@ -659,25 +375,25 @@ class RobotScriptParser extends CstParser {
             $.CONSUME(Outdent)
             $.CONSUME(End)
         })
-        $.RULE("declaration_Parameter", () => {
+        $.RULE("declaration_parameter", () => {
             $.CONSUME(TypeParameter)
             $.CONSUME(Identifier)
-            $.CONSUME(DDot)
+            $.CONSUME(Colon)
             $.CONSUME(TypeValue)
         })
 
-        $.RULE("section_Areas", () => {
+        $.RULE("section_areas", () => {
             $.CONSUME(Areas)
             $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
-                $.SUBRULE($.declaration_Area)
+                $.SUBRULE($.declaration_area)
             })
             $.CONSUME(Outdent)
         })
-        $.RULE("declaration_Area", () => {
+        $.RULE("declaration_area", () => {
             $.CONSUME(Identifier)
-            $.CONSUME(DDot)
-            $.CONSUME(AreaType)
+            $.CONSUME(Colon)
+            $.CONSUME(TypeArea)
             $.CONSUME(LParen)
             $.CONSUME1(Integer)
             $.CONSUME1(Comma)
@@ -687,21 +403,21 @@ class RobotScriptParser extends CstParser {
             $.CONSUME3(Comma)
             $.CONSUME4(Integer)
             $.CONSUME(RParen)
-        });
+        })
 
-        $.RULE("section_Robots", () => {
+        $.RULE("section_robots", () => {
             $.CONSUME(Robots)
             $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
-                $.SUBRULE($.declaration_Robot)
+                $.SUBRULE($.declaration_robot)
             })
             $.CONSUME(Outdent)
-        });
-        $.RULE("declaration_Robot", () => {
+        })
+        $.RULE("declaration_robot", () => {
             $.CONSUME(Robot)
             $.CONSUME(Identifier)
             $.OPTION(() => {
-                $.SUBRULE($.section_Variables)
+                $.SUBRULE($.section_variables)
             })
             $.CONSUME(Begin)
             $.CONSUME(Indent)
@@ -710,37 +426,37 @@ class RobotScriptParser extends CstParser {
             })
             $.CONSUME(Outdent)
             $.CONSUME(End)
-        });
+        })
 
-        $.RULE("section_Instances", () => {
+        $.RULE("section_instances", () => {
             $.CONSUME(Variables)
             $.CONSUME(Indent)
             $.AT_LEAST_ONE(() => {
-                $.SUBRULE($.declaration_Instance)
+                $.SUBRULE($.declaration_instance)
             })
             $.CONSUME(Outdent)
-        });
-        $.RULE("declaration_Instance", () => {
+        })
+        $.RULE("declaration_instance", () => {
             $.CONSUME(Identifier)
-            $.CONSUME(DDot)
+            $.CONSUME(Colon)
             $.CONSUME1(Identifier)
-        });
+        })
 
-        $.RULE("section_Main", () => {
+        $.RULE("section_main", () => {
             $.CONSUME(Begin)
             $.CONSUME(Indent)
             $.MANY(() => {
                 $.OR([
-                    { ALT: () => {$.SUBRULE($.asignArea)}},
-                    { ALT: () => {$.SUBRULE($.initialPosition)}},
-                    { ALT: () => {$.SUBRULE($.asignItem)}}
+                    { ALT: () => {$.SUBRULE($.assign_area)}},
+                    { ALT: () => {$.SUBRULE($.assign_item)}},
+                    { ALT: () => {$.SUBRULE($.assign_origin)}},
                 ])
             })
             $.CONSUME(Outdent)
             $.CONSUME(End)
-        });
-        $.RULE("asignArea", () => {
-            $.CONSUME(AsignArea)
+        })
+        $.RULE("assign_area", () => {
+            $.CONSUME(AssignArea)
             $.CONSUME(LParen)
             $.AT_LEAST_ONE_SEP({
                 SEP: Comma,
@@ -749,23 +465,23 @@ class RobotScriptParser extends CstParser {
                 }
             })
             $.CONSUME(RParen)
-        });
-        $.RULE("asignItem", () => {
-            $.CONSUME(AsignItem)
+        })
+        $.RULE("assign_item", () => {
+            $.CONSUME(AssignItem)
             $.CONSUME(LParen)
             $.CONSUME(Identifier)
             $.CONSUME1(Comma)
-            $.CONSUME1(String)
+            $.CONSUME1(LiteralString)
             $.OPTION(() => {
                 $.CONSUME2(Comma)
-                $.CONSUME2(String)
+                $.CONSUME2(LiteralString)
             })
             $.CONSUME3(Comma)
             $.CONSUME(Integer)
             $.CONSUME(RParen)
-        });
-        $.RULE("initialPosition", () => {
-            $.CONSUME(InitRobot)
+        })
+        $.RULE("assign_origin", () => {
+            $.CONSUME(AssignOrigin)
             $.CONSUME(LParen)
             $.CONSUME(Identifier)
             $.CONSUME(Comma)
@@ -776,13 +492,12 @@ class RobotScriptParser extends CstParser {
                 }
             })
             $.CONSUME(RParen)
-        });
+        })
 
         this.performSelfAnalysis()
     }
 }
 const RSParserInstance = new RobotScriptParser();
-
 
 
 const BaseRSVisitor = RSParserInstance.getBaseCstVisitorConstructor();
@@ -792,19 +507,20 @@ class RSToAstVisitor extends BaseRSVisitor {
         this.validateVisitor();
     };
 
-    section_Variables(ctx) {
+    section_variables(ctx) {
         let variables = [];
 
-        ctx.declaration_Variable.forEach( dec => {
+        ctx.declaration_variable.forEach( dec => {
             const newVariables = this.visit(dec);
             variables = variables.concat(newVariables);
         })
         
         return variables;
     };
-    declaration_Variable(ctx) {
+    declaration_variable(ctx) {
         const newVariables = [];
         const type_value = ctx.TypeValue[0].image;
+
         ctx.Identifier.forEach( i => {
             newVariables.push({
                 type_value: type_value,
@@ -815,36 +531,34 @@ class RSToAstVisitor extends BaseRSVisitor {
         return newVariables;
     };
 
-    // possible change to this
     statement(ctx) {
-        if (ctx.ifStatement){
-            return this.visit(ctx.ifStatement)
+        if (ctx.statement_if){
+            return this.visit(ctx.statement_if)
         }
-        if (ctx.forStatement){
-            return this.visit(ctx.forStatement)
+        if (ctx.statement_for){
+            return this.visit(ctx.statement_for)
         }
-        if (ctx.whileStatement){
-            return this.visit(ctx.whileStatement)
+        if (ctx.statement_while){
+            return this.visit(ctx.statement_while)
         }
-        if (ctx.blockStatement){
-            return this.visit(ctx.blockStatement)
+        if (ctx.statement_block){
+            return this.visit(ctx.statement_block)
         }
-        if (ctx.assignStatement){
-            return this.visit(ctx.assignStatement)
+        if (ctx.statement_assign){
+            return this.visit(ctx.statement_assign)
         }
-        if (ctx.callProcedure){
-            return this.visit(ctx.callProcedure)
+        if (ctx.call_procedure){
+            return this.visit(ctx.call_procedure)
         }
-        if (ctx.actionMethod){
-            return this.visit(ctx.actionMethod)
+        if (ctx.action_method){
+            return this.visit(ctx.action_method)
         }
-        if (ctx.complexActionMethod){
-            return this.visit(ctx.complexActionMethod)
+        if (ctx.action_method_complex){
+            return this.visit(ctx.action_method_complex)
         }
         console.log("No existe visitor para este statement")
     };
-
-    ifStatement(ctx) {
+    statement_if(ctx) {
         const condition = this.visit(ctx.paren_expr);
 
         const bodyIf = this.visit(ctx.statement[0]);
@@ -862,7 +576,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             else: bodyElse
         }
     };
-    forStatement(ctx) {
+    statement_for(ctx) {
         const condition = this.visit(ctx.paren_expr);
 
         const body = this.visit(ctx.statement);
@@ -874,7 +588,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             body: body
         }
     };
-    whileStatement(ctx) {
+    statement_while(ctx) {
         const condition = this.visit(ctx.paren_expr);
 
         const body = this.visit(ctx.statement);
@@ -886,8 +600,8 @@ class RSToAstVisitor extends BaseRSVisitor {
             body: body
         }
     };
-    blockStatement(ctx) {
-        let body = [];
+    statement_block(ctx) {
+        const body = [];
         if (ctx.statement){
             ctx.statement.forEach( dec => {
                 const statement = this.visit(dec);
@@ -900,7 +614,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             body: body
         }
     };
-    assignStatement(ctx) {
+    statement_assign(ctx) {
         const identifier = ctx.Identifier[0].image;
 
         const value = this.visit(ctx.expression);
@@ -911,10 +625,10 @@ class RSToAstVisitor extends BaseRSVisitor {
             value: value
         }
     };
-    callProcedure(ctx) {
+    call_procedure(ctx) {
         const identifier = ctx.Identifier[0].image;
 
-        let parameters = [];
+        const parameters = [];
         if (ctx.expression) {
             ctx.expression.forEach( dec => {
                 const parameter = this.visit(dec);
@@ -929,12 +643,12 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     }
     
-    complexActionMethod(ctx) {
-        if (ctx.changePosition){
-            return this.visit(ctx.changePosition);
+    action_method_complex(ctx) {
+        if (ctx.change_position){
+            return this.visit(ctx.change_position);
         } 
-        else if (ctx.generateNumber){
-            return this.visit(ctx.generateNumber);
+        else if (ctx.generate_number){
+            return this.visit(ctx.generate_number);
         } 
         else if (ctx.inform){
             return this.visit(ctx.inform);
@@ -942,11 +656,11 @@ class RSToAstVisitor extends BaseRSVisitor {
         else if (ctx.message){
             return this.visit(ctx.message);
         } 
-        else if (ctx.controlCorner){
-            return this.visit(ctx.controlCorner);
+        else if (ctx.control_corner){
+            return this.visit(ctx.control_corner);
         }
     }
-    changePosition(ctx) {
+    change_position(ctx) {
         const xVal = this.visit(ctx.expression[0]);
         const yVal = this.visit(ctx.expression[1]);
 
@@ -956,7 +670,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             y : yVal
         }
     }
-    generateNumber(ctx) {
+    generate_number(ctx) {
         const identifier = ctx.Identifier[0].image;
 
         const min = this.visit(ctx.expression[0]);
@@ -969,14 +683,15 @@ class RSToAstVisitor extends BaseRSVisitor {
             max : max
         }
     }
+    //Improve inform visitor
     inform(ctx) {
         let arg1 = {};
         let arg2 = {};
 
-        if (ctx.String) {
+        if (ctx.LiteralString) {
             arg1 = {
                 type : "STRING_LITERAL",
-                value : ctx.String[0].image.replaceAll(/["']/g, "")
+                value : ctx.LiteralString[0].image.replaceAll(/["']/g, "")
             }
             if (ctx.expression) {
                 arg2 = this.visit(ctx.expression)
@@ -1011,7 +726,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             who : who
         }
     }
-    controlCorner(ctx) {
+    control_corner(ctx) {
         let mode = "";
         const identifier = ctx.ControlCorner[0].image;
         if (identifier === "BloquearEsquina") {
@@ -1021,7 +736,7 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
 
         const xVal = this.visit(ctx.expression[0]);
-        const yVal = this.visit(ctx.expression[0]);
+        const yVal = this.visit(ctx.expression[1]);
 
         return {
             type : "CONTROL_CORNER",
@@ -1031,8 +746,8 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     }
 
-    actionMethod(ctx) {
-        const identifier = ctx.actionMethod[0].image;
+    action_method(ctx) {
+        const identifier = ctx.action_method[0].image;
 
         return {
             type : "ACTION_METHOD",
@@ -1040,8 +755,8 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     }
 
-    stateMethod(ctx) {
-        const identifier = ctx.stateMethod[0].image;
+    state_method(ctx) {
+        const identifier = ctx.state_method[0].image;
 
         return {
             type : "STATE_METHOD",
@@ -1130,8 +845,8 @@ class RSToAstVisitor extends BaseRSVisitor {
                 value : (ctx.Boolean[0].image === "verdad")
             }
         }
-        if (ctx.stateMethod){
-            return this.visit(ctx.stateMethod);
+        if (ctx.state_method){
+            return this.visit(ctx.state_method);
         }
         if (ctx.Identifier){
             return {
@@ -1150,12 +865,12 @@ class RSToAstVisitor extends BaseRSVisitor {
 
     //Program estructure
     program(ctx) {
-        const name = this.visit(ctx.section_Name);
-        const procedures = ctx.section_Procedures? this.visit(ctx.section_Procedures) : [];
-        const areas = this.visit(ctx.section_Areas);
-        const robots = this.visit(ctx.section_Robots);
-        const instances = this.visit(ctx.section_Instances);
-        const main = this.visit(ctx.section_Main);
+        const name = this.visit(ctx.section_name);
+        const procedures = ctx.section_procedures? this.visit(ctx.section_procedures) : [];
+        const areas = this.visit(ctx.section_areas);
+        const robots = this.visit(ctx.section_robots);
+        const instances = this.visit(ctx.section_instances);
+        const main = this.visit(ctx.section_main);
 
         return {
             type: "ROBOT_SCRIPT_PROGRAM",
@@ -1170,7 +885,7 @@ class RSToAstVisitor extends BaseRSVisitor {
         };
     };
 
-    section_Name(ctx) {
+    section_name(ctx) {
         const identifier = ctx.Identifier[0].image;
 
         return {
@@ -1179,33 +894,33 @@ class RSToAstVisitor extends BaseRSVisitor {
         };
     };
 
-    section_Procedures(ctx) {
+    section_procedures(ctx) {
         const procedures = [];
 
-        ctx.declaration_Procedure.forEach( dec => {
+        ctx.declaration_procedure.forEach( dec => {
             const procedure = this.visit(dec);
             procedures.push(procedure);
         })
 
         return procedures;
     };
-    declaration_Procedure(ctx) {
+    declaration_procedure(ctx) {
         const identifier = ctx.Identifier[0].image;
 
-        let parameters = [];
-        if (ctx.declaration_Parameter) {
-            ctx.declaration_Parameter.forEach( dec => {
+        const parameters = [];
+        if (ctx.declaration_parameter) {
+            ctx.declaration_parameter.forEach( dec => {
                 const parameter = this.visit(dec);
                 parameters.push(parameter);
             })
         }
 
         let variables = [];
-        if (ctx.section_Variables) {
-            variables = this.visit(ctx.section_Variables)
+        if (ctx.section_variables) {
+            variables = this.visit(ctx.section_variables)
         }
 
-        let body = [];
+        const body = [];
         if (ctx.statement){
             ctx.statement.forEach( dec => {
                 const statement = this.visit(dec);
@@ -1220,7 +935,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             body: body
         }
     };
-    declaration_Parameter(ctx) {
+    declaration_parameter(ctx) {
         const type_parameter = ctx.TypeParameter[0].image;
         const identifier = ctx.Identifier[0].image;
         const type_value = ctx.TypeValue[0].image;
@@ -1232,21 +947,21 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     };
 
-    section_Areas(ctx) {
+    section_areas(ctx) {
         const areas = [];
 
-        ctx.declaration_Area.forEach( dec => {
+        ctx.declaration_area.forEach( dec => {
             const area = this.visit(dec);
             areas.push(area);
         })
 
         return areas;
     };
-    declaration_Area(ctx) {
+    declaration_area(ctx) {
         const identifier = ctx.Identifier[0].image;
 
         let area_type = "";
-        const type = ctx.AreaType[0].image;
+        const type = ctx.TypeArea[0].image;
         if (type === "AreaC") {
             area_type = "SHARED"
         }
@@ -1275,25 +990,25 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     };
 
-    section_Robots(ctx) {
-        let robot_types = [];
+    section_robots(ctx) {
+        const robot_types = [];
 
-        ctx.declaration_Robot.forEach( dec => {
+        ctx.declaration_robot.forEach( dec => {
             const robot = this.visit(dec);
             robot_types.push(robot);
         })
 
         return robot_types;
     };
-    declaration_Robot(ctx) {
+    declaration_robot(ctx) {
         const identifier = ctx.Identifier[0].image;
 
         let variables = [];
-        if (ctx.section_Variables) {
-            variables = this.visit(ctx.section_Variables)
+        if (ctx.section_variables) {
+            variables = this.visit(ctx.section_variables)
         }
 
-        let body = [];
+        const body = [];
         if (ctx.statement){
             ctx.statement.forEach( dec => {
                 const statement = this.visit(dec);
@@ -1308,24 +1023,19 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     };
 
-    section_Instances(ctx) {
-        let instances = [];
+    section_instances(ctx) {
+        const instances = [];
 
-        ctx.declaration_Instance.forEach( dec => {
+        ctx.declaration_instance.forEach( dec => {
             const instance = this.visit(dec);
             instances.push(instance);
         })
 
         return instances;
     };
-    declaration_Instance(ctx) {
-        let robot_type = "";
-        let identifier = "";
-
-        if (ctx.Identifier && ctx.Identifier.length === 2) {
-            identifier = ctx.Identifier[0].image;
-            robot_type = ctx.Identifier[1].image;
-        }
+    declaration_instance(ctx) {
+        const identifier = ctx.Identifier[0].image;
+        const robot_type = ctx.Identifier[1].image;
 
         return {
             type : robot_type,
@@ -1333,26 +1043,26 @@ class RSToAstVisitor extends BaseRSVisitor {
         }
     };
 
-    section_Main(ctx) {
+    section_main(ctx) {
         let areas_asignation = [];
-        if (ctx.asignArea) {
-            ctx.asignArea.forEach( dec => {
+        if (ctx.assign_area) {
+            ctx.assign_area.forEach( dec => {
                 const area = this.visit(dec);
                 areas_asignation.push(area);
             })
         }
 
         let items_asignation = [];
-        if (ctx.asignItem) {
-            ctx.asignItem.forEach( dec => {
+        if (ctx.assign_item) {
+            ctx.assign_item.forEach( dec => {
                 const item = this.visit(dec);
                 items_asignation.push(item);
             })
         }
 
         let positions = [];
-        if (ctx.initialPosition) {
-            ctx.initialPosition.forEach( dec => {
+        if (ctx.assign_origin) {
+            ctx.assign_origin.forEach( dec => {
                 const position = this.visit(dec);
                 positions.push(position);
             })
@@ -1364,29 +1074,24 @@ class RSToAstVisitor extends BaseRSVisitor {
             initial_positions: positions
         }
     };
-    asignArea(ctx) {
-        let area_type = "";
-        let identifier = "";
-
-        if (ctx.Identifier && ctx.Identifier.length === 2) {
-            identifier = ctx.Identifier[0].image;
-            area_type = ctx.Identifier[1].image;
-        }
+    assign_area(ctx) {
+        const identifier = ctx.Identifier[0].image;
+        const area_type = ctx.Identifier[1].image;
 
         return {
             type : area_type,
             identifier : identifier
         }
     };
-    asignItem(ctx) {
+    assign_item(ctx) {
         const identifier = ctx.Identifier[0].image;
 
         const item_type = [];
 
-        ctx.String.forEach(type => {
+        ctx.LiteralString.forEach(type => {
             const id = type.image.replaceAll(/["']/g, "");
             item_type.push(id === "flores"? "flower":
-                        id === "papeles"? "paper": id);
+                           id === "papeles"? "paper": id);
         });
 
         const quantity = Number(ctx.Integer[0].image);
@@ -1397,17 +1102,11 @@ class RSToAstVisitor extends BaseRSVisitor {
             value : quantity
         }
     };
-    initialPosition(ctx) {
-        let identifier= "";
-        if (ctx.Identifier) {
-            identifier= ctx.Identifier[0].image;
-        };
+    assign_origin(ctx) {
+        const identifier = ctx.Identifier[0].image;
         
-        let xVal = -1, yVal = -1;
-        if (ctx.Integer && ctx.Integer.length === 2) {
-            xVal = Number(ctx.Integer[0].image)
-            yVal = Number(ctx.Integer[1].image)
-        }
+        const xVal = Number(ctx.Integer[0].image)
+        const yVal = Number(ctx.Integer[1].image)
 
         return {
             identifier : identifier,
@@ -1419,18 +1118,10 @@ class RSToAstVisitor extends BaseRSVisitor {
 const toAstVisitorInstance = new RSToAstVisitor();
 
 
-
 function toAst(inputText) {
     // Lexing
-    indentStack = [0];
-    error = "";
-    error2 = "";
-    const noTabs = inputText.replaceAll(/\t/g, "  ");
-    const lexResult = RSLexerInstance.tokenize(noTabs);
+    const lexResult = RSLexer.tokenize(inputText);
 
-    console.log(lexResult)  
-    console.log(error)
-    console.log(error2)
     if (lexResult.errors.length > 0) {
         return {
             ast : null,
@@ -1461,4 +1152,3 @@ function toAst(inputText) {
 };
 
 export {toAst};
-

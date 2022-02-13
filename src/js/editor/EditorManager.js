@@ -4,58 +4,108 @@ import Manager from "../general/Manager.js";
 import { toAst } from "./ast-generator.js";
 import { validateAst } from "./ast-validator.js";
 
-const DEFAULT_EDITOR_CODE =  `programa Ejemplo
+const DEFAULT_EDITOR_CODE =  `programa Prueba6
 procesos
-  proceso juntarFlor (ES flor: numero; ES noFlor: numero)
+  proceso juntarFlores(ES flores: numero)
   comenzar
-    si (HayFlorEnLaEsquina)
-      mientras (HayFlorEnLaEsquina) comenzar
-      	tomarFlor
-        flor:= flor + 1
-      fin
-    sino
-      noFlor:= noFlor +1
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+  proceso juntarPapeles(ES papeles: numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      papeles:= papeles + 1
+  fin
+  proceso juntarEnEsquinaFlores(ES flores: numero; E AvO: numero)
+  variables
+    Av, Ca: numero
+  comenzar
+    Random(Av, 1, 5)
+    Random(Ca, 1, 10)
+    BloquearEsquina(Av, Ca)
+    Pos(Av, Ca)
+    juntarFlores(flores)
+    Pos(AvO, 10)
+    LiberarEsquina(Av, Ca)
+  fin
+  proceso juntarEnEsquinaPapeles(ES papeles: numero; E AvO: numero)
+  variables
+    Av, Ca: numero
+  comenzar
+    Random(Av, 6, 10)
+    Random(Ca, 1, 9)
+    BloquearEsquina(Av, Ca)
+    Pos(Av, Ca)
+    juntarPapeles(papeles)
+    Pos(AvO, 10)
+    LiberarEsquina(Av, Ca)
   fin
 areas
-  ciudad : AreaC(1,1,25,25)
-  ciudad2 : AreaC(26,1,50,25)
-  ciudad3 : AreaC(51,1,76,25)
-robots 
-  robot tipo1
+  ciudad1: AreaPC(1,1,5,10)
+  ciudad2: AreaPC(6,1,10,9)
+  ciudad3: AreaP(6,10,6,10)
+  ciudad4: AreaP(7,10,7,10)
+  ciudad5: AreaP(8,10,8,10)
+  ciudad6: AreaP(9,10,9,10)
+  ciudad7: AreaC(10,10,10,10)
+robots
+  robot florero
   variables
-    flor, noFlor, av: numero
+    flores: numero
+    AvO: numero
   comenzar
-    av:= PosAv + 1
-    Pos(av,1)
-    repetir (3) comenzar
-      flor:= 0
-      noFlor:= 0
-      Pos(av,1)
-      juntarFlor(flor, noFlor)
-      repetir (24) comenzar
-        mover
-        juntarFlor(flor, noFlor)
-      fin
-      repetir (flor)
-        depositarFlor
-      Informar(flor)
-      Informar(noFlor)
-      av:= av + 2
-    fin
+    flores:= 0
+    AvO:= PosAv
+    repetir (5)
+      juntarEnEsquinaFlores(flores, AvO)
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    repetir (flores)
+      depositarFlor
+    Pos(AvO, 10)
+    LiberarEsquina(10, 10)
   fin
-variables 
-  robot1: tipo1
-  robot2: tipo1
-  robot3: tipo1
-comenzar 
-  AsignarArea(robot1,ciudad)
-  Iniciar(robot1, 1, 1)
-  AsignarArea(robot2,ciudad2)
-  Iniciar(robot2, 26, 1)
-  AsignarArea(robot3,ciudad3)
-  Iniciar(robot3, 51, 1)
-fin
-`;
+  robot papelero
+  variables
+    papeles: numero
+    AvO: numero
+  comenzar
+    papeles:= 0
+    AvO:= PosAv
+    repetir (3)
+      juntarEnEsquinaPapeles(papeles, AvO)
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    repetir (papeles)
+      depositarPapel
+    Pos(AvO, 10)
+    LiberarEsquina(10, 10)
+  fin
+variables
+  robot1: florero
+  robot2: florero
+  robot3: papelero
+  robot4: papelero
+comenzar
+  AsignarArea(robot1, ciudad1)
+  AsignarArea(robot2, ciudad1)
+  AsignarArea(robot3, ciudad2)
+  AsignarArea(robot4, ciudad2)
+  AsignarArea(robot1, ciudad3)
+  AsignarArea(robot2, ciudad4)
+  AsignarArea(robot3, ciudad5)
+  AsignarArea(robot4, ciudad6)
+  AsignarArea(robot1, ciudad7)
+  AsignarArea(robot2, ciudad7)
+  AsignarArea(robot3, ciudad7)
+  AsignarArea(robot4, ciudad7)
+  Iniciar(robot1, 6, 10)
+  Iniciar(robot2, 7, 10)
+  Iniciar(robot3, 8, 10)
+  Iniciar(robot4, 9, 10)
+fin`;
 const CUSTOM_COMPLETES = [
     { word : "programa", meta : "define nombre del programa",},
     { word : "procesos", meta : "seccion",},

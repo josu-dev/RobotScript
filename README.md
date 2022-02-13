@@ -25,7 +25,6 @@ Se destaca que esta en desarrollo permanente
 
 ### Temas por desarrollar-implementar
 
-- Embellecer errores de parseo
 - Implementar:
     - Hud de estado de instancias
     - Seleccion de camara, libre o seguir una instancia

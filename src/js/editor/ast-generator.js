@@ -53,15 +53,15 @@ const {
 const RSParserErrorProvider = {
     // improve mismatch type handling
     buildMismatchTokenMessage: function (options) {
-        console.log(options);
-        
         return (
-            `Se esperaba '${options.expected.LABEL}' en la Ln ${options.actual.startLine}, Col ${options.actual.startColumn} pero se encontro '${options.actual.image}', en la declaracion de ${options.ruleName}`
+            `Se esperaba '${options.expected.LABEL}' en la Ln ${options.actual.startLine}, Col ${options.actual.startColumn} pero se encontro '${options.actual.tokenType.LABEL}', en la ${options.ruleName}`
         );
     },
 
     buildNotAllInputParsedMessage: function (options) {
-        return `Existe codigo extra despues de la inicializacion de los robots, en Ln ${options.firstRedundant.startLine}, Col ${options.firstRedundant.startColumn}`
+        return (
+            `Existe codigo extra despues de la inicializacion de los robots, en Ln ${options.firstRedundant.startLine}, Col ${options.firstRedundant.startColumn}`
+        );
     },
 
     buildNoViableAltMessage: function (options) {
@@ -74,13 +74,13 @@ const RSParserErrorProvider = {
         });
         if (posiblePaths !== "") posiblePaths = posiblePaths.substring(0, posiblePaths.length -2);
         return (
-            `Se esperaba: ${posiblePaths}\nEn la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].image}', en la declaracion de ${options.ruleName}`
+            `Se esperaba: ${posiblePaths}\nEn la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].image}', en la ${options.ruleName}`
         );
     },
 
     buildEarlyExitMessage: function (options) {
         return (
-            `Se esperaba por lo menos una declaracion de: ${options.expectedIterationPaths[0][0].LABEL} en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn}, en la declaracion de ${options.ruleName}`
+            `Se esperaba por lo menos una declaracion de: ${options.expectedIterationPaths[0][0].LABEL} en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn}, en la ${options.ruleName}`
         );
     }
 };

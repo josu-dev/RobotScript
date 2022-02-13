@@ -7,8 +7,28 @@ const Lexer = chevrotain.Lexer;
 
 const RSLexer = (function () {
     let indentStack = [0];
+    const identState = {
+        error : false,
+        messsage : "",
+    }
+    function identationError(message) {
+        identState.error = true;
+        identState.messsage = message;
+    }
+    function resetIdentState() {
+        identState.error = false;
+        identState.messsage = "";
+    }
 
     function matchIndentBase(text, offset, matchedTokens, groups, type) {
+        function getLineColumn() {
+            const line = _.last(newLines).startLine + 1;
+            const column = offset - _.last(newLines).endOffset + 1;
+            return {
+                line: line,
+                column : column
+            }
+        }
         const noTokensMatchedYet = _.isEmpty(matchedTokens);
         const newLines = groups.nl;
         const noNewLinesMatchedYet = _.isEmpty(newLines);
@@ -30,45 +50,61 @@ const RSLexer = (function () {
             if (match !== null) currIndentLevel = match[0].length;
             // "empty" indentation means indentLevel of 0.
             else currIndentLevel = 0;
+            const prevIndentLevel = _.last(indentStack);
 
-            const prevIndentLevel = _.last(indentStack)
-            // deeper indentation
+            if (currIndentLevel > (prevIndentLevel + 2)) {
+                const { line, column } = getLineColumn();
+                identationError(
+                    `Identacion invalida en la Ln ${line}, Col ${currIndentLevel}, error por exceso de identacion`
+                )
+                return null;
+            }
+            if (currIndentLevel % 2 !== 0) {
+                const { line, column } = getLineColumn();
+                identationError(
+                    `Identacion invalida en la Ln ${line}, Col ${currIndentLevel}, use tabs o numero par de espacios (0,2,4...)`
+                )
+                return null;
+            }
+
             if (currIndentLevel > prevIndentLevel && type === "indent") {
                 indentStack.push(currIndentLevel)
                 return match;
             }
-            // shallower indentation
             else if (currIndentLevel < prevIndentLevel && type === "outdent") {
-            const matchIndentIndex = _.findLastIndex(
-                indentStack,
-                (stackIndentDepth) => stackIndentDepth === currIndentLevel
-            );
+                const matchIndentIndex = _.findLastIndex(
+                    indentStack,
+                    (stackIndentDepth) => stackIndentDepth === currIndentLevel
+                );
 
-            // any outdent must match some previous indentation level.
-            if (matchIndentIndex === -1) {
-                throw Error(`invalid outdent at offset: ${offset}`)
-            }
+                if (matchIndentIndex === -1) {
+                    const { line, column } = getLineColumn();
+                    identationError(
+                        `Identacion invalida en la Ln ${line}, Col ${column}, no corresponde a ninguna identacion previa`
+                    )
+                    return null;
+                }
 
-            const numberOfDedents = indentStack.length - matchIndentIndex - 1
+                const numberOfDedents = indentStack.length - matchIndentIndex - 1
 
-            // This is a little tricky
-            // 1. If there is no match (0 level indent) than this custom token
-            //    matcher would return "null" and so we need to add all the required outdents ourselves.
-            // 2. If there was match (> 0 level indent) than we need to add minus one number of outsents
-            //    because the lexer would create one due to returning a none null result.
-            let iStart = match !== null ? 1 : 0
-            for (let i = iStart; i < numberOfDedents; i++) {
-                indentStack.pop()
-                matchedTokens.push(
-                    createTokenInstance(Outdent, "", NaN, NaN, NaN, NaN, NaN, NaN)
-                )
-            }
+                // This is a little tricky
+                // 1. If there is no match (0 level indent) than this custom token
+                //    matcher would return "null" and so we need to add all the required outdents ourselves.
+                // 2. If there was match (> 0 level indent) than we need to add minus one number of outsents
+                //    because the lexer would create one due to returning a none null result.
+                let iStart = match !== null ? 1 : 0
+                for (let i = iStart; i < numberOfDedents; i++) {
+                    indentStack.pop()
+                    matchedTokens.push(
+                        createTokenInstance(Outdent, "", NaN, NaN, NaN, NaN, NaN, NaN)
+                    )
+                }
 
-            // even though we are adding fewer outdents directly we still need to update the indent stack fully.
-            if (iStart === 1) {
-                indentStack.pop()
-            }
-            return match
+                // even though we are adding fewer outdents directly we still need to update the indent stack fully.
+                if (iStart === 1) {
+                    indentStack.pop()
+                }
+                return match;
             }
             else return null;
         }
@@ -298,14 +334,12 @@ const RSLexer = (function () {
         pattern: /fin/,
         longer_alt: Identifier
     });
-
     const Program = createToken({
         name: "Program",
         label: "programa",
         pattern: /programa/,
         longer_alt: Identifier
     });
-
     const Procedures = createToken({
         name: "Procedures",
         label: "procesos",
@@ -318,7 +352,6 @@ const RSLexer = (function () {
         pattern: /proceso/,
         longer_alt: Identifier
     });
-
     const TypeParameter = createToken({
         name: "TypeParameter",
         pattern: Lexer.NA
@@ -642,8 +675,18 @@ const RSLexer = (function () {
     }
     function tokenize (inputText = "") {
         indentStack = [0];
+        resetIdentState();
+
         const noTabsInput = inputText.replaceAll(/\t/g, "  ");
         const lexResult = lexerInstance.tokenize(noTabsInput);
+
+        if (identState.error) {
+            console.log(lexResult);
+            lexResult.errors.unshift({
+                message : identState.messsage
+            });
+            return lexResult;
+        }
 
         while (indentStack.length > 1) {
             lexResult.tokens.push(

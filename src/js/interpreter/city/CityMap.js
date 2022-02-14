@@ -292,7 +292,6 @@ class CityMap {
     }
 
     isSpaceTaken(newX, newY) {
-        console.log(JSON.stringify(this.walls, null, " "))
         return this.walls[`${newX},${newY}`] === true || false;
     }
 

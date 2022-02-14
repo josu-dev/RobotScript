@@ -341,7 +341,7 @@ class Robot extends CityObject {
                     r.value = - rRight.value;
                     return r;
                 }
-                if (op === "!") {
+                if (op === "~") {
                     r.value = ! rRight.value;
                     return r;
                 }

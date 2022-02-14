@@ -564,7 +564,7 @@ const validateExpression = (exp, vars) => {
             }
             r.setType("numero");
         }
-        if (op === "!") {
+        if (op === "~") {
             if (rRight.type !== "boolean") {
                 r.setError("No se puede negar un valor numero, mal uso del operador '!'");
                 return r;

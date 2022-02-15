@@ -80,7 +80,7 @@ const RSParserErrorProvider = {
 
     buildEarlyExitMessage: function (options) {
         return (
-            `Se esperaba por lo menos una declaracion de: ${options.expectedIterationPaths[0][0].LABEL} en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn}, en la ${options.ruleName}`
+            `Se esperaba por lo menos un: '${options.expectedIterationPaths[0][0].LABEL}' en la Ln ${options.actual[0].startLine}, Col ${options.actual[0].startColumn} pero se encontro '${options.actual[0].tokenType.LABEL}' en la ${options.ruleName}`
         );
     }
 };
@@ -864,6 +864,11 @@ class RSToAstVisitor extends BaseRSVisitor {
 
 
     //Program estructure
+    /**
+     * 
+     * @param {*} ctx 
+     * @returns {RSProgram} a {@link RSProgram}
+     */
     program(ctx) {
         const name = this.visit(ctx.section_name);
         const procedures = ctx.section_procedures? this.visit(ctx.section_procedures) : [];
@@ -1044,7 +1049,7 @@ class RSToAstVisitor extends BaseRSVisitor {
     };
 
     section_main(ctx) {
-        let areas_asignation = [];
+        const areas_asignation = [];
         if (ctx.assign_area) {
             ctx.assign_area.forEach( dec => {
                 const area = this.visit(dec);
@@ -1052,7 +1057,7 @@ class RSToAstVisitor extends BaseRSVisitor {
             })
         }
 
-        let items_asignation = [];
+        const items_asignation = [];
         if (ctx.assign_item) {
             ctx.assign_item.forEach( dec => {
                 const item = this.visit(dec);
@@ -1060,18 +1065,18 @@ class RSToAstVisitor extends BaseRSVisitor {
             })
         }
 
-        let positions = [];
+        const origin_asignation = [];
         if (ctx.assign_origin) {
             ctx.assign_origin.forEach( dec => {
                 const position = this.visit(dec);
-                positions.push(position);
+                origin_asignation.push(position);
             })
         }
 
         return {
             assign_areas: areas_asignation,
             assign_items: items_asignation,
-            initial_positions: positions
+            assign_origins: origin_asignation
         }
     };
     assign_area(ctx) {
@@ -1118,6 +1123,11 @@ class RSToAstVisitor extends BaseRSVisitor {
 const toAstVisitorInstance = new RSToAstVisitor();
 
 
+/**
+ * Take a RobotScript code and generate the corresponding {@link RSProgram}, if there is a error in the process it returns the related information
+ * @param {string} inputText 
+ * @returns {transpalingResult} a {@link transpalingResult}
+ */
 function toAst(inputText) {
     // Lexing
     const lexResult = RSLexer.tokenize(inputText);
@@ -1142,7 +1152,9 @@ function toAst(inputText) {
         };
     };
 
-    // Visiting
+    /**
+     * @type {RSProgram}
+     */
     const ast = toAstVisitorInstance.visit(cst);
     return {
         ast : ast,

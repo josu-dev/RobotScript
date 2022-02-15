@@ -1,6 +1,10 @@
 "use strict";
 
 class Manager {
+    /**
+     * 
+     * @param {{container: HTMLElement, defaultName: string, storage: StorageAdministrator}} config 
+     */
     constructor(config) {
         this.container = config.container;
         this.defaultName = config.defaultName;

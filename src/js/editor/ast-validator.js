@@ -1,52 +1,81 @@
 "use strict";
 
-// Error class
-class ValidationError {
+class ValidationResult {
     constructor() {
+        /**
+         * @type {boolean}
+         */
         this.error = false;
+        /**
+         * @type {string}
+         */
         this.type = "";
+        /**
+         * @type {string}
+         */
         this.context = "";
     }
 
-    setError( type = "", context = "" ) {
+    /**
+     * 
+     * @param {string} type 
+     * @param {string} context 
+     */
+    setError( type, context ) {
         this.error = true;
         this.type = type;
         this.context = context;
     }
-
-    addContext( additionalContext = "" ) {
-        this.context = this.context.concat(additionalContext);
+    /**
+     * Add additional message to the actual context
+     * @param {string} additionalContext 
+     */
+    addContext( additionalContext ) {
+        this.context = `${this.context}${additionalContext}`;
     }
-
-    setContext( newContext = "" ) {
+    /**
+     * Change the existing context with the new
+     * @param {string} newContext 
+     */
+    setContext( newContext ) {
         this.context = newContext;
     }
-
-    update( newError = ValidationError ) {
-        this.error = newError.error;
-        this.type = newError.type;
-        this.context = newError.context;
+    /**
+     * Takes an ValidationResult to update itself
+     * @param {ValidationResult} newError 
+     */
+    update( newResult ) {
+        this.error = newResult.error;
+        this.type = newResult.type;
+        this.context = newResult.context;
     }
 }
 
-//Common functions
+
+
+/**
+ * Takes a point and returns if it belongs to the square defined by a - b
+ * @param {point} point to compare
+ * @param {point} a left bottom point
+ * @param {point} b right top point
+ * @returns {boolean}
+ */
 const pointInArea = ( point, a, b ) => {
     const xInRange = (point.x >= a.x) && (point.x <= b.x);
     const yInRange = (point.y >= a.y) && (point.y <= b.y);
 
     return (xInRange && yInRange);
 }
-const robotTypeExist = ( type, validTypes ) => {
-    let match = false;
-    for (const possibleType of validTypes) {
-        if (possibleType === type) {
-            match = true;
-            break;
-        };
-    }
-    return match;
-}
-const getIdentifiers = ( baseArray ) => {
+
+/**
+ * Take an array of objects an returns a new array with the string contained in the identifier property of every element if it exist
+ * @param {object[]} baseArray 
+ * @returns {string[]}
+ */
+ const getIdentifiers = ( baseArray ) => {
+    /**
+     * @type {string[]}
+     */
     let identifiers = [];
 
     if ( baseArray && (baseArray.length > 0)) {
@@ -58,36 +87,13 @@ const getIdentifiers = ( baseArray ) => {
     }
     return identifiers;
 }
-const getVariables = ( baseArray ) => {
-    let variables = [];
-
-    if ( baseArray && (baseArray.length > 0)) {
-        baseArray.forEach( e => {
-            variables.push({
-                identifier : e.identifier,
-                type_value : e.type_value
-            });
-        })
-    }
-    return variables;
-}
-const getValidProcedures = ( baseProcedures ) => {
-    let procedures = [];
-    
-    if ( baseProcedures && (baseProcedures.length > 0)) {
-        baseProcedures.forEach( e => {
-            const identifier = e.identifier;
-            const parameters = e.parameters;
-            procedures.push({
-                identifier : identifier,
-                parameters : parameters
-            })
-        })
-    }
-
-    return procedures;
-}
-const identifierExist = ( identifier, validIdentifiers ) => {
+/**
+ * Take an string and returns if it's in the string[]
+ * @param {string} identifier 
+ * @param {string[]} validIdentifiers 
+ * @returns {boolean}
+ */
+ const identifierExist = ( identifier, validIdentifiers ) => {
     let match = false;
     for (const possibleId of validIdentifiers) {
         if (possibleId === identifier) {
@@ -97,8 +103,13 @@ const identifierExist = ( identifier, validIdentifiers ) => {
     }
     return match;
 }
-const identifiersAreUnique = ( baseArray, context ) => {
-    const r = new ValidationError();
+/**
+ * Takes an array of objects and returns a ValidationResult error if two objects have same identifiers
+ * @param {object[]} baseArray 
+ * @returns a {@link ValidationResult}
+ */
+const identifiersAreUnique = (baseArray) => {
+    const r = new ValidationResult();
     if (baseArray.length === 0) return r;
 
     for(let i = 0; i < baseArray.length; i++) {
@@ -121,8 +132,65 @@ const identifiersAreUnique = ( baseArray, context ) => {
     return r;
 }
 
-//Validations
+/**
+ * Take an array of objects and return an array of objects that contain the identifier and type_value from the base array
+ * @param {variable[]|parameter[]} baseArray 
+ * @returns a {@link variable}[]
+ */
+const getVariables = ( baseArray ) => {
+    /**
+     * @type {variable[]}
+     */
+    let variables = [];
+
+    if ( baseArray && (baseArray.length > 0)) {
+        baseArray.forEach( e => {
+            variables.push({
+                identifier : e.identifier,
+                type_value : e.type_value
+            });
+        })
+    }
+    return variables;
+}
+/**
+ * 
+ * @param {procedure[]} baseProcedures  
+ * @returns a {@link validProcedure}[]
+ */
+const getValidProcedures = ( baseProcedures ) => {
+    /**
+     * @type {validProcedure[]}
+     */
+    const procedures = [];
+    
+    if ( baseProcedures && (baseProcedures.length > 0)) {
+        baseProcedures.forEach( e => {
+            const identifier = e.identifier;
+            const parameters = e.parameters;
+            procedures.push({
+                identifier : identifier,
+                parameters : parameters
+            })
+        })
+    }
+
+    return procedures;
+}
+
+
+/**
+ * Take an array of areas and returns if they area valid
+ * @param {area[]} areas 
+ * @returns a {@link ValidationResult}
+ */
 const validateAreas = (areas) => {
+    /**
+     * Takes point a,b and return if a is minor or equal than b
+     * @param {point} p1 
+     * @param {point} p2 
+     * @returns {boolean}
+     */
     const pointsInOrder = ( p1, p2 ) => {
         const xInOrder = (p1.x <= p2.x);
         const yInOrder = (p1.y <= p2.y);
@@ -130,6 +198,14 @@ const validateAreas = (areas) => {
         return (xInOrder && yInOrder);
     }
 
+    /**
+     * Takes point a1,b1,a2,b2 and returns if the area defined by a1,b1 overlaps with area defined by a2,b2
+     * @param {point} a1 
+     * @param {point} b1 
+     * @param {point} a2 
+     * @param {point} b2 
+     * @returns {boolean}
+     */
     const areasOverlap = ( a1, b1, a2, b2 ) => {
         if (b1.x < a2.x) return false;
 
@@ -142,7 +218,7 @@ const validateAreas = (areas) => {
         return true;
     }
 
-    const r = new ValidationError();
+    const r = new ValidationResult();
 
     for(let i = 0; i < areas.length; i++) {
         const nameBase = areas[i].identifier;
@@ -202,45 +278,54 @@ const validateAreas = (areas) => {
     return r;
 }
 
+/**
+ * Take an array of instances and array of robot types an return if the instances are valid
+ * @param {instance[]} instances 
+ * @param {robot[]} robot_types 
+ * @returns a {@link ValidationResult}
+ */
 const validateInstances = (instances, robot_types) => {
-    const r = new ValidationError();
+    const r = new ValidationResult();
     
-    const validRobotTypes = [];
-    robot_types.forEach(dec => validRobotTypes.push(dec.identifier));
+    const validRobotTypes = getIdentifiers(robot_types);
+
+    const rIU = identifiersAreUnique(instances);
+    if (rIU.error) {
+        r.setError(
+            `Invalida declaracion de instancia`,
+            `${rIU.context} de las variables robots`
+        )
+    }
 
     for(let i = 0; i < instances.length; i++) {
         const nameBase = instances[i].identifier;
         const typeBase = instances[i].type;
         
-        if (!robotTypeExist(typeBase, validRobotTypes)) {
+        if (!identifierExist(typeBase, validRobotTypes)) {
             r.setError(
                 `Invalida declaracion de instancia`,
                 `Tipo de robot '${typeBase}' no fue declarado y se uso en la declaracion de instancia ${i + 1}`
             );
             break;
         }
-
-        for(let j = 0; j < i; j++) {
-            const nameComp = instances[j].identifier;
-
-            if (nameBase === nameComp) {
-                r.setError(
-                    `Invalida declaracion de instancia`,
-                    `Identificador '${nameComp}' se utiliza en la declaracion de instancia ${j + 1} y ${i + 1}`
-                );
-                break;
-            }     
-        }
-
-        if (r.error) break;
     }
 
     return r;
 }
 
+/**
+ * Take an array of instances and array of robot types an return if the instances are valid
+ * @param {init} inits
+ * @param {instance[]} instances 
+ * @param {area[]} areas 
+ * @returns a {@link ValidationResult}
+ */
 const validateInits = (inits, instances, areas) => {
-    const r = new ValidationError();
-
+    const r = new ValidationResult();
+    /**
+     * @typedef {{type: string, a: point, b: point, max: number, uses: number}} validArea
+     * @type {validArea[]}
+     */
     const validAreas = [];
     areas.forEach(area => {
         let max = 0;
@@ -259,6 +344,9 @@ const validateInits = (inits, instances, areas) => {
             max = 1;
         }
 
+        /**
+         * @type {validArea}
+         */
         const validArea = {
             type : area.identifier,
             a : area.a,
@@ -270,8 +358,15 @@ const validateInits = (inits, instances, areas) => {
         validAreas.push(validArea);
     });
 
+    /**
+     * @typedef {{identifier: string, areas: string[], inventory: {flower: number, paper: number}, origin: {x: number, y: number}}} validInstance
+     * @type {validInstance[]}
+     */
     const validInstances = [];
     instances.forEach(instance => {
+        /**
+         * @type {validInstance[]}
+         */
         const validInstance = {
             identifier : instance.identifier,
             areas : [],
@@ -279,12 +374,11 @@ const validateInits = (inits, instances, areas) => {
                 flower : null,
                 paper : null
             },
-            initial_position : {}
+            origin : {}
         }
 
         validInstances.push(validInstance);
     })
-
 
     const assigns = inits.assign_areas;
     
@@ -393,7 +487,7 @@ const validateInits = (inits, instances, areas) => {
     if (r.error) return r;
     
 
-    const initials = inits.initial_positions;
+    const initials = inits.assign_origins;
 
     for(let i = 0; i < initials.length; i++) {
         const identifier = initials[i].identifier;
@@ -412,7 +506,7 @@ const validateInits = (inits, instances, areas) => {
             break;
         }
 
-        if (validInstances[instanceIndex].initial_position.x) {
+        if (validInstances[instanceIndex].origin.x) {
             r.setError(
                 `Invalida inicializacion`,
                 `La instancia '${identifier}' solo puede tener un punto inicial, segundo punto en la inicializacion ${i + 1}`
@@ -438,7 +532,7 @@ const validateInits = (inits, instances, areas) => {
             break;
         }
         
-        const originIndex = validInstances.findIndex( e => e.initial_position.x === origin.x && e.initial_position.y === origin.y );
+        const originIndex = validInstances.findIndex( e => e.origin.x === origin.x && e.origin.y === origin.y );
 
         if (originIndex !== -1) {
             r.setError(
@@ -448,12 +542,12 @@ const validateInits = (inits, instances, areas) => {
             break;
         }
 
-        validInstances[instanceIndex].initial_position = origin;
+        validInstances[instanceIndex].origin = origin;
     }
     if (r.error) return r;
 
     for (const instance of validInstances) {
-        if (!instance.initial_position.x) {
+        if (!instance.origin.x) {
             r.setError(
                 `Invalida inicializacion`,
                 `No se asigno un punto inicial para la instancia '${instance.identifier}'`
@@ -465,32 +559,61 @@ const validateInits = (inits, instances, areas) => {
     return r;
 }
 
+
 class ExpressionResult {
     constructor() {
+        /**
+         * @type {boolean}
+         */
         this.error = false;
+        /**
+         * @type {string}}
+         */
         this.context = "";
+        /**
+         * @type {string}
+         */
         this.type = null;
     }
 
-    setError( context = "" ) {
+    /**
+     * @param {string} context 
+     */
+    setError( context ) {
         this.error = true;
         this.context = context;
     }
-
-    addContext( additionalContext = "" ) {
-        this.context = this.context.concat(additionalContext);
+    /**
+     * Add additional message to the actual context
+     * @param {string} additionalContext 
+     */
+    addContext( additionalContext ) {
+        this.context = `${this.context}${additionalContext}`;
     }
-
+    /**
+     * Change the existing type with the new
+     * @param {string} newType 
+     */
     setType( newType ) {
         this.type = newType;
     }
-
-    update( newResult = ExpressionResult ) {
+    /**
+     * Takes an ExpressionResult to update itself
+     * @param {ExpressionResult} newResult 
+     */
+    update( newResult ) {
         this.error = newResult.error;
         this.context = newResult.context;
         this.type = newResult.type;
     }
 }
+
+/**
+ * Take an expression tree and an array of variables and validate if value types and identifiers exists
+ * @param {expression} exp 
+ * @param {variable[]} vars 
+ * @returns a {@link ExpressionResult}
+ */
 const validateExpression = (exp, vars) => {
     const r = new ExpressionResult();
     if (!exp.type) {
@@ -618,8 +741,16 @@ const validateExpression = (exp, vars) => {
     console.log(exp, "no resolviste este caso pa");
 }
 
+/**
+ * 
+ * @param {statement} statement 
+ * @param {variable[]} vars 
+ * @param {string[]} instancesIds 
+ * @param {validProcedure[]} validProcedures 
+ * @returns a {@link ValidationResult}
+ */
 const validateStatement = (statement, vars, instancesIds, validProcedures) => {
-    const r = new ValidationError();
+    const r = new ValidationResult();
     if (!statement.type) {
         console.log(statement);
         return r;
@@ -726,7 +857,7 @@ const validateStatement = (statement, vars, instancesIds, validProcedures) => {
     // Improve the handling of arguments at inform sentence
     if ( type === "INFORM" ) {
         const { arg1, arg2 } = statement;
-        let rExp = new ValidationError();
+        let rExp = new ValidationResult();
 
         if (arg1.type === "STRING_LITERAL" && arg2.type) {
             rExp = validateExpression(arg2, vars);
@@ -928,8 +1059,16 @@ const validateStatement = (statement, vars, instancesIds, validProcedures) => {
     return r;
 }
 
+/**
+ * 
+ * @param {statement[]} body 
+ * @param {variable[]} vars 
+ * @param {string[]} instancesIds 
+ * @param {validProcedure[]} validProcedures 
+ * @returns a {@link ValidationResult}
+ */
 const validateBody = (body, vars, instancesIds, validProcedures) => {
-    const r = new ValidationError();
+    const r = new ValidationResult();
 
     if (body.length === 0) return r;
 
@@ -949,13 +1088,22 @@ const validateBody = (body, vars, instancesIds, validProcedures) => {
     return r;
 }
 
+/**
+ * 
+ * @param {procedure[]} procedures 
+ * @param {string[]} instancesIds 
+ * @returns a {@link ValidationResult}
+ */
 const validateProcedures = (procedures, instancesIds) => {
-    const r = new ValidationError();
+    const r = new ValidationResult();
 
     if (procedures.length === 0) return r;
 
     const validProcedures = getValidProcedures(procedures);
 
+    /**
+     * @type {string[]}
+     */
     const validProceduresIds = [];
     for(let i = 0; i < procedures.length; i++) {
         const procedureId = procedures[i].identifier;
@@ -969,7 +1117,7 @@ const validateProcedures = (procedures, instancesIds) => {
             break;
         }
 
-        const resultPar = identifiersAreUnique(procedures[i].parameters, "parametro");
+        const resultPar = identifiersAreUnique(procedures[i].parameters);
         if (resultPar.error) {
             r.setError(
                 `Invalida declaracion de parametro`,
@@ -978,7 +1126,7 @@ const validateProcedures = (procedures, instancesIds) => {
             break;
         }
 
-        const resultVar = identifiersAreUnique(procedures[i].local_variables, "variable");
+        const resultVar = identifiersAreUnique(procedures[i].local_variables);
         if (resultVar.error) {
             r.setError(
                 `Invalida declaracion de variable`,
@@ -987,7 +1135,7 @@ const validateProcedures = (procedures, instancesIds) => {
             break;
         }
 
-        const allVars = getVariables(procedures[i].local_variables).concat(getVariables(procedures[i].parameters));
+        const allVars = procedures[i].local_variables.concat(getVariables(procedures[i].parameters));
         
         const body = procedures[i].body;
         const resultBody = validateBody(body, allVars, instancesIds, validProcedures);
@@ -1006,14 +1154,21 @@ const validateProcedures = (procedures, instancesIds) => {
     return r;
 }
 
+/**
+ * 
+ * @param {robot[]} robot_types 
+ * @param {procedure[]} procedures 
+ * @param {string[]} instancesIds 
+ * @returns a {@link ValidationResult}
+ */
 const validateRobotTypes = (robot_types, procedures, instancesIds) => {
-    const r = new ValidationError();
+    const r = new ValidationResult();
 
-    let validProcedures = [];
-    if (procedures.length > 0) {
-        validProcedures = getValidProcedures(procedures);
-    }
+    const validProcedures = getValidProcedures(procedures);
 
+    /**
+     * @type {string[]}
+     */
     const validRobotTypeIds = [];
     for(let i = 0; i < robot_types.length; i++) {
         const robotTypeId = robot_types[i].identifier;
@@ -1027,7 +1182,7 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
             break;
         }
 
-        const resultVar = identifiersAreUnique(robot_types[i].local_variables, "variable");
+        const resultVar = identifiersAreUnique(robot_types[i].local_variables);
         if (resultVar.error) {
             r.setError(
                 `Invalida declaracion de variable`,
@@ -1036,7 +1191,7 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
             break;
         }
 
-        const allVars = getVariables(robot_types[i].local_variables);
+        const allVars = robot_types[i].local_variables;
         
         const body = robot_types[i].body;
         const resultBody = validateBody(body, allVars, instancesIds, validProcedures);
@@ -1055,11 +1210,15 @@ const validateRobotTypes = (robot_types, procedures, instancesIds) => {
     return r;
 }
 
-
+/**
+ * Take a RobotScript ast an validate it returning the succes or failure ( with a message atacched that describe it ) of the validation
+ * @param {RSast} inputAst 
+ * @returns a {@link ValidationResult}
+ */
 function validateAst(inputAst) {
     const { PROCEDURES, AREAS, ROBOT_TYPES, INSTANCES, INITS } = inputAst;
 
-    const result = new ValidationError();
+    const result = new ValidationResult();
 
     result.update(validateAreas(AREAS));
 

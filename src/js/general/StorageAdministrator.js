@@ -27,6 +27,9 @@ class StorageAdministrator {
             this.localItems.push(new LocalItem(key, ""))
         })
 
+        /**
+         * @type {{new: boolean, ast: RSast}}
+         */
         this.program = {
             new : false,
             ast : null
@@ -92,6 +95,10 @@ class StorageAdministrator {
         localStorage.clear();
     }
 
+    /**
+     * Loads a RobotScript ast passed by argument, if its null it removes the last ast if any was loaded
+     * @param {RSast|null} newProgram 
+     */
     loadProgram ( newProgram ) {
         if (!newProgram) {
             this.program.new = false;
@@ -103,6 +110,10 @@ class StorageAdministrator {
         }
     }
 
+    /**
+     * If a RobotScript ast was loaded it returns it, if not return null
+     * @returns {RSast|null} a {@link RSast} or null
+     */
     getProgram () {
         return this.program.ast;
     }

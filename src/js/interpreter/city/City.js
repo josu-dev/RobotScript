@@ -4,8 +4,15 @@ import CityMap from './CityMap.js';
 import CameraHandler from './CameraHandler.js';
 
 class City {
+    /**
+     * 
+     * @param {{element: HTMLElement, storage: StorageAdministrator}} config 
+     */
     constructor(config) {
         this.element = config.element;
+        /**
+         * @type {StorageAdministrator} a {@link StorageAdministrator}
+         */
         this.storage = config.storage;
         // this.storage.camera.width = this.element.clientWidth;
         // this.storage.camera.height = this.element.clientHeight;
@@ -170,7 +177,7 @@ class City {
             })
             let x = 0;
             let y = 0;
-            for (const initial of ast.INITS.initial_positions) {
+            for (const initial of ast.INITS.assign_origins) {
                 if (initial.identifier === id) {
                     x = initial.x;
                     y = initial.y;

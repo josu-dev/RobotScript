@@ -1,9 +1,14 @@
 "use strict";
 
 import Manager from "../general/Manager.js";
+import StorageAdministrator from "../general/StorageAdministrator.js";
 import City from "./city/City.js";
 
 class InterpreterManager extends Manager {
+    /**
+     * 
+     * @param {{container: HTMLElement, storage: StorageAdministrator}} config 
+     */
     constructor(config) {
         super({
             ...config,

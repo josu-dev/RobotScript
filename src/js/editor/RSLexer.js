@@ -6,20 +6,50 @@ const createTokenInstance = chevrotain.createTokenInstance;
 const Lexer = chevrotain.Lexer;
 
 const RSLexer = (function () {
+    /**
+     * @type {number[]} - Represent de identation level of previous lines
+     */
     let indentStack = [0];
+
+    /**
+     * Identation state of tokenize phase
+     * @constant {object}
+     * @prop {Boolean} error - represent if an error ocurred during identation lexing
+     * @prop {String} message - represent the identation error cause
+     */
     const identState = {
         error : false,
         messsage : "",
     }
+
+    /**
+     * Set identation error
+     * @param {String} message - describe the identation error cause
+     */
     function identationError(message) {
         identState.error = true;
         identState.messsage = message;
     }
+
+    /**
+     * Reset identation state to default
+     */
     function resetIdentState() {
         identState.error = false;
         identState.messsage = "";
     }
 
+    /**
+     * This custom Token matcher uses Lexer context ("matchedTokens" and "groups" arguments)
+     * combined with state via closure ("indentStack" and "lastTextMatched") to match indentation.
+     *
+     * @param {string} text - the full text to lex, sent by the Chevrotain lexer.
+     * @param {number} offset - the offset to start matching in the text.
+     * @param {IToken[]} matchedTokens - Tokens lexed so far, sent by the Chevrotain Lexer.
+     * @param {object} groups - Token groups already lexed, sent by the Chevrotain Lexer.
+     * @param {string} type - determines if this function matches Indent or Outdent tokens.
+     * @returns {*}
+     */
     function matchIndentBase(text, offset, matchedTokens, groups, type) {
         function getLineColumn() {
             const line = _.last(newLines).startLine + 1;
@@ -93,10 +123,11 @@ const RSLexer = (function () {
                 // 2. If there was match (> 0 level indent) than we need to add minus one number of outsents
                 //    because the lexer would create one due to returning a none null result.
                 let iStart = match !== null ? 1 : 0
+                const { line, column } = getLineColumn();
                 for (let i = iStart; i < numberOfDedents; i++) {
                     indentStack.pop()
                     matchedTokens.push(
-                        createTokenInstance(Outdent, "", NaN, NaN, NaN, NaN, NaN, NaN)
+                        createTokenInstance(Outdent, "", offset, NaN, line, NaN, column, NaN)
                     )
                 }
 
@@ -110,6 +141,7 @@ const RSLexer = (function () {
         }
         else return null;
     }
+
     // customize matchIndentBase to create separate functions of Indent and Outdent.
     const matchIndent = _.partialRight(matchIndentBase, "indent");
     const matchOutdent = _.partialRight(matchIndentBase, "outdent");
@@ -602,6 +634,9 @@ const RSLexer = (function () {
         categories: ControlCorner
     });
 
+    /**
+     * @constant {TokenType[]} allTokens - RS tokens definitions in order for correct lexing
+     */
     const allTokens = [
         Newline, Outdent, Indent, Spaces,
         LineComment, MultiLineComment,
@@ -646,8 +681,23 @@ const RSLexer = (function () {
         LParen, RParen,
     ];
 
-
+    /**
+     * @typedef {object} errorMessageProvider
+     * @method buildUnexpectedCharactersMessage define how the lexer create the message of an error during tokenize
+     */
+    /**
+     * @type {errorMessageProvider}
+     */
     const RSLexerErrorProvider = {
+        /**
+         * An Unexpected Character Error occurs when the lexer is unable to match a range of one or more characters in the input text against any of the Token Types in it's Lexer definition
+         * @param {string} fullText - full original input text
+         * @param {number} startOffset - offset in input text where error starts
+         * @param {number} length - error length
+         * @param {number} [line] - line number where the error occurred. (optional) Will not be provided when lexer is not defined to track lines/columns
+         * @param {number} [column] - column number where the error occurred. (optional) Will not be provided when lexer is not defined to track lines/columns
+         * @returns {string}
+         */
         buildUnexpectedCharactersMessage( fullText, startOffset, length, line, column ) { 
             if (length === 1) return (
                 `Error de escritura, el caracter '${fullText.charAt(startOffset)}' en la Ln ${line}, Col ${column} no es valido en el lenguaje`
@@ -657,31 +707,58 @@ const RSLexer = (function () {
             );
         }
     }
+    /**
+     * Configuration to create the lexer
+     * @type {object}
+     * @prop {errorMessageProvider} errorMessageProvider 
+     */
     const lexerConfig = {
         errorMessageProvider : RSLexerErrorProvider,
         // In order to use identation based parsing must track full data about tokens
         // positionTracking : "onlyStart"
     };
+
+    /**
+     * @constant {Lexer} lexerInstance the instance that tokenize an RS program
+     */
     const lexerInstance = new Lexer(allTokens, lexerConfig);
 
-
+    /**
+     * @returns {tokensObject}
+     */
     function objectTokens () {
         const T = {};
         allTokens.forEach(t => T[t.name] = t);
         return T;
     }
+    /**
+     * Getter
+     * @returns {TokenType[]} an array of RS tokens definitions
+     */
     function arrayTokens () {
         return allTokens;
     }
-    function tokenize (inputText = "") {
+
+    /**
+     * 
+     * @param {string} inputText 
+     * @returns {ILexingResult}
+     */
+    function tokenize (inputText) {
         indentStack = [0];
         resetIdentState();
 
+        /**
+         * @type {string} is the same as inputText but every tab character was replaced with 2 spaces
+         */
         const noTabsInput = inputText.replaceAll(/\t/g, "  ");
+
+        /**
+         * @type {ILexingResult} is the result of the tokenize process
+         */
         const lexResult = lexerInstance.tokenize(noTabsInput);
 
         if (identState.error) {
-            console.log(lexResult);
             lexResult.errors.unshift({
                 message : identState.messsage
             });

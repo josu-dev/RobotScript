@@ -4,107 +4,25 @@ import Manager from "../general/Manager.js";
 import { toAst } from "./ast-generator.js";
 import { validateAst } from "./ast-validator.js";
 
-const DEFAULT_EDITOR_CODE =  `programa Prueba6
-procesos
-  proceso juntarFlores(ES flores: numero)
-  comenzar
-    mientras (HayFlorEnLaEsquina)
-      tomarFlor
-      flores:= flores + 1
-  fin
-  proceso juntarPapeles(ES papeles: numero)
-  comenzar
-    mientras (HayPapelEnLaEsquina)
-      tomarPapel
-      papeles:= papeles + 1
-  fin
-  proceso juntarEnEsquinaFlores(ES flores: numero; E AvO: numero)
-  variables
-    Av, Ca: numero
-  comenzar
-    Random(Av, 1, 5)
-    Random(Ca, 1, 10)
-    BloquearEsquina(Av, Ca)
-    Pos(Av, Ca)
-    juntarFlores(flores)
-    Pos(AvO, 10)
-    LiberarEsquina(Av, Ca)
-  fin
-  proceso juntarEnEsquinaPapeles(ES papeles: numero; E AvO: numero)
-  variables
-    Av, Ca: numero
-  comenzar
-    Random(Av, 6, 10)
-    Random(Ca, 1, 9)
-    BloquearEsquina(Av, Ca)
-    Pos(Av, Ca)
-    juntarPapeles(papeles)
-    Pos(AvO, 10)
-    LiberarEsquina(Av, Ca)
-  fin
+const DEFAULT_EDITOR_CODE =  `programa //nombre
+
 areas
-  ciudad1: AreaPC(1,1,5,10)
-  ciudad2: AreaPC(6,1,10,9)
-  ciudad3: AreaP(6,10,6,10)
-  ciudad4: AreaP(7,10,7,10)
-  ciudad5: AreaP(8,10,8,10)
-  ciudad6: AreaP(9,10,9,10)
-  ciudad7: AreaC(10,10,10,10)
+  //nombre: tipo(x1,y1,x2,y2)
+
 robots
-  robot florero
+  robot //nombre
   variables
-    flores: numero
-    AvO: numero
+    // nombre: tipo
   comenzar
-    flores:= 0
-    AvO:= PosAv
-    repetir (5)
-      juntarEnEsquinaFlores(flores, AvO)
-    BloquearEsquina(10, 10)
-    Pos(10, 10)
-    repetir (flores)
-      depositarFlor
-    Pos(AvO, 10)
-    LiberarEsquina(10, 10)
+    //instrucciones
   fin
-  robot papelero
-  variables
-    papeles: numero
-    AvO: numero
-  comenzar
-    papeles:= 0
-    AvO:= PosAv
-    repetir (3)
-      juntarEnEsquinaPapeles(papeles, AvO)
-    BloquearEsquina(10, 10)
-    Pos(10, 10)
-    repetir (papeles)
-      depositarPapel
-    Pos(AvO, 10)
-    LiberarEsquina(10, 10)
-  fin
+
 variables
-  robot1: florero
-  robot2: florero
-  robot3: papelero
-  robot4: papelero
+  //nombre: tipo
+
 comenzar
-  AsignarArea(robot1, ciudad1)
-  AsignarArea(robot2, ciudad1)
-  AsignarArea(robot3, ciudad2)
-  AsignarArea(robot4, ciudad2)
-  AsignarArea(robot1, ciudad3)
-  AsignarArea(robot2, ciudad4)
-  AsignarArea(robot3, ciudad5)
-  AsignarArea(robot4, ciudad6)
-  AsignarArea(robot1, ciudad7)
-  AsignarArea(robot2, ciudad7)
-  AsignarArea(robot3, ciudad7)
-  AsignarArea(robot4, ciudad7)
-  Iniciar(robot1, 6, 10)
-  Iniciar(robot2, 7, 10)
-  Iniciar(robot3, 8, 10)
-  Iniciar(robot4, 9, 10)
+  //AsignarArea(nombre, tipo)
+  //Iniciar(nombre, x, y)
 fin`;
 const CUSTOM_COMPLETES = [
     { word : "programa", meta : "define nombre del programa",},
@@ -193,7 +111,7 @@ class EditorManager extends Manager {
     
             //Configure session
             this.aceEditor.session.setOptions({
-                useSoftTabs : false,
+                useSoftTabs : true,
                 tabSize : 2,
                 mode : "ace/mode/robotscript",
             });

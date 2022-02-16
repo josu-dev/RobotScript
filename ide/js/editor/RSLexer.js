@@ -314,18 +314,18 @@ const RSLexer = (function () {
     });
     const Integer = createToken({
         name: "Integer",
-        label: "numero entero",
+        label: "entero",
         pattern: /0|[1-9]\d*/
     });
     const Boolean = createToken({
         name: "Boolean",
-        label: "valor booleano",
+        label: "booleano",
         pattern: /verdad|falso/,
         longer_alt: Identifier
     });
     const LiteralString = createToken({
         name: "LiteralString",
-        label: "cadena de caracteres",
+        label: "string",
         pattern: /["][^"\n]*["]|['][^'\n]*[']/
     });
 

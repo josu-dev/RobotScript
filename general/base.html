@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Page name</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./assets/RobotScript-Icon.ico">
+
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="./base.css">
+</head>
+<body>
+    <header class="primary-bar">
+        <div class="container-logo">
+            <img src="./src/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
+            <span>RobotScript</span>
+        </div>
+
+        <div class="container-content-mode">
+            <button data-selected="true" class="mode-btn left">
+                <img src="./assets/svg/Arrow-left.svg" alt="contenido izquierdo">
+                <span>Contenido 1</span>
+            </button>
+            <span></span>
+            <button data-selected="false" class="mode-btn right">
+                <img src="./assets/svg/Arrow-right.svg" alt="contenido derecho">
+                <span>Contenido 2</span>
+            </button>
+        </div>
+
+        <div class="container-nav">
+            <button class="primary-nav-toggle" aria-expanded="false">
+            </button>
+            <nav>
+                <ul data-visible="false" class="primary-navigation">
+                    <li>
+                        <a href="../index.html"
+                        target="_blank">IDE</a>
+                    </li>
+                    <li>
+                        <a href="../docs/language/language.html"
+                        target="_blank">Documentacion</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/J-Josu/RobotScript"
+                        target="_blank">Repositorio</a>
+                    </li>
+                    <li>
+                        <a href="https://www.info.unlp.edu.ar/"
+                        target="_blank">Universidad</a>
+                    </li>
+                    <li>
+                        <a href="https://discord.gg/Y28Sv4HnKr"
+                        target="_blank">Discord</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <article class="content left" data-visible="true">
+        </article>
+
+        <article class="content right" data-visible="false">
+        </article>
+    </main>
+
+    <!-- Scripts -->
+    <!-- Page -->
+    <script type="module" src="./StorageAdministrator.js"></script>
+    <script type="module" src="./PageManager.js"></script>
+</body>
+</html>

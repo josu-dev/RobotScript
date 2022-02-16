@@ -1,14 +1,23 @@
 "use strict";
 
+import StorageAdministrator from "./StorageAdministrator.js";
+
+/**
+ * Base class for manegin windows
+ * @module Manager
+ */
 class Manager {
     /**
      * 
-     * @param {{container: HTMLElement, defaultName: string, storage: StorageAdministrator}} config 
+     * @param {object} config
+     * @param {HTMLElement} config.container
+     * @param {string} config.defaultName
+     * @param {StorageAdministrator} config.storage
      */
-    constructor(config) {
-        this.container = config.container;
-        this.defaultName = config.defaultName;
-        this.storage = config.storage;
+    constructor({container, defaultName, storage}) {
+        this.container = container;
+        this.defaultName = defaultName;
+        this.storage = storage;
 
         this.toolBar = {}
 

@@ -18,6 +18,7 @@ Se destaca que esta en desarrollo permanente
 - Compilacion con validacion de errores
 - Interpretador de codigo integrado
 - Multiples instancias
+- Documentacion
 - Apto movil (en desarrollo)
 - Y mas
 

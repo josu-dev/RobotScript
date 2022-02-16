@@ -6,28 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>IDE</title>
-    <link rel="shortcut icon" type="image/x-icon" href="./src/assets/RobotScript-Icon.ico" >
+    <link rel="shortcut icon" type="image/x-icon" href="./ide/assets/RobotScript-Icon.ico" >
 
     <!-- Styles -->
     <!-- Page -->
-    <link rel="stylesheet" type= "text/css" href="./src/css/normalize.css">
-    <link rel="stylesheet" type= "text/css" href="./src/css/index.css">
+    <link rel="stylesheet" type= "text/css" href="./ide/css/normalize.css">
+    <link rel="stylesheet" type= "text/css" href="./ide/css/index.css">
 </head>
 <body>
     <header class="primary-bar">
         <div class="container-logo">
-            <img src="./src/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
+            <img src="./ide/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
             <span>RobotScript</span>
         </div>
 
         <div class="container-content-mode">
             <button data-selected="true" class="mode-btn btnEditor">
-                <img src="./src/assets/svg/Editor.svg" alt="editor">
+                <img src="./ide/assets/svg/Editor.svg" alt="editor">
                 <span>Editor</span>
             </button>
             <span></span>
             <button data-selected="false" class="mode-btn btnInterpreter">
-                <img src="./src/assets/svg/Execute.svg" alt="interpreter">
+                <img src="./ide/assets/svg/Execute.svg" alt="interpreter">
                 <span>Interpreter</span>
             </button>
         </div>
@@ -38,12 +38,20 @@
             <nav>
                 <ul data-visible="false" class="primary-navigation flex">
                     <li>
-                        <a href="https://www.info.unlp.edu.ar/"
-                        target="_blank">Universidad</a>
+                        <a href="./index.html"
+                        target="_blank">IDE</a>
+                    </li>
+                    <li>
+                        <a href="./docs/language/language.html"
+                        target="_blank">Documentacion</a>
                     </li>
                     <li>
                         <a href="https://github.com/J-Josu/RobotScript"
                         target="_blank">Repositorio</a>
+                    </li>
+                    <li>
+                        <a href="https://www.info.unlp.edu.ar/"
+                        target="_blank">Universidad</a>
                     </li>
                     <li>
                         <a href="https://discord.gg/Y28Sv4HnKr"
@@ -59,19 +67,19 @@
         <article class="content editor" data-visible="true">
             <section class="tool-bar">
                 <button class="tool--button btnUpload">
-                    <img src="./src/assets/svg/Upload.svg" alt="abrir">
+                    <img src="./ide/assets/svg/Upload.svg" alt="abrir">
                     <span>Abrir</span>
                 </button>
                 <button class="tool--button btnDownload">
-                    <img src="./src/assets/svg/Download.svg" alt="bajar">
+                    <img src="./ide/assets/svg/Download.svg" alt="bajar">
                     <span>Bajar</span>
                 </button>
                 <button class="tool--button btnCopy">
-                    <img src="./src/assets/svg/Copy.svg" alt="copiar">
+                    <img src="./ide/assets/svg/Copy.svg" alt="copiar">
                     <span>Copiar</span>
                 </button>
                 <button class="tool--button btnClear">
-                    <img src="./src/assets/svg/Clean.svg" alt="limpiar">
+                    <img src="./ide/assets/svg/Clean.svg" alt="limpiar">
                     <span>Limpiar</span>
                 </button>
                 <select class="tool-fontSize" name="" id="">
@@ -86,7 +94,7 @@
                     <option value="8">8</option>
                 </select>
                 <button class="tool--button btnCompile">
-                    <img src="./src/assets/svg/Compile.svg" alt="compilar">
+                    <img src="./ide/assets/svg/Compile.svg" alt="compilar">
                     <span>Compilar</span>
                 </button>
             </section>
@@ -107,24 +115,24 @@
         <article class="content interpreter" data-visible="false">
             <section class="tool-bar">
                 <button class="tool--button btnLoad">
-                    <img src="./src/assets/svg/Compile.svg" alt="cargar">
+                    <img src="./ide/assets/svg/Compile.svg" alt="cargar">
                     <span>Cargar</span>
                 </button>
                 <button class="tool--button btnRun">
-                    <img src="./src/assets/svg/Play.svg" alt="ejecutar">
+                    <img src="./ide/assets/svg/Play.svg" alt="ejecutar">
                     <span>Ejecutar</span>
                 </button>
                 <button class="tool--button btnPause">
-                    <img src="./src/assets/svg/Pause.svg" alt="pausar">
+                    <img src="./ide/assets/svg/Pause.svg" alt="pausar">
                     <span>Pausar</span>
                 </button>
                 <button class="tool--button btnReset">
-                    <img src="./src/assets/svg/Reload.svg" alt="reiniciar">
+                    <img src="./ide/assets/svg/Reload.svg" alt="reiniciar">
                     <span>Reiniciar</span>
                 </button>
                 <div class="container-menu city">
                     <button class="tool--button btnCity">
-                        <img src="./src/assets/svg/City.svg" alt="ciudad">
+                        <img src="./ide/assets/svg/City.svg" alt="ciudad">
                         <span>Ciudad</span>
                     </button>
 
@@ -151,7 +159,7 @@
                     </ul>
                 </div>
                 <button class="tool--button btnView">
-                    <img src="./src/assets/svg/Camera.svg" alt="vista">
+                    <img src="./ide/assets/svg/Camera.svg" alt="vista">
                     <span>Vista</span>
                 </button>
             </section>
@@ -172,29 +180,29 @@
 
     <!-- Scripts -->
     <!-- Page -->
-    <script type="module" src="./src/js/index.js"></script>
-    <script type="module" src="./src/js/general/PageManager.js"></script>
-    <script type="module" src="./src/js/general/Manager.js"></script>
-    <script type="module" src="./src/js/general/StorageAdministrator.js"></script>
+    <script type="module" src="./ide/js/index.js"></script>
+    <script type="module" src="./ide/js/general/PageManager.js"></script>
+    <script type="module" src="./ide/js/general/Manager.js"></script>
+    <script type="module" src="./ide/js/general/StorageAdministrator.js"></script>
 
     <!-- Library Ace - Chevrotain, Editor -->
-    <script src="./src/lib/ace/ace.js"></script>
-    <script src="./src/lib/ace/mode-robotscript.js"></script>
-    <script src="./src/lib/ace/ext-language_tools.js"></script>
-    <script src="./src/lib/chevrotain/chevrotain.js"></script>
-    <script src="./src/lib/chevrotain/lodash.js"></script>
+    <script src="./ide/lib/ace/ace.js"></script>
+    <script src="./ide/lib/ace/mode-robotscript.js"></script>
+    <script src="./ide/lib/ace/ext-language_tools.js"></script>
+    <script src="./ide/lib/chevrotain/chevrotain.js"></script>
+    <script src="./ide/lib/chevrotain/lodash.js"></script>
 
-    <script type="module" src="./src/js/editor/RSLexer.js"></script>
-    <script type="module" src="./src/js/editor/ast-generator.js"></script>
-    <script type="module" src="./src/js/editor/ast-validator.js"></script>
-    <script type="module" src="./src/js/editor/EditorManager.js"></script>
+    <script type="module" src="./ide/js/editor/RSLexer.js"></script>
+    <script type="module" src="./ide/js/editor/ast-generator.js"></script>
+    <script type="module" src="./ide/js/editor/ast-validator.js"></script>
+    <script type="module" src="./ide/js/editor/EditorManager.js"></script>
 
     <!-- Interpreter -->
-    <script src="./src/js/interpreter/city/utils.js"> </script>
-    <script type="module" src="./src/js/interpreter/city/CameraHandler.js"> </script>
-    <script type="module" src="./src/js/interpreter/city/City.js"> </script>
-    <script type="module" src="./src/js/interpreter/city/CityObject.js"> </script>
-    <script type="module" src="./src/js/interpreter/city/CityMap.js"> </script>
-    <script type="module" src="./src/js/interpreter/InterpreterManager.js"> </script>
+    <script src="./ide/js/interpreter/city/utils.js"> </script>
+    <script type="module" src="./ide/js/interpreter/city/CameraHandler.js"> </script>
+    <script type="module" src="./ide/js/interpreter/city/City.js"> </script>
+    <script type="module" src="./ide/js/interpreter/city/CityObject.js"> </script>
+    <script type="module" src="./ide/js/interpreter/city/CityMap.js"> </script>
+    <script type="module" src="./ide/js/interpreter/InterpreterManager.js"> </script>
 </body>
 </html>

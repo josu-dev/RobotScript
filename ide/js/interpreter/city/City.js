@@ -1,5 +1,6 @@
 "use strict";
 
+import StorageAdministrator from '../../general/StorageAdministrator.js';
 import CityMap from './CityMap.js';
 import CameraHandler from './CameraHandler.js';
 
@@ -233,7 +234,7 @@ class City {
                 statements : newBody,
                 procedures : newProcedures,
                 inventory : inventory,
-                src : `./src/assets/city/object/robot/robot-32x8-${index}.png`,
+                src : `./ide/assets/city/object/robot/robot-32x8-${index}.png`,
                 color : colorTable[index]
             }
         }

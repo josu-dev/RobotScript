@@ -1163,4 +1163,4 @@ function toAst(inputText) {
     };
 };
 
-export {toAst};
+export {toAst, RSParserInstance};

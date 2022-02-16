@@ -19,7 +19,7 @@ class MapImageHandler {
         this.ctx.imageSmoothingEnabled = false;
 
         this.imgBackground = new Image();
-        this.imgBackground.src = "./src/assets/city/map/city-bordered-1624x1624.png";
+        this.imgBackground.src = "./ide/assets/city/map/city-bordered-1624x1624.png";
         this.imgBackground.onload = () => {
             this.drawBackground();
         }
@@ -179,7 +179,7 @@ class CityMap {
         this.robots.camera = new Robot({
             city : this.city,
             map : this,
-            src: "./src/assets/city/object/camera/camera-32x8-invisible.png",
+            src: "./ide/assets/city/object/camera/camera-32x8-invisible.png",
             isMountable: false,
             x: 0,
             y: 0,

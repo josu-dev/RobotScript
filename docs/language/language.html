@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Documentacion</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../general/assets/RobotScript-Icon.ico">
+
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="../../general/base.css">
+    <link rel="stylesheet" type="text/css" href="./language.css">
+</head>
+<body>
+    <header class="primary-bar">
+        <div class="container-logo">
+            <img src="../../general/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
+            <span>RobotScript</span>
+        </div>
+
+        <div class="container-content-mode">
+            <button data-selected="false" class="mode-btn left">
+                <img src="./assets/Book.svg" alt="documentacion">
+                <span>Documentacion</span>
+            </button>
+            <span></span>
+            <button data-selected="true" class="mode-btn right">
+                <img src="./assets/Diagram.svg" alt="diagrama de sintaxis">
+                <span>Diagrama Sintaxis</span>
+            </button>
+        </div>
+
+        <div class="container-nav">
+            <button class="primary-nav-toggle" aria-expanded="false">
+            </button>
+            <nav>
+                <ul data-visible="false" class="primary-navigation">
+                    <li>
+                        <a href="../../index.html"
+                        target="_blank">IDE</a>
+                    </li>
+                    <li>
+                        <a href="./language.html"
+                        target="_blank">Documentacion</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/J-Josu/RobotScript"
+                        target="_blank">Repositorio</a>
+                    </li>
+                    <li>
+                        <a href="https://www.info.unlp.edu.ar/"
+                        target="_blank">Universidad</a>
+                    </li>
+                    <li>
+                        <a href="https://discord.gg/Y28Sv4HnKr"
+                        target="_blank">Discord</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <article class="content left" data-visible="false">
+            <div class="documentation">
+                Aca va a ir la documentacion
+            </div>
+        </article>
+
+        <article class="content right" data-visible="true">
+            <iframe id="innerFrame" src=""
+                style="position:relative;
+                top:0px;
+                left:0px;
+                bottom:0px;
+                right:0px;
+                width:100%;
+                height:100%;
+                border:none;
+                margin:0;
+                padding:0;
+                overflow:hidden;
+                z-index:1;">
+                </iframe>
+        </article>
+    </main>
+
+    <!-- Scripts -->
+    <!-- Page -->
+    <script type="module" src="../../general/StorageAdministrator.js"></script>
+    <script type="module" src="../../general/PageManager.js"></script>
+    <script type="module" src="./language.js"></script>
+
+    <!-- Chevrotain -->
+    <script src="../../ide/lib/chevrotain/chevrotain.js"></script>
+    <script src="../../ide/lib/chevrotain/lodash.js"></script>
+    <script type="module" src="../../ide/js/editor/RSLexer.js"></script>
+</body>
+</html>

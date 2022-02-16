@@ -61,7 +61,7 @@ class CityObject {
         this.sprite = new Sprite({
             storage: this.city.storage,
             cityObject: this,
-            src: config.src || "./src/assets/city/sprite-default.png",
+            src: config.src || "./ide/assets/city/sprite-default.png",
             ctx : config.ctx
         });
     }
@@ -81,7 +81,7 @@ class CityItem extends CityObject {
     constructor(config) {
         super({
             ...config,
-            src : config.type === "flower" ? "./src/assets/city/object/item/flower-8x8.png" :"./src/assets/city/object/item/paper-8x8.png",
+            src : config.type === "flower" ? "./ide/assets/city/object/item/flower-8x8.png" :"./ide/assets/city/object/item/paper-8x8.png",
         });
         this.isMountable = false;
         this.type = config.type;

@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * @module StorageAdministrator
+ */
+
 class LocalItem {
     constructor(key = "", defaultValue = "") {
         if (!localStorage.getItem(key)) {

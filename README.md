@@ -1,4 +1,4 @@
-<img src="./src/assets/svg/RobotScript-Icon.svg" alt="RobotScript icon" style="height: 16rem; width: 16rem;"/>
+<img src="./general/assets/svg/RobotScript-Icon.svg" alt="RobotScript icon" style="height: 16rem; width: 16rem;"/>
 
 <br>
 

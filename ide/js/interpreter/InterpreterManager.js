@@ -1,7 +1,7 @@
 "use strict";
 
 import Manager from "../general/Manager.js";
-import StorageAdministrator from "../general/StorageAdministrator.js";
+import StorageAdministrator from "../general/IdeStorage.js";
 import City from "./city/City.js";
 
 class InterpreterManager extends Manager {

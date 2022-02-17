@@ -1,10 +1,9 @@
 "use strict";
 
-import StorageAdministrator from "../../general/StorageAdministrator.js";
-import PageManager from "../../general/PageManager.js";
-import RSLexer from "../../ide/js/editor/RSLexer.js";
-
-const CstParser = chevrotain.CstParser;
+import StorageAdministrator from "../../../general/StorageAdministrator.js";
+import PageManager from "../../../general/PageManager.js";
+import RSLexer from "../../../ide/js/editor/RSLexer.js";
+import getDocHTML from "./docGenerator.js";
 
 
 const myStorage = new StorageAdministrator();
@@ -12,6 +11,10 @@ const myStorage = new StorageAdministrator();
 const myPage = new PageManager({
     storage : myStorage
 });
+
+const myDocumentationPreviewer = document.querySelector(".doc-body");
+myDocumentationPreviewer.innerHTML = getDocHTML();
+
 
 
 const allTokens = RSLexer.tokensArray;
@@ -57,6 +60,8 @@ const {
     MultiplicacionOperator, Mult, Div,
     LParen, RParen
 } = RSLexer.tokensObject;
+
+const CstParser = chevrotain.CstParser;
 
 class RSParserSpanish extends CstParser {
     constructor() {
@@ -507,11 +512,12 @@ const CUSTOM_SYNTAX_CSS = `<style type="text/css">
     --clr-pr-100: hsl(0,0%,92%);
     --clr-pr-150: hsl(0,0%,88%);
 
-    --clr-bg-900: hsl(0,0%,8%);
-    --clr-bg-800: hsl(0,0%,16%);
-    --clr-bg-700: hsl(0,0%,24%);
-    --clr-bg-600: hsl(0,0%,32%);
-    --clr-bg-500: hsl(0,0%,40%);
+    --clr-bg-900: hsl(0,0%,4%);
+    --clr-bg-800: hsl(0,0%,8%);
+    --clr-bg-700: hsl(0,0%,12%);
+    --clr-bg-600: hsl(0,0%,16%);
+    --clr-bg-500: hsl(0,0%,20%);
+    --clr-bg-400: hsl(0,0%,24%);
     
     --clr-br-0: hsl(32,100%,40%);
     --clr-br-no-seleccion-1: hsl(16,100%,40%);
@@ -520,10 +526,12 @@ const CUSTOM_SYNTAX_CSS = `<style type="text/css">
     --clr-br-seleccion-2: hsl(20,100%,50%);
 
     --clr-bg-no-seleccion-1: hsl(0,100%,96%);
-    --clr-bg-no-seleccion-2: hsl(0,100%,92%);
-    --clr-bg-seleccion-1: hsl(60,100%,45%);
+    --clr-bg-no-seleccion-2: hsl(0,100%,90%);
+    --clr-bg-seleccion-1: hsl(60,100%,50%);
     --clr-bg-seleccion-2: hsl(60,100%,45%);
     --clr-bg-seleccion-3: hsl(60,100%,15%);
+    
+    --clr-selection: hsl(32, 10%, 40%);
     
     --gdt-tb-rs: to bottom, hsl(0,100%,50%) , hsl(30,100%,50%);
     --gdt-tb-rs-a0: to bottom, hsl(0,100%,35%) , hsl(30,100%,35%);
@@ -533,7 +541,7 @@ const CUSTOM_SYNTAX_CSS = `<style type="text/css">
 }
 
 body {
-    background-color: var(--clr-bg-900);
+    background-color: var(--clr-bg-700);
     color: var(--clr-pr-150);
 }
 
@@ -631,13 +639,16 @@ svg.railroad-diagram g.non-terminal text {
     cursor: pointer;
 }
 
+::selection { background: var(--clr-selection); }
+::-moz-selection { background: var(--clr-selection); }
+
 ::-webkit-scrollbar {
     width: 0.5rem;
     height: 0.5rem;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--clr-bg-900);
+    background: var(--clr-bg-700);
 }
 
 ::-webkit-scrollbar-thumb:vertical {

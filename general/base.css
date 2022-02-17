@@ -1,14 +1,15 @@
 :root {
-    --clr-pr-000: #ffffff;
-    --clr-pr-200: #efefef;
+    --clr-pr-000: hsl(0, 0%, 100%);
+    --clr-pr-200: hsl(0, 0%, 94%);
 
-    --clr-delimiter: #7f7f7f;
+    --clr-delimiter: hsl(0, 0%, 50%);
 
-    --clr-bg-400: #383838;
-    --clr-bg-500: #303030;
-    --clr-bg-600: #282828;
-    --clr-bg-700: #202020;
-    --clr-bg-800: #181818;
+    --clr-bg-400: hsl(0, 0%, 24%);
+    --clr-bg-500: hsl(0, 0%, 20%);
+    --clr-bg-600: hsl(0, 0%, 16%);
+    --clr-bg-700: hsl(0, 0%, 12%);
+    --clr-bg-800: hsl(0, 0%, 8%);
+    --clr-bg-900: hsl(0, 0%, 4%);
 
     --gdt-tb-rs: to bottom, hsl(0,100%,50%) , hsl(30,100%,50%);
     --gdt-tb-rs-a0: to bottom, hsl(0,100%,35%) , hsl(30,100%,35%);
@@ -22,6 +23,7 @@
     padding: 0;
     border: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 button {
     all: unset;
@@ -185,12 +187,11 @@ body {
     z-index: 2000;
     top: -1rem;
     right: -1rem;
-    width: 9rem;
 
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     flex-direction: column;
-    padding: min(30vh, 4rem) 2rem;
+    padding: 4rem 2rem 2rem 2rem;
     transform: translateX(100%);
     transition: transform 350ms ease-out;
 
@@ -205,6 +206,14 @@ body {
     letter-spacing: 2px;
     font-style: monospace;
     text-transform: uppercase;
+}
+@media (min-width:720px) {
+    .primary-navigation {
+        gap: 1.5rem;
+    }
+    .primary-navigation a {
+        font-size: 1.25rem;
+    }
 }
 
 .primary-navigation[data-visible="true"] {

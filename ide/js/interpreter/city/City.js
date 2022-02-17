@@ -1,6 +1,6 @@
 "use strict";
 
-import StorageAdministrator from '../../general/StorageAdministrator.js';
+import StorageAdministrator from '../../general/IdeStorage.js';
 import CityMap from './CityMap.js';
 import CameraHandler from './CameraHandler.js';
 

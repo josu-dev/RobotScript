@@ -1,6 +1,6 @@
 "use strict";
 
-import StorageAdministrator from "./StorageAdministrator.js";
+import StorageAdministrator from "./IdeStorage.js";
 
 /**
  * Base class for manegin windows

@@ -6,27 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>IDE</title>
-    <link rel="shortcut icon" type="image/x-icon" href="./ide/assets/RobotScript-Icon.ico" >
+    <link rel="shortcut icon" type="image/x-icon" href="./general/assets/RobotScript-Icon.ico" >
 
     <!-- Styles -->
-    <!-- Page -->
-    <link rel="stylesheet" type= "text/css" href="./ide/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./general/base.css">
     <link rel="stylesheet" type= "text/css" href="./ide/css/index.css">
 </head>
 <body>
     <header class="primary-bar">
         <div class="container-logo">
-            <img src="./ide/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
+            <img src="./general/assets/svg/RobotScript-Icon.svg" alt="lenguage icon">
             <span>RobotScript</span>
         </div>
 
         <div class="container-content-mode">
-            <button data-selected="true" class="mode-btn btnEditor">
+            <button data-selected="true" class="mode-btn left">
                 <img src="./ide/assets/svg/Editor.svg" alt="editor">
                 <span>Editor</span>
             </button>
             <span></span>
-            <button data-selected="false" class="mode-btn btnInterpreter">
+            <button data-selected="false" class="mode-btn right">
                 <img src="./ide/assets/svg/Execute.svg" alt="interpreter">
                 <span>Interpreter</span>
             </button>
@@ -60,11 +59,10 @@
                 </ul>
             </nav>
         </div>
-        
     </header>
 
     <main class="main">
-        <article class="content editor" data-visible="true">
+        <article class="content left" data-visible="true">
             <section class="tool-bar">
                 <button class="tool--button btnUpload">
                     <img src="./ide/assets/svg/Upload.svg" alt="abrir">
@@ -112,7 +110,7 @@
             </section>
         </article>
 
-        <article class="content interpreter" data-visible="false">
+        <article class="content right" data-visible="false">
             <section class="tool-bar">
                 <button class="tool--button btnLoad">
                     <img src="./ide/assets/svg/Compile.svg" alt="cargar">
@@ -180,10 +178,11 @@
 
     <!-- Scripts -->
     <!-- Page -->
-    <script type="module" src="./ide/js/index.js"></script>
-    <script type="module" src="./ide/js/general/PageManager.js"></script>
+    <script type="module" src="./general/StorageAdministrator.js"></script>
+    <script type="module" src="./ide/js/general/IdeStorage.js"></script>
+    <script type="module" src="./general/PageManager.js"></script>
     <script type="module" src="./ide/js/general/Manager.js"></script>
-    <script type="module" src="./ide/js/general/StorageAdministrator.js"></script>
+    <script type="module" src="./ide/js/index.js"></script>
 
     <!-- Library Ace - Chevrotain, Editor -->
     <script src="./ide/lib/ace/ace.js"></script>

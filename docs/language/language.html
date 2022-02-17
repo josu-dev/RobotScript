@@ -10,7 +10,8 @@
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="../../general/base.css">
-    <link rel="stylesheet" type="text/css" href="./language.css">
+    <link rel="stylesheet" type="text/css" href="./css/documentation.css">
+    
 </head>
 <body>
     <header class="primary-bar">
@@ -20,12 +21,12 @@
         </div>
 
         <div class="container-content-mode">
-            <button data-selected="false" class="mode-btn left">
+            <button data-selected="true" class="mode-btn left">
                 <img src="./assets/Book.svg" alt="documentacion">
                 <span>Documentacion</span>
             </button>
             <span></span>
-            <button data-selected="true" class="mode-btn right">
+            <button data-selected="false" class="mode-btn right">
                 <img src="./assets/Diagram.svg" alt="diagrama de sintaxis">
                 <span>Diagrama Sintaxis</span>
             </button>
@@ -62,13 +63,11 @@
     </header>
 
     <main class="main">
-        <article class="content left" data-visible="false">
-            <div class="documentation">
-                Aca va a ir la documentacion
-            </div>
+        <article class="content left" data-visible="true">
+            <div class="doc-body"></div>
         </article>
 
-        <article class="content right" data-visible="true">
+        <article class="content right" data-visible="false">
             <iframe id="innerFrame" src=""
                 style="position:relative;
                 top:0px;
@@ -90,11 +89,13 @@
     <!-- Page -->
     <script type="module" src="../../general/StorageAdministrator.js"></script>
     <script type="module" src="../../general/PageManager.js"></script>
-    <script type="module" src="./language.js"></script>
+    <script type="module" src="./js/docGenerator.js"></script>
+    <script type="module" src="./js/language.js"></script>
 
-    <!-- Chevrotain -->
+    <!-- Chevrotain, Marked -->
     <script src="../../ide/lib/chevrotain/chevrotain.js"></script>
     <script src="../../ide/lib/chevrotain/lodash.js"></script>
+    <script src="./js/marked.js"></script>
     <script type="module" src="../../ide/js/editor/RSLexer.js"></script>
 </body>
 </html>

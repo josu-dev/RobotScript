@@ -515,7 +515,10 @@ class SintaxDiagram {
 
         const serializedGrammar = parserInstance.getSerializedGastProductions();
 
-        const baseURL = window.location.origin;
+        let baseURL = window.location.origin;
+        if (!baseURL.startsWith("http://127.0.0.1")) {
+            baseURL = baseURL + "/RobotScript";
+        }
 
         const htmlString = chevrotain.createSyntaxDiagramsCode(serializedGrammar,{ css: `${baseURL}/docs/language/css/sintax-diagram.css`});
 

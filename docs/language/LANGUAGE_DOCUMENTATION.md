@@ -1,4 +1,4 @@
-# Documentacion Lenguage RobotScript 
+# Documentacion Lenguaje RobotScript 
 
 En el siguiente documento se detalla la información pertinente para entender, interpretar y escribir en el lenguage de programación RobotScript.
 
@@ -12,7 +12,7 @@ En el siguiente documento se detalla la información pertinente para entender, i
 
 
 ## **Indice**
-1. [¿Qué es RobotScript?](#¿qué-es-robotscript?)
+1. [Que es RobotScript](#que-es-robotscript)
 1. [Estructura del programa](#estructura-del-programa)
 1. [Tipos de dato](#tipos-de-dato)
 1. [Operadores](#operadores)
@@ -46,7 +46,7 @@ En el siguiente documento se detalla la información pertinente para entender, i
 
 
 
-## **¿Qué es RobotScript?**
+## **Que es RobotScript**
 
 R-Info es un entorno de programación donde se aprende conceptos básicos sobre como se constituye un programa y como se escribe uno, esto lo hace de manera sencilla ( con instrucciones y datos elementales o básicos en idioma español ) y didacticamente al ser un robot o varios, ubicado dentro de un mapa, el que realiza el algoritmo creado por programador.
 
@@ -167,7 +167,8 @@ Dentro de la sintaxis del lenguaje se encuentran los operadores que son un conju
 
 Los operadores lógicos dan como resultado valores booleanos, es decir, verdad o falsedad dependiendo de las entradas.
 
-Operadores para datos booleanos:
+##### Operadores para datos booleanos:
+
 | Sintaxis | Nombre/s |
 | :-: | :-: |
 | ~ | negación , no |
@@ -176,7 +177,8 @@ Operadores para datos booleanos:
 | = | igualación , igual |
 | <> | diferente , distinto |
 
-Operadores para datos númericos:
+##### Operadores para datos númericos:
+
 | Sintaxis | Nombre/s |
 | :-: | :-: |
 | = | igualación , igual |
@@ -194,7 +196,7 @@ Operadores para datos númericos:
 
 El no es un operador unario (se aplica en solo un valor), este cambia el valor lógico al opuesto.
 
-Su tabla de verdad es:
+##### Su tabla de verdad es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -207,7 +209,7 @@ Su tabla de verdad es:
 
 El o es un operador binario (se aplica entre dos valores), este da como resultado verdad si almenos uno de los valores es verdad.
 
-Su tabla de verdad es:
+##### Su tabla de verdad es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -222,7 +224,7 @@ Su tabla de verdad es:
 
 El y es un operador binario (se aplica entre dos valores), este da como resultado verdad si y solo si ambos valores son verdad.
 
-Su tabla de verdad es:
+##### Su tabla de verdad es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -237,7 +239,7 @@ Su tabla de verdad es:
 
 El igual es un operador binario (se aplica entre dos valores), este da como resultado verdad si y solo si ambos valores son iguales, respetando que sean el mismo tipo de dato.
 
-Su tabla de verdad con valores booleanos es:
+##### Su tabla de verdad con valores booleanos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -246,7 +248,7 @@ Su tabla de verdad con valores booleanos es:
 | F = V | F |
 | V = V | V |
 
-Su tabla de verdad con valores númericos es:
+##### Su tabla de verdad con valores númericos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -261,7 +263,7 @@ Su tabla de verdad con valores númericos es:
 
 El desigual es un operador binario (se aplica entre dos valores), este da como resultado verdad si y solo si ambos valores son diferentes, respetando que sean el mismo tipo de dato.
 
-Su tabla de verdad con valores booleanos es:
+##### Su tabla de verdad con valores booleanos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -270,7 +272,7 @@ Su tabla de verdad con valores booleanos es:
 | F <> V | V |
 | V <> V | F |
 
-Su tabla de verdad con valores númericos es:
+##### Su tabla de verdad con valores númericos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -285,7 +287,7 @@ Su tabla de verdad con valores númericos es:
 
 El menor es un operador binario (se aplica entre dos valores), este da como resultado verdad si y solo si el primer valor es mas pequeño que el segundo.
 
-Su tabla de verdad con valores númericos es:
+##### Su tabla de verdad con valores númericos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -300,7 +302,7 @@ Su tabla de verdad con valores númericos es:
 
 El mayor es un operador binario (se aplica entre dos valores), este da como resultado verdad si y solo si el primer valor es mas grande que el segundo.
 
-Su tabla de verdad con valores numericos es:
+##### Su tabla de verdad con valores numericos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -315,7 +317,7 @@ Su tabla de verdad con valores numericos es:
 
 El menor o igual es un operador binario (se aplica entre dos valores), este da como resultado verdad si el primer valor es mas pequeño que el segundo o si los dos valores son iguales.
 
-Su tabla de verdad con valores númericos es:
+##### Su tabla de verdad con valores númericos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -330,7 +332,7 @@ Su tabla de verdad con valores númericos es:
 
 El mayor o igual es un operador binario (se aplica entre dos valores), este da como resultado verdad si el primer valor es mas grande que el segundo o si los dos valores son iguales.
 
-Su tabla de verdad con valores númericos es:
+##### Su tabla de verdad con valores númericos es:
 
 | Entrada | Resultado |
 | :-: | :-: |
@@ -350,6 +352,7 @@ Su tabla de verdad con valores númericos es:
 Los operadores aritméticos dan como resultado valores númericos enteros dependiendo de las entradas.
 
 Operadores
+
 | Sintaxis | Función |
 | :-: | :-: |
 | + | adición , suma |
@@ -704,7 +707,7 @@ Un ejemplo es calcular la potencia de cierto número:
 
 Las instrucciones de estado son las que devuelven un dato que representa el estado de cierta característica del robot con respecto al mapa o a su inventario.
 
-Respecto del mapa existen las instrucciones:
+##### Respecto del mapa existen las instrucciones:
 
 | Sintaxis | Tipo de dato que devuelve | Descripción |
 | :-: | :-: | :-: |
@@ -713,7 +716,7 @@ Respecto del mapa existen las instrucciones:
 | HayFlorEnLaEsquina | boolean | El booleano representa si hay una flor en la esquina actual |
 | HayPapelEnLaEsquina | boolean | El booleano representa si hay un papel en la esquina actual |
 
-Repecto del inventario existen las intrucciones:
+##### Repecto del inventario existen las intrucciones:
 
 | Sintaxis | Tipo de dato que devuelve | Descripción |
 | :-: | :-: | :-: |
@@ -730,7 +733,7 @@ Repecto del inventario existen las intrucciones:
 
 Las instrucciones de acción son las que permiten al robot la interacción de su inventario con respecto al mapa y viceversa.
 
-Existen las siguientes instrucciones:
+##### Existen las siguientes instrucciones:
 
 | Sintaxis | Acción |
 | :-: | :-: |
@@ -1313,7 +1316,5 @@ Estas son definiciones de términos y conceptos utilizados en el documento.
 <br> <br>
 
 
-
-Hecho por compañeros de la Facultad.
 
 Fin del documento.

@@ -191,7 +191,7 @@ body {
     display: flex;
     gap: 1rem;
     flex-direction: column;
-    padding: 4rem 2rem 2rem 2rem;
+    padding: 4rem 2rem 4rem 2rem;
     transform: translateX(100%);
     transition: transform 350ms ease-out;
 
@@ -209,10 +209,10 @@ body {
 }
 @media (min-width:720px) {
     .primary-navigation {
-        gap: 1.5rem;
+        gap: 1.25rem;
     }
     .primary-navigation a {
-        font-size: 1.25rem;
+        font-size: 1.25em;
     }
 }
 

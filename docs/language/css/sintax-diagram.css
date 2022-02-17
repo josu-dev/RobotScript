@@ -1,7 +1,5 @@
 :root {
-    --clr-pr-000: hsl(0,0%,100%);
-    --clr-pr-100: hsl(0,0%,92%);
-    --clr-pr-150: hsl(0,0%,88%);
+    --clr-txt-default: hsl(32, 10%, 90%);
 
     --clr-bg-900: hsl(0,0%,4%);
     --clr-bg-800: hsl(0,0%,8%);
@@ -16,13 +14,11 @@
     --clr-br-seleccion-1: hsl(12,100%,50%);
     --clr-br-seleccion-2: hsl(20,100%,50%);
 
-    --clr-bg-no-seleccion-1: hsl(0,100%,96%);
-    --clr-bg-no-seleccion-2: hsl(0,100%,92%);
-    --clr-bg-seleccion-1: hsl(60,100%,45%);
+    --clr-bg-no-seleccion-1: hsl(0,100%,90%);
+    --clr-bg-no-seleccion-2: hsl(0,100%,96%);
+    --clr-bg-seleccion-1: hsl(60,100%,50%);
     --clr-bg-seleccion-2: hsl(60,100%,45%);
     --clr-bg-seleccion-3: hsl(60,100%,15%);
-    
-    --clr-selection: hsl(32, 10%, 40%);
     
     --gdt-tb-rs: to bottom, hsl(0,100%,50%) , hsl(30,100%,50%);
     --gdt-tb-rs-a0: to bottom, hsl(0,100%,35%) , hsl(30,100%,35%);
@@ -32,8 +28,8 @@
 }
 
 body {
-    background-color: var(--clr-bg-900);
-    color: var(--clr-pr-150);
+    background-color: var(--clr-bg-700);
+    color: var(--clr-txt-default);
 }
 
 svg {
@@ -130,8 +126,6 @@ svg.railroad-diagram g.non-terminal text {
     cursor: pointer;
 }
 
-.doc-body ::selection { background: var(--clr-selection); }
-.doc-body ::-moz-selection { background: var(--clr-selection); }
 
 ::-webkit-scrollbar {
     width: 0.5rem;
@@ -139,7 +133,7 @@ svg.railroad-diagram g.non-terminal text {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--clr-bg-900);
+    background: var(--clr-bg-700);
 }
 
 ::-webkit-scrollbar-thumb:vertical {

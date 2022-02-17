@@ -10,8 +10,8 @@
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="../../general/base.css">
-    <link rel="stylesheet" type="text/css" href="./css/documentation.css">
-    
+    <link rel="stylesheet" type="text/css" href="./css/language.css">
+    <link rel="stylesheet" type="text/css" href="./css/markdown-github-like.css">
 </head>
 <body>
     <header class="primary-bar">
@@ -64,32 +64,21 @@
 
     <main class="main">
         <article class="content left" data-visible="true">
-            <div class="doc-body"></div>
+            <div class="markdown-body"></div>
         </article>
 
         <article class="content right" data-visible="false">
-            <iframe id="innerFrame" src=""
-                style="position:relative;
-                top:0px;
-                left:0px;
-                bottom:0px;
-                right:0px;
-                width:100%;
-                height:100%;
-                border:none;
-                margin:0;
-                padding:0;
-                overflow:hidden;
-                z-index:1;">
-                </iframe>
+            <iframe id="innerFrame" src=""></iframe>
         </article>
     </main>
 
+    <embed src="./LANGUAGE_DOCUMENTATION.md" type="">
     <!-- Scripts -->
     <!-- Page -->
     <script type="module" src="../../general/StorageAdministrator.js"></script>
     <script type="module" src="../../general/PageManager.js"></script>
-    <script type="module" src="./js/docGenerator.js"></script>
+    <script type="module" src="./js/mdToHTML.js"></script>
+    <script type="module" src="./js/SintaxDiagram.js"></script>
     <script type="module" src="./js/language.js"></script>
 
     <!-- Chevrotain, Marked -->

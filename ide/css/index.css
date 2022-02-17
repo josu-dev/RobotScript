@@ -10,6 +10,7 @@
 /*--------------*/
 
 .tool-bar {
+    position: relative;
     background: var(--clr-bg-600);
     height: 3rem;
     display: flex;
@@ -55,6 +56,15 @@
 }
 .tool-fontSize option {
     background: var(--clr-bg-800);
+}
+
+.btnInfo {
+    position: absolute;
+    right: 0;
+}
+.btnInfo {
+    text-decoration: none;
+    color: inherit;
 }
 
 

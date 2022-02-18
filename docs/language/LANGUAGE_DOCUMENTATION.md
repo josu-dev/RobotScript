@@ -1,17 +1,16 @@
 # Documentacion Lenguaje RobotScript 
 
-En el siguiente documento se detalla la información pertinente para entender, interpretar y escribir en el lenguage de programación RobotScript.
+En el siguiente documento se detalla la información pertinente para entender, interpretar y escribir en el lenguaje de programación RobotScript.
 
 
 > **El uso de este material es bajo el consentimiento del propio usuario** 
 
 
-
 <br> <br>
 
 
-
 ## **Indice**
+
 1. [Que es RobotScript](#que-es-robotscript)
 1. [Estructura del programa](#estructura-del-programa)
 1. [Tipos de dato](#tipos-de-dato)
@@ -48,7 +47,7 @@ En el siguiente documento se detalla la información pertinente para entender, i
 
 ## **Que es RobotScript**
 
-R-Info es un entorno de programación donde se aprende conceptos básicos sobre como se constituye un programa y como se escribe uno, esto lo hace de manera sencilla ( con instrucciones y datos elementales o básicos en idioma español ) y didacticamente al ser un robot o varios, ubicado dentro de un mapa, el que realiza el algoritmo creado por programador.
+RobotScript es un lenguaje de programación donde se aprende conceptos básicos sobre como se constituye un programa y como se escribe uno, esto lo hace de manera sencilla ( con instrucciones y datos elementales o básicos en idioma español ) y didacticamente al ser un robot o varios, ubicado dentro de un mapa, el que realiza el algoritmo creado por programador.
 
 Este entorno ofrece la posibilidad de ademas de aprender lo ya mencionado también tiene la capacidad de trabajar con el paradigma de programación concurrente, ya que puede coexistir mas de un robot en el mismo mapa, de manera que el programa tendrá que estar preparado para esto si se usa mas de un robot.
 
@@ -65,20 +64,28 @@ Sobre el mapa donde interactuan los robots este es una matriz de 100 filas y 100
 ## **Estructura del programa**
 
 La estructura básica de un programa consiste de las siguientes secciones:
+```rs
+programa //nombre
 
-    programa
+areas
+  // nombre: tipo(x1,y1,x2,y2)
 
-    procesos ( no necesaria )
+robots
+  robot //nombre
+  variables
+    // nombre: tipo
+  comenzar
+    // instrucciones
+  fin
 
-    areas
+variables
+  // nombre: tipo
 
-    robots
-
-    variables
-
-    comenzar
-    fin
-
+comenzar
+  // AsignarArea(nombre, tipo)
+  // Iniciar(nombre, x, y)
+fin
+```
 
 <br> <br>
 
@@ -139,8 +146,8 @@ El tipo de dato booleano se utiliza para representar si algo es verdad o si algo
 
 Sus dos unicos posible valores son:
 
-- "V" para representar la verdad.
-- "F" para representar la falsedad.
+- "verdad" para representar la verdad.
+- "falso" para representar la falsedad.
 
 También se puede utilizar para representar subjetivamente como:
 
@@ -607,11 +614,12 @@ Instrucciones:
 La instrucción si se utiliza para habilitar o no la ejecución del bloque de código que este identado debajo de esta, este solo se ejecutara si y solo si el resultado de la condición que acompaña al si sea verdadera.
 
 Estructura del si:
-
-    si ( condicion )
-        bloque
-        de codigo
-        a ejecutar
+```rs
+si ( condicion )
+    bloque
+    de codigo
+    a ejecutar
+```
 
 Un ejemplo de uso del si es guardar el máximo entre dos números:
 
@@ -1034,34 +1042,36 @@ En el llamado al módulo debe existir igual cantidad de parámetros que en la cr
 
 Ejemplos de uso:
 
-    procesos
-        proceso sumarEsquinasVaciasCalle( ES cantidad: numero )
-        variables
-            aux: numero
-        comenzar
-            aux:= 0
+```rs
+procesos
+    proceso sumarEsquinasVaciasCalle( ES cantidad: numero )
+    variables
+        aux: numero
+    comenzar
+        aux:= 0
+        si ( ~( HayFlorEnLaEsquina | HayPapelEnLaEsquina ) )
+                aux:= aux +1
+        repetir 99
+            mover
             si ( ~( HayFlorEnLaEsquina | HayPapelEnLaEsquina ) )
-                    aux:= aux +1
-            repetir 99
+                aux:= aux +1
+        cantidad:= cantidad + aux
+    fin
+
+    proceso calcularMaximo( E n: numero; ES max: numero )
+    comenzar
+        si ( n > max )
+            max:= n
+    fin
+
+    proceso hacerCuadrado3
+    comenzar
+        repetir 4
+            repetir 3
                 mover
-                si ( ~( HayFlorEnLaEsquina | HayPapelEnLaEsquina ) )
-                    aux:= aux +1
-            cantidad:= cantidad + aux
-        fin
-
-        proceso calcularMaximo( E n: numero; ES max: numero )
-        comenzar
-            si ( n > max )
-                max:= n
-        fin
-
-        proceso hacerCuadrado3
-        comenzar
-            repetir 4
-                repetir 3
-                    mover
-                derecha
-        fin
+            derecha
+    fin
+```
 
 Dentro de un módulo puede llamarse a otros módulos, de esta manera se produce un anidamiento de módulos que es positivo siempre y cuando se consiga una separación de tareas que aumente la legibilidad y reusabilidad del código.
 

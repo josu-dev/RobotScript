@@ -621,7 +621,7 @@ class Robot extends CityObject {
 
                 if (s.else.type === "STATEMENT_BLOCK") {
                     const newStatements = s.else.body;
-                    ifControl.length = newStatements.length;
+                    ifControl.length = newStatements.length + 1;
                     addStatements(newStatements.concat(ifControl));
                 }
                 else {
@@ -827,6 +827,7 @@ class Robot extends CityObject {
         const rStmt = this.resolveStatement(statement);
         
         if (rStmt.error) {
+            console.log(statement, this.instIndex, this.statements);
             this.map.setNewError({
                 emitter : this.identifier,
                 message : rStmt.context

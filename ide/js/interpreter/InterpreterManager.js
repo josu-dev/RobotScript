@@ -98,7 +98,7 @@ class InterpreterManager extends Manager {
                 if (rData.x.max === 0 || rData.y.max === 0) return;
 
                 const itemArray = this.generateItems(rData);
-                console.log(itemArray)
+                
                 this.storage.addItems({
                     type : "papers",
                     items : itemArray

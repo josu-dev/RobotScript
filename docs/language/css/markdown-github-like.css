@@ -27,6 +27,7 @@
     --clr-pr-0: hsl(32, 100%, 50%);
     --clr-pr-1: hsl(32, 100%, 60%);
     --clr-pr-2: hsl(32, 100%, 70%);
+    --clr-pr-3: hsl(32, 100%, 80%);
 
     --clr-txt-default: hsl(32, 10%, 90%);
     --clr-txt-muted: hsl(32, 10%, 70%);
@@ -343,6 +344,7 @@
 .markdown-body h4 {
     font-weight: 600;
     font-size: 1.50em;
+    color: var(--clr-pr-3);
 }
 
 .markdown-body h5 {

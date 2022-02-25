@@ -71,7 +71,7 @@ Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de con
 
 ## Licencia
 
-Este projecto esta licenciado bajo la Licencia MIT - lea [LICENSE.md](./LICENSE.md) para mas detalles.
+Este projecto esta licenciado bajo la Licencia MIT - lea [LICENSE](./LICENSE) para mas detalles.
 
 
 <br>

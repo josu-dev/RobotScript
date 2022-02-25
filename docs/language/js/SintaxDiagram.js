@@ -516,7 +516,7 @@ class SintaxDiagram {
         const serializedGrammar = parserInstance.getSerializedGastProductions();
 
         let baseURL = window.location.origin;
-        if (!baseURL.startsWith("http://127.0.0.1")) {
+        if (!baseURL.startsWith("http://127.0")) {
             baseURL = baseURL + "/RobotScript";
         }
 

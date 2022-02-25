@@ -1057,7 +1057,7 @@ Estas se dividen en:
             aux:= 0
             si ( ~( HayFlorEnLaEsquina | HayPapelEnLaEsquina ) )
                     aux:= aux +1
-            repetir 99
+            repetir (99)
                 mover
                 si ( ~( HayFlorEnLaEsquina | HayPapelEnLaEsquina ) )
                     aux:= aux +1
@@ -1070,10 +1070,10 @@ Estas se dividen en:
                 max:= n
         fin
 
-        proceso hacerCuadrado3
+        proceso hacerCuadrado3()
         comenzar
-            repetir 4
-                repetir 3
+            repetir (4)
+                repetir (3)
                     mover
                 derecha
         fin
@@ -1085,7 +1085,7 @@ Estas se dividen en:
 
     ```rs
     procesos
-        proceso juntarFlores
+        proceso juntarFlores()
         comenzar
             mientras HayFlorEnLaEsquina
                 tomarFlor
@@ -1097,12 +1097,12 @@ Estas se dividen en:
         comenzar
             sigCa:= PosCa
             i:= 0
-            repetir cantCalles
+            repetir (cantCalles)
                 i:= i +1
-                repetir 99
-                    juntarFlores
+                repetir (99)
+                    juntarFlores()
                     mover
-                juntarFlores
+                juntarFlores()
                 si ( i < cantCalles )
                     sigCa:= sigCa +1
                     Pos( 1, sigCa)
@@ -1220,8 +1220,8 @@ Estas se dividen en:
             flores: numero
         comenzar
             flores:= 0
-            repetir 9
-                repetir 15
+            repetir (9)
+                repetir (15)
                     juntarFlores(flores)
                     mover
                 juntarFlores(flores)

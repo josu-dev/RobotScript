@@ -405,7 +405,7 @@ const RSLexer = (function () {
 
     const Variables = createToken({
         name: "Variables",
-        label: "variabels",
+        label: "variables",
         pattern: /variables/,
         longer_alt: Identifier
     });
@@ -478,7 +478,7 @@ const RSLexer = (function () {
     });
     const AssignItem = createToken({
         name: "AssignItem",
-        label: "Asignaritem",
+        label: "AsignarItem",
         pattern: /AsignarItem/,
         longer_alt: Identifier
     });

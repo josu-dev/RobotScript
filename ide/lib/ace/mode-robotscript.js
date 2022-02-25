@@ -12,7 +12,7 @@ var RobotScriptHighlightRules = function() {
     );
     
     var storageType = (
-        "boolean|numero|string|AreaC|AreaPC|AreaP|area|proceso|robot"
+        "boolean|numero|string|AreaC|AreaPC|AreaP|proceso|robot"
     );
 
     var storageModifiers = (

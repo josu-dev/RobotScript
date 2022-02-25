@@ -1,3 +1,5 @@
+@import url('../../general/base.css');
+
 :root {
     --clr-info: hsl(214, 100%, 60%);
     --clr-valid: hsl(113, 100%, 50%);

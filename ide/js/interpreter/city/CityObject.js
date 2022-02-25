@@ -827,7 +827,6 @@ class Robot extends CityObject {
         const rStmt = this.resolveStatement(statement);
         
         if (rStmt.error) {
-            console.log(statement, this.instIndex, this.statements);
             this.map.setNewError({
                 emitter : this.identifier,
                 message : rStmt.context

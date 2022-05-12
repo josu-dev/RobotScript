@@ -12,7 +12,7 @@ RobotScript es una reversion de el entorno de programacion R-Info usada en la fa
 
 - https://j-josu.github.io/RobotScript/
 
-> Se destaca que esta en desarrollo permanente
+> Se destaca que esta en desarrollo
 
 
 <br>

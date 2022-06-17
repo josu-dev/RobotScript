@@ -8,12 +8,12 @@
 RobotScript es una reversion de el entorno de programacion R-Info usada en la facultad UNLP Informatica para la enseñanza de contenido. El objetivo es llevar el concepto a tiempos modernos, aumentando las herramientas que brinda, mejorando la interfaz y el acceso a la misma, ya que ahora al ser una pagina web puede ser utilizada en cualquier navegador sin la necesidad de descargar ni instalar algo.
 
 
-#### Pagina web: **https://j-josu.github.io/RobotScript/**
+**Pagina web: https://j-josu.github.io/RobotScript/**
 
 > Se encuentra en desarrollo
 
 
-### Importante
+## Importante
 
 Existen algunas diferencias de sintaxis entre R-Info y RobotScript, estas son:
 

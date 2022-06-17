@@ -5,14 +5,44 @@
 
 ## Introduccion
 
-RobotScript es una reversion de el entorno de programacion R-Info usada en la facultad UNLP Informatica para la enseñanza de contenido. El objetivo es llevar el concepto a tiempos modernos, aumentando las herramientas que brinda, mejorando la interfaz y el acceso a la misma, ya que ahora al ser una pagina web puede ser utilizada en cualquier navegador sin la necesidad de descargar ni instalar algo
+RobotScript es una reversion de el entorno de programacion R-Info usada en la facultad UNLP Informatica para la enseñanza de contenido. El objetivo es llevar el concepto a tiempos modernos, aumentando las herramientas que brinda, mejorando la interfaz y el acceso a la misma, ya que ahora al ser una pagina web puede ser utilizada en cualquier navegador sin la necesidad de descargar ni instalar algo.
 
 
-#### Pagina web
+#### Pagina web: **https://j-josu.github.io/RobotScript/**
 
-- https://j-josu.github.io/RobotScript/
+> Se encuentra en desarrollo
 
-> Se destaca que esta en desarrollo
+
+### Importante
+
+Existen algunas diferencias de sintaxis entre R-Info y RobotScript, estas son:
+
+| R-Info | RobotScript |
+| :-: | :-: |
+| V | verdad |
+| F | falso |
+| { | /* |
+| } | */ |
+
+Las expresiones para las instrucciones si, repetir y mientras deben estar contenidas en parentesis:
+
+- R-Info
+    ```
+    si 16 < cantidad
+
+    repetir 5
+
+    mientras (56 > n) & estado
+    ```
+
+- RobotScript
+    ```
+    si (16 < cantidad)
+
+    repetir (5)
+
+    mientras ((56 > n) & estado)
+    ```
 
 
 <br>
@@ -69,12 +99,13 @@ Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de con
 
 ## Licencia
 
-Este projecto esta licenciado bajo la Licencia MIT - lea [LICENSE](./LICENSE) para mas detalles.
+Este projecto esta licenciado bajo la Licencia MIT, lea [LICENSE](./LICENSE) para mas detalles.
 
 
 <br>
+<br>
 
 
-## Extras
+##
 
-Esto no tiene ningun fin de lucro, solo aportar a la educacion y ayudar al otro
+Esto no tiene ningun fin de lucro, solo aportar a la educacion y ayudar al otro.

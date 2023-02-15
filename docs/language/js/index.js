@@ -5,13 +5,11 @@ import PageManager from "../../../general/PageManager.js";
 import mdToHTML from "./mdToHTML.js";
 import SintaxDiagram from "./SintaxDiagram.js";
 
-
 const myStorage = new StorageAdministrator();
 
 const myPage = new PageManager({
     storage : myStorage
 });
-
 
 const myMdRenderer = document.querySelector(".markdown-body");
 

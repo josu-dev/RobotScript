@@ -1,4 +1,4 @@
-# Documentacion Lenguaje RobotScript
+# Documentación Lenguaje RobotScript
 
 En el siguiente documento se detalla la información pertinente para entender, interpretar y escribir en el lenguaje de programación RobotScript.
 
@@ -63,19 +63,19 @@ La estructura básica de un programa consiste de las siguientes secciones:
 ```rs
 programa // nombre
 
-// seccion opcional
+// sección opcional
 procesos
-    proceso // nombre ( parametros opcional )
-    // seccion opcional
-    variables
-        // nombre: tipo
-    comenzar
-        // instrucciones
-    fin
+  proceso // nombre ( parametros opcional )
+  // sección opcional
+  variables
+    // nombre: tipo
+  comenzar
+    // instrucciones
+  fin
 
 
 areas
-  // nombre: tipo(x1,y1,x2,y2)
+  // nombre: tipo(x1, y1, x2, y2)
 
 robots
   robot //nombre
@@ -434,9 +434,7 @@ Existen dos grupos de operadores
 [índice](#)
 
 
-
 <br> <br>
-
 
 
 ## Variables dato
@@ -449,7 +447,7 @@ Una variable es un espacio de memoria donde se guarda algun valor que representa
 
 - ### Declaración
 
-    Para declarar variables se necesita crear el segmento de varibales escribiendo la palabra clave **variables**, este segmento no puede ser creado en cualquier lugar, revisar el apartado de [secciones](#secciones), ahí se detalla si en una seccion pueden existir variables dato.
+    Para declarar variables se necesita crear el segmento de varibales escribiendo la palabra clave **variables**, este segmento no puede ser creado en cualquier lugar, revisar el apartado de [secciones](#secciones), ahí se detalla si en una sección pueden existir variables dato.
 
     Los tipos posible de variables son:
     - numero: para representar números enteros.
@@ -530,7 +528,7 @@ Una variable es un espacio de memoria donde se guarda algun valor que representa
             validacionOpuesta := ( n1 >= n2 )
 
             validacionOpuesta := ~ validacionOpuesta
-        
+
     > IMPORTANTE: la variable a ser escrita puede ser leida para el cálculo del valor a escribir en ella ya que primero se calcula el valor final a escribir y luego se guarda.
 
 
@@ -539,9 +537,7 @@ Una variable es un espacio de memoria donde se guarda algun valor que representa
 [índice](#indice)
 
 
-
 <br> <br>
-
 
 
 ## Instrucciones
@@ -549,12 +545,13 @@ Una variable es un espacio de memoria donde se guarda algun valor que representa
 Dentro de la sintaxis del lenguaje se encuentran las instrucciones que permiten realizar determinadas tareas/acciones.
 
 Estas se dividen en:
+
 - [Control](#control)
 - [Estado](#estado)
-- [Acción](#accion)
+- [Acción](#acción)
 - [Desplazamiento](#desplazamiento)
-- [Comunicación](#comunicacion)
-- [Generación](#generacion)
+- [Comunicación](#comunicación)
+- [Generación](#generación)
 
 
 <br> <br>
@@ -586,6 +583,7 @@ Instrucciones:
     La instrucción si se utiliza para habilitar o no la ejecución del bloque de código que este identado debajo de esta, este solo se ejecutara si y solo si el resultado de la condición que acompaña al si sea verdadera.
 
     Estructura del si:
+
     ```rs
     si ( condicion )
         bloque
@@ -705,7 +703,7 @@ Instrucciones:
 
 Las instrucciones de estado son las que devuelven un dato que representa el estado de cierta característica del robot con respecto al mapa o a su inventario.
 
-##### Respecto del mapa existen las instrucciones:
+**Respecto del mapa existen las instrucciones:**
 
 | Sintaxis | Tipo de dato que devuelve | Descripción |
 | :-: | :-: | :-: |
@@ -714,7 +712,7 @@ Las instrucciones de estado son las que devuelven un dato que representa el esta
 | HayFlorEnLaEsquina | boolean | El booleano representa si hay una flor en la esquina actual |
 | HayPapelEnLaEsquina | boolean | El booleano representa si hay un papel en la esquina actual |
 
-##### Repecto del inventario existen las intrucciones:
+**Repecto del inventario existen las intrucciones:**
 
 | Sintaxis | Tipo de dato que devuelve | Descripción |
 | :-: | :-: | :-: |
@@ -731,7 +729,7 @@ Las instrucciones de estado son las que devuelven un dato que representa el esta
 
 Las instrucciones de acción son las que permiten al robot la interacción de su inventario con respecto al mapa y viceversa.
 
-##### Existen las siguientes instrucciones:
+**Existen las siguientes instrucciones:**
 
 | Sintaxis | Acción |
 | :-: | :-: |
@@ -752,21 +750,25 @@ Las instrucciones de acción son las que permiten al robot la interacción de su
 
 Para el desplazamiento del robot en el mapa existen las siguientes instrucciones:
 
-| Sintaxis |
-| :-: |
-| mover |
-| derecha |
-| Pos( avenida, calle ) |
+- [mover](#instrucción-mover)
+- [derecha](#instrucción-derecha)
+- [Pos](#instrucción-pos)
 
-> IMPORTANTE: tener en cuenta que los desplazamientos tienen que ser validos con respecto a las dimenciones del mapa, el area designada al robot y la posición de los otros robots, de existir otros.
+> IMPORTANTE: tener en cuenta que los desplazamientos tienen que ser validos con respecto a las dimenciones del mapa, el area designada al robot y la posición de los otros robots (en casode existir otros).
 
 <br>
 
-- ### Instrucción mover
+- #### Instrucción mover
 
     La instrucción mover se utiliza para desplazar al robot una posición en la dirección que se encuentre mirando.
 
-    | Dirección | Posición resultado |
+    | Sintaxis |
+    | :-: |
+    | mover |
+
+    Tabla que describe su comportamiento:
+
+    | Dirección del robot | Posición resultante |
     | :-: | :-: |
     | arriba | avenidaActual +1, calleActual |
     | derecha | avenidaActual, calleActual +1 |
@@ -775,11 +777,17 @@ Para el desplazamiento del robot en el mapa existen las siguientes instrucciones
 
 <br>
 
-- ### Instrucción derecha
+- #### Instrucción derecha
 
     La instrucción derecha se utiliza para cambiar la dirección que se encuentra mirando por la consecutiva en sentido horario.
 
-    | Dirección base | Dirección resultado |
+    | Sintaxis |
+    | :-: |
+    | derecha |
+
+    Tabla que describe su comportamiento:
+
+    | Dirección del robot | Dirección resultante |
     | :-: | :-: |
     | arriba | derecha |
     | derecha | abajo |
@@ -788,7 +796,7 @@ Para el desplazamiento del robot en el mapa existen las siguientes instrucciones
 
 <br>
 
-- ### Instrucción Pos
+- #### Instrucción Pos
 
     La instrucción Pos se utiliza para ubicar al robot en un par ( avenida, calle ) determinado.
 
@@ -815,13 +823,16 @@ Para el desplazamiento del robot en el mapa existen las siguientes instrucciones
 La comunicación es la tranferencia de mensajes hacia el usuario o entre robots.
 
 Las instrucciones son:
-- Informar
-- EnviarMensaje
-- RecibirMensaje
+
+- [Informar](#instrucción-informar)
+- [EnviarMensaje](#instrucción-enviarmensaje)
+- [RecibirMensaje](#instrucción-recibirmensaje)
+- [BloquearEsquina](#instrucción-bloquearesquina)
+- [LiberarEsquina](#instrucción-liberaresquina)
 
 <br>
 
-- ### Instrucción Informar
+- #### Instrucción Informar
 
     Para la comunicación con el usuario, en otras palabras mostrar información en pantalla, existe la instrucción Informar.
 
@@ -842,7 +853,7 @@ Las instrucciones son:
 
 <br>
 
-- ### Instrucción EnviarMensaje
+- #### Instrucción EnviarMensaje
 
     Esta instrucción se utiliza para enviar un valor a un receptor determinado, siendo una variable robot el receptor.
 
@@ -864,7 +875,7 @@ Las instrucciones son:
 
 <br>
 
-- ### Instrucción RecibirMensaje
+- #### Instrucción RecibirMensaje
 
     Esta instrucción se utiliza para recibir un valor de un emisor determinado o no determinado, siendo una variable robot el emisor.
 
@@ -895,7 +906,57 @@ Las instrucciones son:
     RecibirMensaje( parar, * )
     ```
 
-[Instrucciones ⬆](#instrucciones)
+<br>
+
+- #### Instrucción BloquearEsquina
+
+    Esta instrucción se utiliza para bloquear logicamente una esquina, es decir, marcar una esquina como no apta para desplazarse a ella. Solo se pueden bloquear esquinas pertenecientes a las areas asignadas al robot que quiere realizar el bloqueo.
+
+    > IMPORTANTE: que una esquina se encuentre bloqueada no significa directamente que la esquina tiene un robot en ella, solo que no se encuentra logimente libre para realizar movimientos a ella.
+
+    | Sintaxis |
+    | :-: |
+    | BloquearEsquina( calle, avenida ) |
+
+    > IMPORTANTE: los parametros son valores numericos explícitos y/o variables de tipo numericas.
+
+    Esta instrucción es sincrónica, es decir, si la esquina ya se encuentra bloqueada no se continua la ejecución del codigo hasta que esta se libere.
+
+    Cuando la esquina esta liberada, esta es marcada como bloqueada y el robot continua la ejecución del codigo.
+
+    Ejemplo de uso:
+
+    ```rs
+    BloquearEsquina( 34, 34 )
+    BloquearEsquina( 5 + pos, 6 )
+    BloquearEsquina( calle, avenida )
+    ```
+
+<br>
+
+- #### Instrucción LiberarEsquina
+
+    Esta instrucción se utiliza para liberar logicamente una esquina, es decir, marcar una esquina como apta para dezplazarse a ella. Solo se pueden liberar esquinas pertenecientes a las areas asignadas al robot que quiere realizar la liberación.
+
+    > IMPORTANTE: que una esquina se encuentre liberada no significa directamente que la esquina no tiene un robot en ella, solo que se encuentra logimente libre para realizar movimientos a ella.
+
+    | Sintaxis | Emisor |
+    | :-: | :-: |
+    | BloquearEsquina( calle, avenida ) |
+
+    > IMPORTANTE: los parametros son valores numericos explícitos y/o variables de tipo numericas.
+
+    Esta instrucción es asincrónica, es decir, la esquina es liberada independientemente de si esta bloqueada o no.
+
+    Ejemplo de uso:
+
+    ```rs
+    LiberarEsquina( 50, 15 )
+    LiberarEsquina( 5, desplazamiento + avenidaActual )
+    LiberarEsquina( calle, avenida )
+    ```
+
+[Comunicación ⬆](#comunicación)
 
 
 <br> <br>
@@ -903,9 +964,7 @@ Las instrucciones son:
 
 ### Generación
 
-Sobre generación existe una unica instrucción para generar valores de tipo número aleatorios dentro de un rango indicado.
-
-La instrucción es:
+Sobre generación existe una unica instrucción para generar valores de tipo número aleatorios dentro de un rango indicado, la cual es:
 
 | Sintaxis |
 | :-: |
@@ -925,9 +984,7 @@ Random( cant, 10, max )
 [índice](#indice)
 
 
-
 <br> <br>
-
 
 
 ## Secciones
@@ -935,6 +992,7 @@ Random( cant, 10, max )
 Un programa en este lenguage se constituye de secciones ( detalladas a continuación ) que se encargan cada una de definir un aspecto del programa.
 
 Estas se dividen en:
+
 - [programa](#programa)
 - [procesos](#procesos)
 - [areas](#areas)
@@ -962,12 +1020,15 @@ Estas se dividen en:
     - Números.
     - Guiones "-" medios y "_" bajos.
 
+
     Ejemplo de uso:
 
     ```rs
     programa ejercicio_1
     programa TP1-E3
     ```
+
+    > IMPORTANTE: el nombre del programa debe comenzar con una letra.
 
 [Secciones ⬆](#secciones)
 
@@ -998,6 +1059,7 @@ Estas se dividen en:
     ```
 
     > IMPORTANTE:
+    >
     > - Los módulos pueden no necesitar comunicación de datos, en ese caso se crea el modulo sin parámetros solo indicando el nombreDelModulo.
     > - Los módulos pueden no necesitar variables locales, en ese caso no se crea la sección de variables.
 
@@ -1263,7 +1325,6 @@ Estas se dividen en:
         rJefe: coordinador
     ```
 
-
     [Secciones ⬆](#secciones)
 
 
@@ -1305,9 +1366,7 @@ Estas se dividen en:
 [índice](#indice)
 
 
-
 <br> <br>
-
 
 
 ## Glosario
@@ -1326,7 +1385,7 @@ Estas son definiciones de términos y conceptos utilizados en el documento.
 
 1. Asignar: es darle un valor a una variable.
 
-1. Condición: valor booleano u operacion lógica (también puede ser conjunto de operaciones lógicas) que determina si se realizara o no determinada instrucción/es.
+1. Condición: valor booleano u operación lógica (también puede ser conjunto de operaciones lógicas) que determina si se realizara o no determinada instrucción/es.
 
 1. Validación: es el acto de verificar si se cumplen determinadas condiciones/valores.
 
@@ -1341,9 +1400,9 @@ Estas son definiciones de términos y conceptos utilizados en el documento.
 [índice](#indice)
 
 
-
 <br> <br>
 
 
+---
 
 Fin del documento.

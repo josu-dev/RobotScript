@@ -11,11 +11,11 @@
     --clr-bg-800: hsl(0, 0%, 8%);
     --clr-bg-900: hsl(0, 0%, 4%);
 
-    --gdt-tb-rs: to bottom, hsl(0,100%,50%) , hsl(30,100%,50%);
-    --gdt-tb-rs-a0: to bottom, hsl(0,100%,35%) , hsl(30,100%,35%);
-    --gdt-tr-rs: to right, hsl(0,100%,50%) , hsl(30,100%,50%);
-    --gdt-tl-rs: to left, hsl(0,100%,50%) , hsl(30,100%,50%);
-    --gdt-tl-rs-a0: to left, hsl(0,100%,35%) , hsl(30,100%,35%);
+    --gdt-tb-rs: to bottom, hsl(0, 100%, 50%), hsl(30, 100%, 50%);
+    --gdt-tb-rs-a0: to bottom, hsl(0, 100%, 35%), hsl(30, 100%, 35%);
+    --gdt-tr-rs: to right, hsl(0, 100%, 50%), hsl(30, 100%, 50%);
+    --gdt-tl-rs: to left, hsl(0, 100%, 50%), hsl(30, 100%, 50%);
+    --gdt-tl-rs-a0: to left, hsl(0, 100%, 35%), hsl(30, 100%, 35%);
 }
 
 /* Resets */
@@ -25,6 +25,7 @@
     margin: 0;
     box-sizing: border-box;
 }
+
 button {
     all: unset;
 }
@@ -52,7 +53,7 @@ body {
     background: var(--clr-bg-700);
     height: 3rem;
     width: 100%;
-    border-bottom: 1px solid var(--clr-bg-400); 
+    border-bottom: 1px solid var(--clr-bg-400);
 }
 
 .container-logo {
@@ -92,19 +93,21 @@ body {
     justify-content: center;
     gap: 1rem;
 }
+
 @media (min-width:720px) {
     .container-content-mode {
         width: 2px;
         gap: 1rem;
     }
 }
+
 @media (min-width:1440px) {
     .container-content-mode {
         display: none;
     }
 }
 
-.container-content-mode > span {
+.container-content-mode>span {
     height: 100%;
     width: 0px;
     border-left: 1px solid var(--clr-bg-400);
@@ -119,6 +122,7 @@ body {
     justify-content: center;
     cursor: pointer;
 }
+
 .mode-btn span {
     display: none;
     font-size: 1rem;
@@ -126,21 +130,24 @@ body {
     letter-spacing: 2px;
     padding: 0.5rem;
 }
+
 @media (min-width:720px) {
     .mode-btn {
         min-width: max-content;
         height: max-content;
     }
+
     .mode-btn.left {
         position: absolute;
         right: 1rem;
     }
+
     .mode-btn.right {
         position: absolute;
         left: 1rem;
     }
 
-    .mode-btn img{
+    .mode-btn img {
         display: none;
     }
 
@@ -152,9 +159,11 @@ body {
 .mode-btn[data-selected="true"] {
     background: var(--clr-bg-400);
 }
+
 .mode-btn.left:hover {
     background: linear-gradient(var(--gdt-tl-rs));
 }
+
 .mode-btn.right:hover {
     background: linear-gradient(var(--gdt-tr-rs));
 }
@@ -176,7 +185,7 @@ body {
     cursor: pointer;
 }
 
-.primary-nav-toggle[aria-expanded="true"]{
+.primary-nav-toggle[aria-expanded="true"] {
     background: url("./assets/svg/Cross.svg");
 }
 
@@ -192,7 +201,7 @@ body {
     gap: 1rem;
     flex-direction: column;
     padding: 4rem 2rem 4rem 2rem;
-    transform: translateX(100%);
+    transform: translateX(101%);
     transition: transform 350ms ease-out;
 
     background: linear-gradient(var(--gdt-tr-rs));
@@ -207,10 +216,12 @@ body {
     font-style: monospace;
     text-transform: uppercase;
 }
+
 @media (min-width:720px) {
     .primary-navigation {
         gap: 1.25rem;
     }
+
     .primary-navigation a {
         font-size: 1.25em;
     }
@@ -280,6 +291,7 @@ body {
 ::-webkit-scrollbar-corner {
     background: transparent;
 }
+
 ::-webkit-scrollbar-track {
     background: transparent;
 }
@@ -287,12 +299,15 @@ body {
 ::-webkit-scrollbar-thumb:vertical {
     background: linear-gradient(var(--gdt-tb-rs-a0));
 }
+
 ::-webkit-scrollbar-thumb:vertical:hover {
     background: linear-gradient(var(--gdt-tb-rs));
 }
+
 ::-webkit-scrollbar-thumb:horizontal {
     background: linear-gradient(var(--gdt-tl-rs-a0));
 }
+
 ::-webkit-scrollbar-thumb:horizontal:hover {
     background: linear-gradient(var(--gdt-tl-rs));
 }

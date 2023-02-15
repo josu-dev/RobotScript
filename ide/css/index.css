@@ -53,9 +53,11 @@
     font-size: 1rem;
     cursor: pointer;
 }
+
 .tool-fontSize:hover {
     background-color: var(--clr-bg-800);
 }
+
 .tool-fontSize option {
     background: var(--clr-bg-800);
 }
@@ -64,6 +66,7 @@
     position: absolute;
     right: 0;
 }
+
 .btnInfo {
     text-decoration: none;
     color: inherit;
@@ -76,7 +79,7 @@
         height: 100%;
     }
 
-    .tool--button img{
+    .tool--button img {
         display: none;
     }
 
@@ -104,6 +107,7 @@
     height: 100%;
     overflow-y: auto;
 }
+
 .container-console::-webkit-scrollbar-track {
     background: inherit;
 }
@@ -119,24 +123,28 @@
     letter-spacing: 1.2px;
 }
 
-.console-logs p{
+.console-logs p {
     margin: 0;
     white-space: pre-wrap;
 }
 
-.console-logs span[data-state="default"]{
+.console-logs span[data-state="default"] {
     color: var(--clr-pr-200);
 }
-.console-logs span[data-state="info"]{
+
+.console-logs span[data-state="info"] {
     color: var(--clr-info);
 }
-.console-logs span[data-state="valid"]{
+
+.console-logs span[data-state="valid"] {
     color: var(--clr-valid);
 }
-.console-logs span[data-state="warning"]{
+
+.console-logs span[data-state="warning"] {
     color: var(--clr-warning);
 }
-.console-logs span[data-state="error"]{
+
+.console-logs span[data-state="error"] {
     color: var(--clr-error);
 }
 
@@ -199,6 +207,7 @@
     align-items: center;
     justify-content: center;
 }
+
 .menu-int {
     display: none;
     position: absolute;
@@ -211,13 +220,15 @@
     padding-block: 0.5rem;
     gap: 0.5rem;
 }
-.menu-int[data-visible="true"]{
+
+.menu-int[data-visible="true"] {
     display: flex;
 }
 
 .btnCity {
     position: relative;
 }
+
 .menu-field {
     display: flex;
     flex-direction: row;
@@ -230,11 +241,12 @@
 .menu-field span {
     display: block;
 }
+
 .menu-field.text:hover {
     background: var(--clr-bg-600);
 }
 
-.menu-field input[type="text"]{
+.menu-field input[type="text"] {
     width: 5rem;
     display: flex;
     flex-direction: row;
@@ -243,17 +255,19 @@
     text-align: center;
     outline: none;
 }
+
 .menu-field input[type="text"].itemQuantity {
     width: 4rem;
 }
 
-.menu-field button{
+.menu-field button {
     height: 100%;
     margin-inline: 0.5rem;
     padding-inline: 0.5rem;
     cursor: pointer;
 }
-.menu-field button:hover{
+
+.menu-field button:hover {
     background: var(--clr-bg-600);
 }
 

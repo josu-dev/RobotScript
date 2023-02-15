@@ -20,11 +20,11 @@ class City {
         this.canvas = this.element.querySelector(".city-canvas");
         this.ctx = this.canvas.getContext("2d");
         // improve canvas performance
-            this.ctx.mozImageSmoothingEnabled = false;
-            this.ctx.webkitImageSmoothingEnabled = false;
-            this.ctx.msImageSmoothingEnabled = false;
-            this.ctx.imageSmoothingEnabled = false;
-        this.map = new CityMap({city : this});
+        this.ctx.mozImageSmoothingEnabled = false;
+        this.ctx.webkitImageSmoothingEnabled = false;
+        this.ctx.msImageSmoothingEnabled = false;
+        this.ctx.imageSmoothingEnabled = false;
+        this.map = new CityMap({ city: this });
         this.view = new CameraHandler(this);
         this.isPaused = false;
         this.isRunning = false;
@@ -38,23 +38,20 @@ class City {
 
     loadProgram() {
         if (this.isRunning && (!this.isPaused)) {
-            this.console.add([
-                {
-                    state : "error",
-                    message : "No se puede cargar un programa cuando se esta ejecutando uno, debes esperar que termine, reiniciar o pausar la ejecucion" }
-            ]);
+            this.console.add([{
+                state: "error",
+                message: "No se puede cargar un programa cuando se esta ejecutando uno, debes esperar que termine, reiniciar o pausar la ejecucion"
+            }]);
             return;
         }
 
         const newProgram = this.storage.getProgram();
-    
+
         if (!newProgram) {
-            this.console.set([
-                {
-                    state : "error",
-                    message : "No hay ningun programa compilado para cargar"
-                }
-            ]);
+            this.console.set([{
+                state: "error",
+                message: "Debe compilar un programa en el editor para poder cargar"
+            }]);
             return;
         }
 
@@ -64,17 +61,17 @@ class City {
         this.setUpProgram();
 
         this.console.set([{
-            state : "info",
-            message : `Se cargo el programa '${this.program.NAME.identifier}'`
-        }])
+            state: "info",
+            message: `Se cargo el programa '${this.program.NAME.identifier}'`
+        }]);
     }
 
     init() {
         if (!this.isRunning) {
             if (!this.program) {
                 this.console.add([{
-                    state : "error",
-                    message : "Debe cargar un programa para poder ejecutar"
+                    state: "error",
+                    message: "Debe cargar un programa para poder ejecutar"
                 }]);
                 return;
             }
@@ -86,68 +83,71 @@ class City {
             this.isRunning = true;
 
             this.console.add([{
-                state : "valid",
-                message : "Comenzando ejecucion"
+                state: "valid",
+                message: "Comenzando ejecucion"
             }]);
             this.startProgram();
         }
         else {
             if (!this.isPaused) {
                 this.console.set([{
-                    state : "info",
-                    message : "El programa ya esta corriendo"
+                    state: "info",
+                    message: "El programa ya esta corriendo"
                 }]);
             }
             else {
                 this.isPaused = false;
-                this.console.add([{ 
-                    state : "valid",
-                    message : "Reanudando la ejecucion"
+                this.console.add([{
+                    state: "valid",
+                    message: "Reanudando la ejecucion"
                 }]);
                 this.startProgram();
             }
         }
     }
-    
+
     pause() {
         if (!this.isRunning) {
-            this.console.set([
-                {
-                    state : "error",
-                    message : "Se debe estar ejecutando un programa para poder pausar"
-                }
-            ])
+            this.console.set([{
+                state: "error",
+                message: "Se debe estar ejecutando un programa para poder pausar"
+            }])
             return;
         }
 
         if (this.isPaused) {
-            this.console.add([{ 
-                state : "warning", message : "La ejecucion ya esta pausada" }]);
+            this.console.add([{
+                state: "warning",
+                message: "La ejecucion ya esta pausada"
+            }]);
+            return;
         }
-        else {
-            this.isPaused = true;
-            this.console.add([{ 
-                state : "info",
-                message : "Ejecucion pausada" }]);
-        }
+
+        this.isPaused = true;
+        this.console.add([{
+            state: "info",
+            message: "Ejecucion pausada"
+        }]);
     }
 
     resetCity() {
         this.isRunning = false;
         this.isPaused = false;
-        requestAnimationFrame(() => {});
+        requestAnimationFrame(() => { });
 
         this.map.reset();
         if (this.program) {
             this.setUpProgram();
-            this.console.set([{ state : "valid", message : "Ciudad reseteada exitosamente"}]);}
+            this.console.set([{
+                state: "valid",
+                message: "Ciudad reseteada exitosamente"
+            }]);
+        }
         else {
-            this.console.set([
-                {
-                    state : "warning",
-                    message : "Se reseteo pero no hay programa el cual cargar, antes de ejecutar debe cargar uno"
-                }
-            ])
+            this.console.set([{
+                state: "warning",
+                message: "Se reseteo pero no hay programa el cual cargar, antes de ejecutar debe cargar uno"
+            }]);
         }
     }
 
@@ -161,17 +161,17 @@ class City {
                     type.body = robotType.body;
                     type.variables = [];
                     robotType.local_variables.forEach(variable => {
-                        const init = variable.type_value === "numero"? 0 : false;
+                        const init = variable.type_value === "numero" ? 0 : false;
                         type.variables.push({
-                            identifier : variable.identifier,
-                            value : init
+                            identifier: variable.identifier,
+                            value: init
                         })
                     })
                     break;
                 }
             }
             const areasIds = [];
-            ast.INITS.assign_areas.forEach( assign => {
+            ast.INITS.assign_areas.forEach(assign => {
                 if (assign.identifier === id) {
                     areasIds.push(assign.type);
                 }
@@ -190,22 +190,22 @@ class City {
                 const idIndex = areasIds.indexOf(area.identifier);
                 if (idIndex !== -1) {
                     const a = {
-                        x : area.a.x * 16,
-                        y : area.a.y * 16,
+                        x: area.a.x * 16,
+                        y: area.a.y * 16,
                     }
                     const b = {
-                        x : area.b.x * 16,
-                        y : area.b.y * 16,
+                        x: area.b.x * 16,
+                        y: area.b.y * 16,
                     }
                     areas.push({
-                        a : a,
-                        b : b
+                        a: a,
+                        b: b
                     })
                 }
             });
             const inventory = {
-                flower : 0,
-                paper : 0
+                flower: 0,
+                paper: 0
             }
             ast.INITS.assign_items.forEach(assign => {
                 if (assign.identifier === id) {
@@ -214,35 +214,35 @@ class City {
                     }
                 }
             })
-        
+
             while (index > 7) {
                 index -= 8;
             }
-            const colorTable = ["#0000ff","#e51c23", "#259b24","#03a9f4", "#ffeb3b", "#ff5722", "#9c27b0", "#eeeeee"];
+            const colorTable = ["#0000ff", "#e51c23", "#259b24", "#03a9f4", "#ffeb3b", "#ff5722", "#9c27b0", "#eeeeee"];
 
             const strBody = JSON.stringify(type.body);
             const newBody = JSON.parse(strBody);
-            
+
             const strProcedures = JSON.stringify(ast.PROCEDURES);
             const newProcedures = JSON.parse(strProcedures);
             return {
-                identifier : id,
-                areas : areas,
-                x : x,
-                y : y,
-                variables : type.variables,
-                statements : newBody,
-                procedures : newProcedures,
-                inventory : inventory,
-                src : `./ide/assets/city/object/robot/robot-32x8-${index}.png`,
-                color : colorTable[index]
+                identifier: id,
+                areas: areas,
+                x: x,
+                y: y,
+                variables: type.variables,
+                statements: newBody,
+                procedures: newProcedures,
+                inventory: inventory,
+                src: `./ide/assets/city/object/robot/robot-32x8-${index}.png`,
+                color: colorTable[index]
             }
         }
 
         const { INSTANCES, AREAS } = this.program;
 
         const robotsConfig = [];
-        for (let i=0; i< INSTANCES.length; i++) {
+        for (let i = 0; i < INSTANCES.length; i++) {
             const config = extractConfig(this.program, i);
             robotsConfig.push(config);
         }
@@ -273,8 +273,8 @@ class City {
                     this.isRunning = false;
                     this.console.add([
                         {
-                            state : "error",
-                            message : "Se aborto la ejecucion del programa debido a un error"
+                            state: "error",
+                            message: "Se aborto la ejecucion del programa debido a un error"
                         }
                     ]);
                     this.map.activeInstances = 0;
@@ -283,8 +283,8 @@ class City {
             if (this.map.activeInstances === 0 && !this.map.executionError) {
                 this.console.add([
                     {
-                        state : "valid",
-                        message : "Finalizo la ejecucion del programa"
+                        state: "valid",
+                        message: "Finalizo la ejecucion del programa"
                     }
                 ])
                 this.isRunning = false;

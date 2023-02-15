@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>IDE</title>
-    <link rel="shortcut icon" type="image/x-icon" href="./general/assets/RobotScript-Icon.ico" >
+    <link rel="shortcut icon" type="image/x-icon" href="./general/assets/RobotScript-Icon.ico">
 
     <!-- Styles -->
     <link rel="stylesheet" href="./ide/css/index.css">
 </head>
+
 <body>
     <header class="primary-bar">
         <div class="container-logo">
@@ -36,24 +38,19 @@
             <nav>
                 <ul data-visible="false" class="primary-navigation flex">
                     <li>
-                        <a href="./index.html"
-                        target="_blank">IDE</a>
+                        <a href="./index.html" target="_blank">IDE</a>
                     </li>
                     <li>
-                        <a href="./docs/language/language.html"
-                        target="_blank">Documentacion</a>
+                        <a href="./docs/language/language.html" target="_blank">Documentacion</a>
                     </li>
                     <li>
-                        <a href="https://github.com/J-Josu/RobotScript"
-                        target="_blank">Repositorio</a>
+                        <a href="https://github.com/J-Josu/RobotScript" target="_blank">Repositorio</a>
                     </li>
                     <li>
-                        <a href="https://www.info.unlp.edu.ar/"
-                        target="_blank">Universidad</a>
+                        <a href="https://www.info.unlp.edu.ar/" target="_blank">Universidad</a>
                     </li>
                     <li>
-                        <a href="https://discord.gg/Y28Sv4HnKr"
-                        target="_blank">Discord</a>
+                        <a href="https://discord.gg/Y28Sv4HnKr" target="_blank">Discord</a>
                     </li>
                 </ul>
             </nav>
@@ -80,6 +77,10 @@
                     <span>Limpiar</span>
                 </button>
                 <select class="tool-fontSize" name="" id="">
+                    <option value="48">48</option>
+                    <option value="40">40</option>
+                    <option value="32">32</option>
+                    <option value="28">28</option>
                     <option value="24">24</option>
                     <option value="22">22</option>
                     <option value="20">20</option>
@@ -94,8 +95,7 @@
                     <img src="./ide/assets/svg/Compile.svg" alt="compilar">
                     <span>Compilar</span>
                 </button>
-                <a class="tool--button btnInfo"
-                href="./docs/language/language.html" target="_blank">
+                <a class="tool--button btnInfo" href="./docs/language/language.html" target="_blank">
                     <img src="./ide/assets/svg/Info.svg" alt="documentacion">
                     <span>Documentacion</span>
                 </a>
@@ -137,7 +137,6 @@
                         <img src="./ide/assets/svg/City.svg" alt="ciudad">
                         <span>Ciudad</span>
                     </button>
-
                     <ul data-visible="false" class="menu-int items">
                         <li class="menu-field text">
                             <span>Cantidad</span>
@@ -164,6 +163,25 @@
                     <img src="./ide/assets/svg/Camera.svg" alt="vista">
                     <span>Vista</span>
                 </button>
+                <div class="container-menu zoom">
+                    <button class="tool--button btnZoom">
+                        <img src="./ide/assets/svg/Zoom.svg" alt="zoom">
+                        <span>Zoom</span>
+                    </button>
+                    <ul data-visible="false" class="menu-int items">
+                        <li class="menu-field text">
+                            <span>Zoom</span>
+                            <input type="text" class="zoomValue" value="100%" readonly>
+                        </li>
+                        <li class="menu-field button">
+                            <button class="item-button btnPlus">Acercar</button>
+                            <button class="item-button btnMinus">Alejar</button>
+                        </li>
+                        <li class="menu-field button">
+                            <button class="item-button btnReset">Reset</button>
+                        </li>
+                    </ul>
+                </div>
             </section>
 
             <section class="window window-interpreter city-camera">
@@ -208,4 +226,5 @@
     <script type="module" src="./ide/js/interpreter/city/CityMap.js"> </script>
     <script type="module" src="./ide/js/interpreter/InterpreterManager.js"> </script>
 </body>
+
 </html>

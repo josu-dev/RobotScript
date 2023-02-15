@@ -8,9 +8,9 @@
 RobotScript es una reversion de el entorno de programacion R-Info usada en la facultad UNLP Informatica para la enseñanza de contenido. El objetivo es llevar el concepto a tiempos modernos, aumentando las herramientas que brinda, mejorando la interfaz y el acceso a la misma, ya que ahora al ser una pagina web puede ser utilizada en cualquier navegador sin la necesidad de descargar ni instalar algo.
 
 
-**Pagina web: https://j-josu.github.io/RobotScript/**
+**Pagina web: [https://j-josu.github.io/RobotScript/](https://j-josu.github.io/RobotScript/)**
 
-> Se encuentra en desarrollo
+> En estado funcional pero desarrollo no terminado
 
 
 ## Importante
@@ -27,7 +27,8 @@ Existen algunas diferencias de sintaxis entre R-Info y RobotScript, estas son:
 Las expresiones para las instrucciones si, repetir y mientras deben estar contenidas en parentesis:
 
 - R-Info
-    ```
+
+    ```text
     si 16 < cantidad
 
     repetir 5
@@ -36,7 +37,8 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
     ```
 
 - RobotScript
-    ```
+
+    ```text
     si (16 < cantidad)
 
     repetir (5)
@@ -45,10 +47,10 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
     ```
 
 
-<br>
+<br />
 
 
-## Capacidades:
+## Capacidades
 
 - Editor de codigo integrado
 - Compilacion con validacion de errores
@@ -59,7 +61,7 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
 - Y mas
 
 
-<br>
+<br />
 
 
 ## En desarrollo
@@ -69,16 +71,16 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
 - Interfaz y funcionalidad para modificar el tiempo entre actualizaciones
 
 
-<br>
+<br />
 
 
-## Librerias usadas:
+## Librerias usadas
 
-- Chevrotain, https://github.com/Chevrotain/chevrotain
-- Ace, https://github.com/ajaxorg/ace
+- Chevrotain - [repository](https://github.com/Chevrotain/chevrotain)
+- Ace - [repository](https://github.com/ajaxorg/ace)
 
 
-<br>
+<br />
 
 
 ## Contribuyendo
@@ -86,7 +88,7 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
 Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de conducta de la comunidad y del proceso de contribucion.
 
 
-<br>
+<br />
 
 
 ## Autores
@@ -94,7 +96,7 @@ Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de con
 - Josue Suarez - *Fundador*
 
 
-<br>
+<br />
 
 
 ## Licencia
@@ -102,10 +104,8 @@ Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de con
 Este projecto esta licenciado bajo la Licencia MIT, lea [LICENSE](./LICENSE) para mas detalles.
 
 
-<br>
-<br>
+<br />
+<br />
 
 
-##
-
-Esto no tiene ningun fin de lucro, solo aportar a la educacion y ayudar al otro.
+> Esto no tiene ningun fin de lucro, solo aportar a la educacion y ayudar al otro.

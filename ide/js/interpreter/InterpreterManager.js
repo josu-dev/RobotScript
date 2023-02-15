@@ -4,46 +4,73 @@ import Manager from "../general/Manager.js";
 import StorageAdministrator from "../general/IdeStorage.js";
 import City from "./city/City.js";
 
+
 class InterpreterManager extends Manager {
     /**
-     * 
      * @param {{container: HTMLElement, storage: StorageAdministrator}} config 
      */
     constructor(config) {
         super({
             ...config,
-            defaultName : "Interpreter"
+            defaultName: "Interpreter"
         });
 
         this.toolBar = {
-            load : this.container.querySelector(".btnLoad"),
-            run : this.container.querySelector(".btnRun"),
-            pause : this.container.querySelector(".btnPause"),
-            reset : this.container.querySelector(".btnReset"),
-            city : {
-                container : this.container.querySelector(".container-menu.city"),
-                btnCity : this.container.querySelector(".btnCity"),
-                menu : this.container.querySelector(".menu-int.items"),
+            load: this.container.querySelector(".btnLoad"),
+            run: this.container.querySelector(".btnRun"),
+            pause: this.container.querySelector(".btnPause"),
+            reset: this.container.querySelector(".btnReset"),
+            city: {
+                container: this.container.querySelector(".container-menu.city"),
+                btnCity: this.container.querySelector(".btnCity"),
+                menu: this.container.querySelector(".container-menu.city .menu-int"),
             },
-            view : this.container.querySelector(".btnView"),
+            view: this.container.querySelector(".btnView"),
+            zoom: {
+                container: this.container.querySelector(".container-menu.zoom"),
+                btnZoom: this.container.querySelector(".btnZoom"),
+                menu: this.container.querySelector(".container-menu.zoom .menu-int"),
+            },
+            openMenu: (() => {
+                let lastOpen;
+                /**
+                 * @param {"city" | "zoom"} keepOpen 
+                 */
+                return (keepOpen) => {
+                    if (lastOpen && lastOpen !== keepOpen)
+                        this.toolBar[lastOpen].menu.setAttribute("data-visible", false);
+                    this.toolBar[keepOpen].menu.setAttribute("data-visible", true);
+                    lastOpen = keepOpen;
+                }
+            })()
         }
 
         this.itemMenu = {
-            quantity : this.toolBar.city.menu.querySelector(".itemQuantity"),
-            x : this.toolBar.city.menu.querySelector(".itemX"),
-            y : this.toolBar.city.menu.querySelector(".itemY"),
-            btn : {
-                flowers : this.toolBar.city.menu.querySelector(".btnFlowers"),
-                papers : this.toolBar.city.menu.querySelector(".btnPapers"),
-                clear : this.toolBar.city.menu.querySelector(".btnClear")
+            quantity: this.toolBar.city.menu.querySelector(".itemQuantity"),
+            x: this.toolBar.city.menu.querySelector(".itemX"),
+            y: this.toolBar.city.menu.querySelector(".itemY"),
+            btn: {
+                flowers: this.toolBar.city.menu.querySelector(".btnFlowers"),
+                papers: this.toolBar.city.menu.querySelector(".btnPapers"),
+                clear: this.toolBar.city.menu.querySelector(".btnClear")
+            }
+        }
+
+        this.zoomMenu = {
+            zoomValue: this.toolBar.zoom.menu.querySelector(".zoomValue"),
+            btn: {
+                plus: this.toolBar.zoom.menu.querySelector(".btnPlus"),
+                minus: this.toolBar.zoom.menu.querySelector(".btnMinus"),
+                reset: this.toolBar.zoom.menu.querySelector(".btnReset")
             }
         }
 
         this.city = new City({
-            element : this.window.querySelector(".city-container"),
-            storage : this.storage,
-            console : this.console
+            element: this.window.querySelector(".city-container"),
+            storage: this.storage,
+            console: this.console
         })
+
 
         this.initToolBar = () => {
             this.toolBar.load.addEventListener("click", () => {
@@ -62,10 +89,11 @@ class InterpreterManager extends Manager {
                 this.city.resetCity();
             });
 
+
             this.toolBar.city.btnCity.addEventListener("click", () => {
-                const visivility =  this.toolBar.city.menu.getAttribute("data-visible");
+                const visivility = this.toolBar.city.menu.getAttribute("data-visible");
                 if (visivility === "false") {
-                    this.toolBar.city.menu.setAttribute("data-visible", true);
+                    this.toolBar.openMenu('city');
                 }
                 else {
                     this.toolBar.city.menu.setAttribute("data-visible", false);
@@ -75,33 +103,33 @@ class InterpreterManager extends Manager {
                 const rData = this.proccessItemMenu();
                 if (rData.quantity === 0) {
                     this.console.add([{
-                        state : "error",
-                        message : "Debe indicar una cantidad mayor a 0 para agregar flores"
+                        state: "error",
+                        message: "Debe indicar una cantidad mayor a 0 para agregar flores"
                     }]);
                     return;
                 };
                 const itemArray = this.generateItems(rData);
                 this.storage.addItems({
-                    type : "flowers",
-                    items : itemArray
+                    type: "flowers",
+                    items: itemArray
                 });
             });
             this.itemMenu.btn.papers.addEventListener("click", () => {
                 const rData = this.proccessItemMenu();
                 if (rData.quantity === 0) {
                     this.console.add([{
-                        state : "error",
-                        message : "Debe indicar una cantidad mayor a 0 para agregar papeles"
+                        state: "error",
+                        message: "Debe indicar una cantidad mayor a 0 para agregar papeles"
                     }]);
                     return;
                 };
                 if (rData.x.max === 0 || rData.y.max === 0) return;
 
                 const itemArray = this.generateItems(rData);
-                
+
                 this.storage.addItems({
-                    type : "papers",
-                    items : itemArray
+                    type: "papers",
+                    items: itemArray
                 });
             });
             this.itemMenu.btn.clear.addEventListener("click", () => {
@@ -111,12 +139,56 @@ class InterpreterManager extends Manager {
                 this.storage.clearItems(rData);
             });
 
+
             this.toolBar.view.addEventListener("click", () => {
                 this.console.add([{
-                    state : "info",
-                    emitter : "Sin implementar",
-                    message : "No esta añadida la funcionalidad de cambiar camaras"
+                    state: "info",
+                    emitter: "Sin implementar",
+                    message: "No esta añadida la funcionalidad de cambiar camaras"
                 }])
+            });
+
+
+            /** 
+             * @param {number} scale
+             * @returns {string}
+             */
+            function scaleToPorcentage(scale) {
+                return (scale * 100).toFixed(0) + "%";
+            }
+            this.toolBar.zoom.btnZoom.addEventListener("click", () => {
+                const visivility = this.toolBar.zoom.menu.getAttribute("data-visible");
+                if (visivility === "false") {
+                    this.toolBar.openMenu('zoom');
+                    this.zoomMenu.zoomValue.value = scaleToPorcentage(this.city.view.scale)
+                }
+                else {
+                    this.toolBar.zoom.menu.setAttribute("data-visible", false);
+                }
+            });
+            this.zoomMenu.btn.plus.addEventListener("click", () => {
+                const newZoom = scaleToPorcentage(this.city.view.zoomIn());
+                this.zoomMenu.zoomValue.value = newZoom;
+                this.console.add([{
+                    state: "info",
+                    message: `Zoom acercado a ${newZoom}`
+                }]);
+            });
+            this.zoomMenu.btn.minus.addEventListener("click", () => {
+                const newZoom = scaleToPorcentage(this.city.view.zoomOut());
+                this.zoomMenu.zoomValue.value = newZoom;
+                this.console.add([{
+                    state: "info",
+                    message: `Zoom alejado a ${newZoom}`
+                }]);
+            });
+            this.zoomMenu.btn.reset.addEventListener("click", () => {
+                const newZoom = scaleToPorcentage(this.city.view.zoomReset());
+                this.zoomMenu.zoomValue.value = newZoom;
+                this.console.add([{
+                    state: "info",
+                    message: `Zoom reseteado a ${newZoom}`
+                }]);
             });
         }
 
@@ -128,48 +200,48 @@ class InterpreterManager extends Manager {
             const nQuantity = Number(str);
             if (!nQuantity) {
                 return {
-                    error : true,
-                    value : 0
+                    error: true,
+                    value: 0
                 }
             }
             return {
-                error : false,
-                value : nQuantity
+                error: false,
+                value: nQuantity
             }
         };
         const trunk100 = (n) => {
             return (
-                n < 0?     0:
-                n > 100? 100: n
+                n < 0 ? 0 :
+                    n > 100 ? 100 : n
             )
         }
         const proccessCoord = (str, name) => {
             const r = {
-                min : 0,
-                max : 0
+                min: 0,
+                max: 0
             };
 
             if (str === "") {
                 this.console.add([{
-                    state : "error",
-                    message : `Debe completar el campo ${name} agregar/limpiar la ciudad`
+                    state: "error",
+                    message: `Debe completar el campo ${name} agregar/limpiar la ciudad`
                 }]);
                 return r;
             }
-    
+
             const strParts = str.split(/[^0-9a-zA-ZñÑ]/);
             if (strParts.length === 0 || strParts.length > 2) {
                 this.console.add([{
-                    state : "error",
-                    message : `Debe completar el campo ${name} con un valor o un rango ( minimo - maximo )`
+                    state: "error",
+                    message: `Debe completar el campo ${name} con un valor o un rango ( minimo - maximo )`
                 }]);
                 return r;
             }
             const rMin = toNumber(strParts[0]);
             if (rMin.error) {
                 this.console.add([{
-                    state : "error",
-                    message : `Debe completar el campo ${name} con un valor o un rango ( minimo - maximo )`
+                    state: "error",
+                    message: `Debe completar el campo ${name} con un valor o un rango ( minimo - maximo )`
                 }]);
                 return r;
             }
@@ -179,8 +251,8 @@ class InterpreterManager extends Manager {
                 const rMax = toNumber(strParts[1]);
                 if (rMax.error) {
                     this.console.add([{
-                        state : "error",
-                        message : `Debe completar el campo ${name} con un valor o un rango ( minimo - maximo )`
+                        state: "error",
+                        message: `Debe completar el campo ${name} con un valor o un rango ( minimo - maximo )`
                     }]);
                     return r;
                 }
@@ -198,14 +270,14 @@ class InterpreterManager extends Manager {
         }
 
         const r = {
-            quantity : 0,
-            x : {
-                min : 0,
-                max : 0
+            quantity: 0,
+            x: {
+                min: 0,
+                max: 0
             },
-            y : {
-                min : 0,
-                max : 0
+            y: {
+                min: 0,
+                max: 0
             }
         };
         const strQuantity = this.itemMenu.quantity.value;
@@ -214,9 +286,9 @@ class InterpreterManager extends Manager {
 
         const rQuantity = toNumber(strQuantity);
         if (!rQuantity.error) {
-            rQuantity.value < 0? r.quantity = 0:
-            rQuantity.value > 1000? r.quantity = 1000:
-            r.quantity = rQuantity.value
+            rQuantity.value < 0 ? r.quantity = 0 :
+                rQuantity.value > 1000 ? r.quantity = 1000 :
+                    r.quantity = rQuantity.value
         }
 
         r.x = proccessCoord(strX, "x");
@@ -233,9 +305,9 @@ class InterpreterManager extends Manager {
         let remaining = config.quantity;
         let maxQuantity = 0;
         if (config.quantity < 10) maxQuantity = 5;
-        else if (config.quantity < 100) maxQuantity = Math.round(config.quantity*0.25);
-        else if (config.quantity < 1000) maxQuantity = Math.round(config.quantity*0.1);
-        else maxQuantity = Math.round(config.quantity*0.01);
+        else if (config.quantity < 100) maxQuantity = Math.round(config.quantity * 0.25);
+        else if (config.quantity < 1000) maxQuantity = Math.round(config.quantity * 0.1);
+        else maxQuantity = Math.round(config.quantity * 0.01);
 
         const rArray = [];
         while (remaining > maxQuantity) {
@@ -244,18 +316,18 @@ class InterpreterManager extends Manager {
             const x = randMinMax(config.x.min, config.x.max);
             const y = randMinMax(config.y.min, config.y.max);
             rArray.push({
-                quantity : quantity,
-                x : x,
-                y : y
+                quantity: quantity,
+                x: x,
+                y: y
             });
         };
         if (remaining !== 0) {
             const x = randMinMax(config.x.min, config.x.max);
             const y = randMinMax(config.y.min, config.y.max);
             rArray.push({
-                quantity : remaining,
-                x : x,
-                y : y
+                quantity: remaining,
+                x: x,
+                y: y
             });
         };
 

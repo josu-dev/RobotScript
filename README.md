@@ -1,14 +1,14 @@
-<img src="./general/assets/svg/RobotScript-Icon.svg" alt="RobotScript icon" style="height: 16rem; width: 16rem;"/>
+<img src="./general/assets/svg/RobotScript-Icon.svg" alt="Icono de RobotScript" style="height: 16rem; width: 16rem;"/>
 
 # RobotScript
 
 
-## Introduccion
+## Introducción
 
-RobotScript es una reversion de el entorno de programacion R-Info usada en la facultad UNLP Informatica para la enseñanza de contenido. El objetivo es llevar el concepto a tiempos modernos, aumentando las herramientas que brinda, mejorando la interfaz y el acceso a la misma, ya que ahora al ser una pagina web puede ser utilizada en cualquier navegador sin la necesidad de descargar ni instalar algo.
+RobotScript es una reversion del entorno de programación R-Info usada en la facultad UNLP Informatica para la enseñanza de contenido. El objetivo es llevar el concepto a tiempos modernos, aumentando las herramientas que brinda, mejorando la interfaz y el acceso a la misma, ya que ahora al ser una pagina web puede ser utilizada en cualquier navegador sin la necesidad de descargar ni instalar algo.
 
 
-**Pagina web: [https://j-josu.github.io/RobotScript/](https://j-josu.github.io/RobotScript/)**
+**Pagina web: [https://josu-dev.github.io/RobotScript/](https://josu-dev.github.io/RobotScript/)**
 
 > En estado funcional pero desarrollo no terminado
 
@@ -50,24 +50,24 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
 <br />
 
 
-## Capacidades
+## Características
 
 - Editor de codigo integrado
-- Compilacion con validacion de errores
+- Compilación con validación de errores
 - Interpretador de codigo integrado
 - Multiples instancias
 - Documentacion
-- Apto movil (en desarrollo)
+- Apto movil (funcional)
 - Y mas
 
 
 <br />
 
 
-## En desarrollo
+## Implementaciones futuras
 
 - Hud de estado de instancias
-- Seleccion de camara, libre o seguir una instancia
+- Selección de camara, libre o seguir una instancia
 - Interfaz y funcionalidad para modificar el tiempo entre actualizaciones
 
 
@@ -83,9 +83,9 @@ Las expresiones para las instrucciones si, repetir y mientras deben estar conten
 <br />
 
 
-## Contribuyendo
+## Contribuir
 
-Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de conducta de la comunidad y del proceso de contribucion.
+Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de conducta del proyecto y del proceso de contribucion.
 
 
 <br />
@@ -93,7 +93,7 @@ Lea [CONTRIBUTING.md](./CONTRIBUTING.md) para mas detalles en los codigos de con
 
 ## Autores
 
-- Josue Suarez - *Fundador*
+- Josue Suarez - *Creador*
 
 
 <br />
@@ -108,4 +108,4 @@ Este projecto esta licenciado bajo la Licencia MIT, lea [LICENSE](./LICENSE) par
 <br />
 
 
-> Esto no tiene ningun fin de lucro, solo aportar a la educacion y ayudar al otro.
+> Desarrollado unicamente para aportar a la educación y ayudar al otro.
